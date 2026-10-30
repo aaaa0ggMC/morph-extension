@@ -4,11 +4,15 @@ import aaaa0ggmc.morphext.ability.AbilityCooldowns;
 import aaaa0ggmc.morphext.ability.AbilityRegistry;
 import aaaa0ggmc.morphext.ability.AbilityUnlocks;
 import aaaa0ggmc.morphext.ability.IAbility;
+import aaaa0ggmc.morphext.ability.IStatefulAbility;
+import aaaa0ggmc.morphext.client.ClientAbilityExecutor;
 import aaaa0ggmc.morphext.config.ModConfig;
 import aaaa0ggmc.morphext.client.RenderUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -230,7 +234,28 @@ public class GuiInstantWheel extends GuiScreen {
         // 搜索模式
         this.searchField.mouseClicked(mouseX, mouseY, mouseButton);
         if (mouseButton == 0 && this.hoveredResult >= 0 && this.hoveredResult < this.results.size()) {
-            this.select(this.results.get(this.hoveredResult));
+            IAbility ability = this.results.get(this.hoveredResult);
+            if (ability instanceof IStatefulAbility) {
+                int rowH = ROW_HEIGHT;
+                int listW = Math.min(280, this.width - 40);
+                int x = this.width / 2 - listW / 2;
+                int y = this.searchY + this.searchH + 8;
+                int rowIdx = this.hoveredResult - this.resultScroll;
+                int ry = y + rowIdx * rowH;
+                int btnW = 76;
+                int btnH = rowH - 4;
+                int btnX = x + listW - btnW - 3;
+                int btnY = ry + 2;
+
+                if (mouseX >= btnX && mouseX <= btnX + btnW && mouseY >= btnY && mouseY <= btnY + btnH) {
+                    // 点击了状态切换按钮：就地切换状态，不选中槽位，不关闭搜索界面
+                    ClientAbilityExecutor.activate(ability);
+                    this.mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    return;
+                }
+            }
+
+            this.select(ability);
         }
     }
 
@@ -482,9 +507,36 @@ public class GuiInstantWheel extends GuiScreen {
             this.drawRect(x, ry, x + listW, ry + rowH,
                     hover ? 0x66FFFFFF : (i % 2 == 0 ? 0x44000000 : 0x22000000));
             this.renderIcon(ability.getIcon(), x + 3, ry + 2);
+
+            boolean isStateful = ability instanceof IStatefulAbility;
+            int btnW = 76;
+            int btnH = rowH - 4;
+            int btnX = x + listW - btnW - 3;
+            int btnY = ry + 2;
+
+            if (isStateful) {
+                IStatefulAbility stateful = (IStatefulAbility) ability;
+                String stateText = stateful.getStateLabel(this.mc.player);
+                boolean active = stateful.isActive(this.mc.player);
+                boolean btnHover = mouseX >= btnX && mouseX <= btnX + btnW && mouseY >= btnY && mouseY <= btnY + btnH;
+
+                int btnBg = active
+                        ? (btnHover ? 0xEE43A047 : 0xCC2E7D32)
+                        : (btnHover ? 0x88666666 : 0x55333333);
+                this.drawRect(btnX, btnY, btnX + btnW, btnY + btnH, btnBg);
+                this.drawRect(btnX, btnY, btnX + btnW, btnY + 1, 0x44FFFFFF);
+                this.drawRect(btnX, btnY + btnH - 1, btnX + btnW, btnY + btnH, 0x44000000);
+
+                if (this.fontRenderer.getStringWidth(stateText) > btnW - 4) {
+                    stateText = this.fontRenderer.trimStringToWidth(stateText, btnW - 6) + "…";
+                }
+                this.drawCenteredString(this.fontRenderer, stateText, btnX + btnW / 2, btnY + 4, active ? 0xAAFFAA : 0xDDDDDD);
+            }
+
+            int textMaxW = isStateful ? listW - 24 - btnW - 8 : listW - 44;
             String name = ability.getDisplayName();
-            if (this.fontRenderer.getStringWidth(name) > listW - 44) {
-                name = this.fontRenderer.trimStringToWidth(name, listW - 48) + "…";
+            if (this.fontRenderer.getStringWidth(name) > textMaxW) {
+                name = this.fontRenderer.trimStringToWidth(name, textMaxW - 4) + "…";
             }
             this.fontRenderer.drawStringWithShadow(name, x + 24, ry + 6, 0xFFFFFF);
         }

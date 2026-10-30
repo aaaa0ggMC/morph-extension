@@ -1,11 +1,10 @@
 package aaaa0ggmc.morphext.variant;
 
 import aaaa0ggmc.morphext.ability.HumanStatureAbility;
-import mchorse.metamorph.api.morphs.AbstractMorph;
 import mchorse.metamorph.api.morphs.EntityMorph;
 import mchorse.metamorph.capabilities.morphing.IMorphing;
 import mchorse.metamorph.capabilities.morphing.Morphing;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderLivingEvent;
@@ -18,6 +17,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * 身形规整（Human Stature）客户端模型渲染与视线/碰撞箱拦截控制器。
+ *
+ * 1. 模式 1 (HUMAN_MODEL)：阻断怪兽模型渲染，放行原版人类玩家模型渲染。
+ * 2. 模式 2 (SMART_SCALE)：在 OpenGL 矩阵中智能缩放怪兽模型的视觉体积，使其高度严格等身对齐人类身高（~1.8 格）。
+ * 3. 模式 0 (OFF)：保持原生模型大小与渲染比例。
  */
 @SideOnly(Side.CLIENT)
 public final class HumanStatureRenderHandler {
@@ -32,17 +35,26 @@ public final class HumanStatureRenderHandler {
     }
 
     /**
-     * 模式 1 (HUMAN_MODEL)：阻止 Metamorph 渲染怪兽模型。
+     * 模式 1 (HUMAN_MODEL) & 模式 2 (SMART_SCALE) 模型渲染拦截：
+     * - 模式 1：取消怪兽模型渲染；
+     * - 模式 2：在 OpenGL 局部变换矩阵中等比缩放整个模型的视觉体积，使其高度缩放到 1.8 格高的人类等身体积。
      */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderLivingPre(RenderLivingEvent.Pre<EntityLivingBase> event) {
         EntityLivingBase host = EntityMorph.renderEntity;
         if (host instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) host;
             HumanStatureAbility.Mode mode = HumanStatureAbility.getClientMode();
             if (mode == HumanStatureAbility.Mode.HUMAN_MODEL) {
                 // 取消 Metamorph 的怪兽实体渲染
                 event.setCanceled(true);
+            } else if (mode == HumanStatureAbility.Mode.SMART_SCALE) {
+                EntityLivingBase mob = event.getEntity();
+                if (mob != null && mob.height > 0.05F) {
+                    float targetHeight = 1.8F;
+                    float scaleFactor = targetHeight / mob.height;
+                    // 直接在 RenderLivingBase 的 Matrix 中缩放模型体积！
+                    GlStateManager.scale(scaleFactor, scaleFactor, scaleFactor);
+                }
             }
         }
     }
@@ -62,38 +74,10 @@ public final class HumanStatureRenderHandler {
         }
         HumanStatureAbility.Mode mode = HumanStatureAbility.getClientMode();
         if (mode == HumanStatureAbility.Mode.HUMAN_MODEL && event.isCanceled()) {
-            // 将被 Metamorph 取消的玩家模型渲染解取消，让原版 RenderPlayer 正常绘制玩家模型
+            // 将被 Metamorph 取消的玩家模型渲染解取消，让原版 RenderPlayer 正常绘制玩家人类模型与皮肤
             event.setCanceled(false);
         }
     }
 
-    /**
-     * 模式 2 (SMART_SCALE)：在渲染前智能调整当前 EntityMorph 的 scale，使其高度与人类一致 (~1.8 格高)。
-     */
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onMorphRenderSmartScale(RenderPlayerEvent.Pre event) {
-        EntityPlayer player = event.getEntityPlayer();
-        if (player == null) {
-            return;
-        }
-        IMorphing morphing = Morphing.get(player);
-        if (morphing == null) {
-            return;
-        }
-        AbstractMorph current = morphing.getCurrentMorph();
-        if (!(current instanceof EntityMorph)) {
-            return;
-        }
-        EntityMorph em = (EntityMorph) current;
-        HumanStatureAbility.Mode mode = HumanStatureAbility.getClientMode();
-
-        if (mode == HumanStatureAbility.Mode.SMART_SCALE) {
-            EntityLivingBase mob = em.getEntity(player.world);
-            float origH = mob != null ? mob.height : current.getHeight(player);
-            if (origH > 0.05F) {
-                // 目标高度 1.8 格
-                em.scale = 1.8F / origH;
-            }
-        }
-    }
+    private HumanStatureRenderHandler() { }
 }
