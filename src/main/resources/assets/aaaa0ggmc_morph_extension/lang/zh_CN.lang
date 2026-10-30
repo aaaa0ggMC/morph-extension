@@ -148,3 +148,6 @@ morphext.metamorph.desc.snowstorm_volley=暴风雪连珠雪球：极速倾泻连
 morphext.metamorph.desc.blaze_fire_ring=烈焰火环爆发：向四周 8 个方向爆发喷射一圈环形烈焰火球弹幕，点燃并击退触碰到的敌人。
 morphext.metamorph.desc.web_trap=吐丝结网：喷吐极具黏性的蛛丝，命中生物将造成缠绕伤害并附加极高程度的迟滞减速（缓慢 IV），命中方块则会在目标位置织就一张蜘蛛网。
 morphext.metamorph.desc.pigman_rage=狂怒战意：发出地狱猪人被激怒时的狂暴咆哮，瞬间激活狂战士本能，获得力量 II、速度 I 与抗性提升 I（持续 7 秒）。
+
+# 变种相关
+morphext.variant.baby=(幼年)

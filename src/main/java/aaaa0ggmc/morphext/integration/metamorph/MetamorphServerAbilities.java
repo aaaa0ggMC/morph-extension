@@ -40,7 +40,9 @@ public final class MetamorphServerAbilities implements ServerAbilityService.Hand
                 return false;
             }
             for (AbstractMorph acquired : morphing.getAcquiredMorphs()) {
-                if (acquired != null && id.equals(MORPH + acquired.name)) { return true; }
+                if (acquired != null && aaaa0ggmc.morphext.variant.MorphVariantHelper.matches(acquired, MORPH, id)) {
+                    return true;
+                }
             }
             return false;
         }
@@ -143,10 +145,9 @@ public final class MetamorphServerAbilities implements ServerAbilityService.Hand
             if (aaaa0ggmc.morphext.config.ModConfig.overwriteMetamorph && !player.isCreative()) {
                 return ActivationResult.unavailable();
             }
-            String name = id.substring(MORPH.length());
-            // 不接受客户端任意指定生物；只允许服务端已获取的 morph。
+            // 不接受客户端任意指定生物；只允许服务端已获取且匹配对应变种的 morph。
             for (AbstractMorph acquired : morphing.getAcquiredMorphs()) {
-                if (acquired != null && name.equals(acquired.name)) {
+                if (acquired != null && aaaa0ggmc.morphext.variant.MorphVariantHelper.matches(acquired, MORPH, id)) {
                     MorphAPI.morph(player, acquired, true);
                     return ActivationResult.success(0);
                 }

@@ -35,6 +35,8 @@ public final class MetamorphIntegration {
     }
 
     public static void init() {
+        aaaa0ggmc.morphext.variant.VariantRegistry.init();
+        aaaa0ggmc.morphext.variant.VariantEventListener.register();
         aaaa0ggmc.morphext.integration.metamorph.vanilla.VanillaActions.registerAll();
         AbilityRegistry.register(new DemorphAbility());
         MetamorphBridge.markInitialized();
@@ -56,7 +58,6 @@ public final class MetamorphIntegration {
             if (morph == null || morph.name == null || morph.name.isEmpty()) {
                 continue;
             }
-            String id = MORPH_PREFIX + morph.name;
             current.add(new MorphAbility(morph));
         }
         AbilityRegistry.replaceGrants("metamorph:acquired", current, mc.player);
@@ -322,9 +323,10 @@ public final class MetamorphIntegration {
         }
 
         public MorphAbility(mchorse.metamorph.api.morphs.AbstractMorph morph) {
-            super(MORPH_PREFIX + morph.name, morph.getDisplayName());
+            super(aaaa0ggmc.morphext.variant.MorphVariantHelper.buildMorphAbilityId(MORPH_PREFIX, morph),
+                    aaaa0ggmc.morphext.variant.MorphVariantHelper.getDisplayNameWithVariant(morph));
             this.morphName = morph.name;
-            this.displayName = "Morph: " + morph.getDisplayName();
+            this.displayName = "Morph: " + aaaa0ggmc.morphext.variant.MorphVariantHelper.getDisplayNameWithVariant(morph);
             this.icon = MorphIcons.forMorph(morph.name);
         }
 

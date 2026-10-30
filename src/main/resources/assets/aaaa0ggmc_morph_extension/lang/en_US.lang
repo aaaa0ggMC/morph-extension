@@ -148,3 +148,6 @@ morphext.metamorph.desc.snowstorm_volley=Snowstorm Volley: Unleash a rapid-fire 
 morphext.metamorph.desc.blaze_fire_ring=Inferno Ring: Erupt in an 8-way radial burst of blazing fireballs, igniting and repelling all approaching threats.
 morphext.metamorph.desc.web_trap=Web Trap: Spit a sticky cobweb strand that entangles enemies with heavy Slowness IV and Weakness, or spins a cobweb block at target location.
 morphext.metamorph.desc.pigman_rage=Nether Fury: Let out an enraged pigman roar, unleashing berserk combat instincts that grant Strength II, Speed I, and Resistance I for 7 seconds.
+
+# Variants
+morphext.variant.baby=(Baby)
