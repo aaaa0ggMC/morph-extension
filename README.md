@@ -1,5 +1,12 @@
 # aaaa0ggmc's morph extension
 
+> [!WARNING]
+> **免责声明 / Disclaimer**
+> 
+> 本项目处于 WIP（Work In Progress）阶段。作者不对本模组当前以及将来的质量、稳定性、可用性做任何形式的明示或暗示保证与担保，代码可能包含 AI 生成内容（AI Slop）。请在测试环境中评估并自行承担使用风险。
+> 
+> This project is a Work In Progress (WIP). The author makes NO warranties or guarantees of any kind regarding the quality, stability, or fitness for any purpose of this mod now or in the future. The codebase may contain AI-generated slop. Use strictly at your own risk.
+
 1.12.2 Forge 的能力系统模组。分两层：
 
 - **能力框架**（`ability` 包）：`IAbility` 接口 + `AbilityRegistry` 注册表。其他模组（addon）实现接口并注册，能力即进入轮盘。
