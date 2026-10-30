@@ -131,6 +131,47 @@ public final class MetamorphIntegration {
                 granted.add(new MorphGrantedAbility(morph.name, name, null, mobAct, icon));
             }
         }
+
+        /* 外部数据驱动能力注入（由 morph_abilities.json 或其他模组注入） */
+        MorphAbilityDefinition def = MorphJsonConfig.get(morph.name);
+        if (def != null) {
+            if (def.abilities != null) {
+                for (String abName : def.abilities) {
+                    boolean already = false;
+                    for (aaaa0ggmc.morphext.ability.IAbility g : granted) {
+                        if (g.getId().endsWith(":" + abName)) {
+                            already = true;
+                            break;
+                        }
+                    }
+                    if (!already) {
+                        mchorse.metamorph.api.abilities.IAbility metaAb = MorphManager.INSTANCE.abilities.get(abName);
+                        granted.add(new MorphGrantedAbility(morph.name, abName, metaAb, null, icon));
+                    }
+                }
+            }
+            if (def.action != null && !def.action.isEmpty()) {
+                boolean actionAlready = false;
+                for (aaaa0ggmc.morphext.ability.IAbility g : granted) {
+                    if (g.getId().endsWith(":" + def.action)) {
+                        actionAlready = true;
+                        break;
+                    }
+                }
+                if (!actionAlready) {
+                    mchorse.metamorph.api.abilities.IAction metaAct = MorphManager.INSTANCE.actions.get(def.action);
+                    if (metaAct != null) {
+                        granted.add(new MorphGrantedAbility(morph.name, def.action, null, metaAct, icon));
+                    } else {
+                        aaaa0ggmc.morphext.ability.IAbility customAbility = AbilityRegistry.get(def.action);
+                        if (customAbility != null) {
+                            granted.add(customAbility);
+                        }
+                    }
+                }
+            }
+        }
+
         AbilityRegistry.replaceGrants("metamorph:current", granted, mc.player);
     }
 

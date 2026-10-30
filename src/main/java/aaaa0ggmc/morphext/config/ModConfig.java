@@ -22,6 +22,9 @@ public class ModConfig {
     public static int hudVertical = 2;
     public static int hudMargin = 0;
 
+    /** 是否接管并禁用生存模式下的 Metamorph 自主操作（禁止自主变回、禁止打开形态菜单、锁死灵魂掉落）。 */
+    public static boolean overwriteMetamorph = true;
+
     public static void init(File file) {
         config = new Configuration(file);
         load();
@@ -31,6 +34,8 @@ public class ModConfig {
         hudHorizontal = config.getInt("hudHorizontal", "hud", 0, 0, 2, "0=left, 1=middle, 2=right");
         hudVertical = config.getInt("hudVertical", "hud", 2, 0, 2, "0=top, 1=center, 2=bottom");
         hudMargin = config.getInt("margin", "hud", 0, 0, 200, "HUD margin in GUI pixels");
+        overwriteMetamorph = config.getBoolean("overwrite_metamorph", Configuration.CATEGORY_GENERAL,
+                true, "Completely disable survival Metamorph operations (demorphing, morph menu, soul drops)");
         maxSlots = config.getInt("maxSlots", Configuration.CATEGORY_GENERAL,
                 MAX_SLOTS_HARD_CAP, 1, MAX_SLOTS_HARD_CAP,
                 "Max abilities bound to the wheel (the circle is evenly divided by this count)");

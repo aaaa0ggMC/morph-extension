@@ -1,0 +1,23 @@
+package aaaa0ggmc.morphext.integration.metamorph;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 单个形态的数据驱动能力与免疫定义（对应 JSON 条目）。
+ */
+public class MorphAbilityDefinition {
+    public List<String> abilities = new ArrayList<>();
+    public String action = "";
+    public List<String> immunities = new ArrayList<>();
+    public List<String> damageImmunities = new ArrayList<>();
+
+    public MorphAbilityDefinition() {
+    }
+
+    public MorphAbilityDefinition(List<String> abilities, String action, List<String> immunities) {
+        if (abilities != null) this.abilities.addAll(abilities);
+        this.action = action != null ? action : "";
+        if (immunities != null) this.immunities.addAll(immunities);
+    }
+}

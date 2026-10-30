@@ -32,18 +32,31 @@ public final class MetamorphServerAbilities implements ServerAbilityService.Hand
     public boolean isAvailable(EntityPlayerMP player, String id) {
         IMorphing morphing = Morphing.get(player);
         if (morphing == null) { return false; }
-        if ("metamorph:demorph".equals(id)) { return true; }
+        if ("metamorph:demorph".equals(id)) {
+            return !aaaa0ggmc.morphext.config.ModConfig.overwriteMetamorph || player.isCreative();
+        }
         if (id.startsWith(MORPH)) {
+            if (aaaa0ggmc.morphext.config.ModConfig.overwriteMetamorph && !player.isCreative()) {
+                return false;
+            }
             for (AbstractMorph acquired : morphing.getAcquiredMorphs()) {
                 if (acquired != null && id.equals(MORPH + acquired.name)) { return true; }
             }
             return false;
         }
         AbstractMorph current = morphing.getCurrentMorph();
-        if (current == null || current.getSettings() == null) { return false; }
+        if (current == null) { return false; }
         String prefix = GRANTED + current.name + ":";
         if (!id.startsWith(prefix)) { return false; }
         String name = id.substring(prefix.length());
+
+        // 检查数据驱动的 JSON 配置能力
+        MorphAbilityDefinition def = MorphJsonConfig.get(current.name);
+        if (def != null && def.action != null && def.action.equals(name)) {
+            return true;
+        }
+
+        if (current.getSettings() == null) { return false; }
         if (current.getSettings().action != null && name.equals(nameOf(MorphManager.INSTANCE.actions,
                 current.getSettings().action, "action"))) { return true; }
         if (current.getSettings().attack != null && name.equals(nameOf(MorphManager.INSTANCE.attacks,
@@ -75,10 +88,16 @@ public final class MetamorphServerAbilities implements ServerAbilityService.Hand
             return ActivationResult.unavailable();
         }
         if ("metamorph:demorph".equals(id)) {
+            if (aaaa0ggmc.morphext.config.ModConfig.overwriteMetamorph && !player.isCreative()) {
+                return ActivationResult.unavailable();
+            }
             MorphAPI.demorph(player);
             return ActivationResult.success(0);
         }
         if (id.startsWith(MORPH)) {
+            if (aaaa0ggmc.morphext.config.ModConfig.overwriteMetamorph && !player.isCreative()) {
+                return ActivationResult.unavailable();
+            }
             String name = id.substring(MORPH.length());
             // 不接受客户端任意指定生物；只允许服务端已获取的 morph。
             for (AbstractMorph acquired : morphing.getAcquiredMorphs()) {
@@ -98,7 +117,7 @@ public final class MetamorphServerAbilities implements ServerAbilityService.Hand
             return ActivationResult.unavailable(); // 变身已变化/旧形态能力请求。
         }
         String name = id.substring(prefix.length());
-        IAction action = current.getSettings().action;
+        IAction action = current.getSettings() != null ? current.getSettings().action : null;
         boolean matches = false;
         if (action != null) {
             String registeredName = "action";
@@ -109,6 +128,16 @@ public final class MetamorphServerAbilities implements ServerAbilityService.Hand
                 }
             }
             matches = registeredName.equals(name);
+        }
+        if (!matches) {
+            // 检查 JSON 数据驱动配置的 action
+            MorphAbilityDefinition def = MorphJsonConfig.get(current.name);
+            if (def != null && def.action != null && def.action.equals(name)) {
+                action = MorphManager.INSTANCE.actions.get(def.action);
+                if (action != null) {
+                    matches = true;
+                }
+            }
         }
         if (!matches && "mob_act".equals(name) && current instanceof EntityMorph) {
             try {

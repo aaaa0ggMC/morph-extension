@@ -14,6 +14,7 @@ public class CommonProxy {
     public void preInit(FMLPreInitializationEvent event) {
         aaaa0ggmc.morphext.ability.PlayerAbilityStore.init(event.getModConfigurationDirectory());
         aaaa0ggmc.morphext.network.AbilityNetwork.init();
+        aaaa0ggmc.morphext.integration.metamorph.MorphJsonConfig.init(event.getModConfigurationDirectory());
     }
 
     public void init(FMLInitializationEvent event) {
@@ -21,6 +22,8 @@ public class CommonProxy {
                 new aaaa0ggmc.morphext.ability.CoreServerAbilities());
         if (net.minecraftforge.fml.common.Loader.isModLoaded("metamorph")) {
             aaaa0ggmc.morphext.integration.metamorph.MetamorphServerAbilities.register();
+            aaaa0ggmc.morphext.integration.metamorph.MorphImmunityHandler.register();
+            aaaa0ggmc.morphext.integration.metamorph.MetamorphOverwriteHandler.register();
         }
     }
 
