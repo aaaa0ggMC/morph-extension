@@ -1,0 +1,24 @@
+key.categories.morphext=变形扩展
+key.morphext.open_wheel=打开能力轮盘
+key.morphext.open_config=能力轮盘配置
+key.morphext.open_status=能力状态总览
+key.morphext.cast=释放选中能力
+
+gui.morphext.wheel.empty=尚未绑定能力 - 按任意键搜索
+gui.morphext.wheel.count=已绑定：%d / %d
+gui.morphext.wheel.selected=当前选中 - 按释放键使用
+gui.morphext.locked=能力未解锁
+gui.morphext.unavailable=当前形态无法使用该能力
+gui.morphext.failed=能力执行失败
+gui.morphext.data_failed=能力数据不可用，请检查服务端日志（原文件已保留）
+gui.morphext.cleanup_failed=能力已移除，但附属模组清理失败，请检查服务端日志
+gui.morphext.syncing=正在同步玩家能力数据
+gui.morphext.cooldown=冷却中：%ss
+gui.morphext.cooldown.short=冷却：%ss
+gui.morphext.search.count=共 %d 个能力
+gui.morphext.search.placeholder=搜索...
+item.morphext.ability_scroll.name=能力卷轴
+item.morphext.ability_scroll_powerful.name=能力净化卷轴
+morphext.scroll.unlocked=已解锁：%s
+morphext.scroll.removed=已移除：%s
+morphext.scroll.purged=已移除：%s（状态数据已清除）

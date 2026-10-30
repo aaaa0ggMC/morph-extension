@@ -1,0 +1,24 @@
+key.categories.morphext=Morph Extension
+key.morphext.open_wheel=Open Ability Wheel
+key.morphext.open_config=Ability Wheel Config
+key.morphext.open_status=Ability Status Page
+key.morphext.cast=Cast Selected Ability
+
+gui.morphext.wheel.empty=No abilities bound - press any key to search
+gui.morphext.wheel.count=Bound: %d / %d
+gui.morphext.wheel.selected=selected - cast key to use
+gui.morphext.locked=Ability locked
+gui.morphext.unavailable=Ability unavailable in the current form
+gui.morphext.failed=Ability execution failed
+gui.morphext.data_failed=Ability data unavailable; check the server log (original files retained)
+gui.morphext.cleanup_failed=Ability removed, but addon cleanup failed; check the server log
+gui.morphext.syncing=Waiting for player ability data
+gui.morphext.cooldown=On cooldown: %ss
+gui.morphext.cooldown.short=Cooldown: %ss
+gui.morphext.search.count=%d abilities
+gui.morphext.search.placeholder=Search...
+item.morphext.ability_scroll.name=Ability Scroll
+item.morphext.ability_scroll_powerful.name=Ability Purge Scroll
+morphext.scroll.unlocked=Unlocked: %s
+morphext.scroll.removed=Removed: %s
+morphext.scroll.purged=Removed: %s (state wiped)

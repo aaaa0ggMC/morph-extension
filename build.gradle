@@ -1,0 +1,50 @@
+buildscript {
+    repositories {
+        maven { url = "https://files.minecraftforge.net/maven" }
+        maven { url = "https://repo.maven.apache.org/maven2" }
+    }
+    dependencies {
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+    }
+}
+
+apply plugin: "net.minecraftforge.gradle.forge"
+
+version = "1.0.0"
+group = "aaaa0ggmc"
+archivesBaseName = "morph-extension"
+
+sourceCompatibility = targetCompatibility = "1.8"
+compileJava.options.encoding = "UTF-8"
+
+minecraft {
+    // 开发用 2847：只有这个构建在 Forge maven 上发布了 userdev 产物（ForgeGradle 2.3 需要）。
+    // 编译产物在 2860 运行时通用（1.12.2 Forge API 稳定）。
+    version = "1.12.2-14.23.5.2847"
+    mappings = "stable_39"
+    runDir = "run"
+}
+
+repositories {
+    maven { url = "https://repo.maven.apache.org/maven2" }
+}
+
+dependencies {
+    // McHorse's McLib —— 配置 UI 使用其 GUI 框架（jar 放在 libs/ 下）
+    compile files("libs/mclib-2.4.3-1.12.2.jar")
+    // Metamorph —— 能力集成（软依赖，仅在运行时检测到该模组时生效）
+    compile files("libs/metamorph-1.4-1.12.2.jar")
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", "1.12.2"
+
+    from(sourceSets.main.resources.srcDirs) {
+        include "mcmod.info"
+        expand "version": project.version, "mcversion": "1.12.2"
+    }
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "mcmod.info"
+    }
+}

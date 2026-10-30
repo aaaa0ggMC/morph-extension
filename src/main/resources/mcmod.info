@@ -1,0 +1,13 @@
+[
+  {
+    "modid": "aaaa0ggmc_morph_extension",
+    "name": "aaaa0ggmc's morph extension",
+    "description": "Code-level ability system: addons register abilities, the InstantUI radial wheel (hold-key quick switch + search) and the McLib-based config UI expose them to the player.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "authorList": ["aaaa0ggmc"],
+    "credits": "McHorse for McLib; GirafiStudios for MineMenu (UX reference)",
+    "dependencies": ["mclib"]
+  }
+]

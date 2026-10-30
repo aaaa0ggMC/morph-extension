@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "aaaa0ggmc_morph_extension:items/ability_scroll_powerful"
+  }
+}
