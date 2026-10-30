@@ -173,7 +173,10 @@ public class GuiAbilityStatus extends GuiScreen {
                 if (cy + off + cellH > top && cy + off < bottom) {
                     Gui.drawRect(cx, cy + off, cx + cellW - 2, cy + cellH + off, 0x44000000);
                     this.drawIcon(ability.getIcon(), cx + 2, cy + off + 2);
-                    String name = font.trimStringToWidth(ability.getDisplayName(), cellW - 26);
+                    String rawName = ability.getDisplayName();
+                    int maxNameW = cellW - 26;
+                    String name = font.getStringWidth(rawName) > maxNameW ?
+                            font.trimStringToWidth(rawName, Math.max(10, maxNameW - font.getStringWidth("…"))).trim() + "…" : rawName;
                     font.drawStringWithShadow(name, cx + 20, cy + off + 6, 0xFFFFFF);
                 }
             }

@@ -48,16 +48,39 @@ public class AbilityHudRenderer {
         FontRenderer font = mc.fontRenderer;
 
         boolean cooling = !AbilityCooldowns.isReady(ability.getId());
-        String title = ability.getDisplayName();
+        String name = ability.getDisplayName();
+        String suffix = "";
         if (cooling) {
-            title += " : CD " + AbilityCooldowns.getRemainingText(ability.getId()) + "s";
+            suffix = " : CD " + AbilityCooldowns.getRemainingText(ability.getId()) + "s";
         } else if (ability instanceof IStatefulAbility && ability.isStateToggleable()) {
             IStatefulAbility stateful = (IStatefulAbility) ability;
-            title = title + " : " + stateful.getStateLabel(mc.player);
+            suffix = " : " + stateful.getStateLabel(mc.player);
         }
+
         int textX = 24;
-        title = font.trimStringToWidth(title, Math.max(24, res.getScaledWidth() / 2 - textX - 6));
-        int width = Math.max(font.getStringWidth(title) + textX + 6, 96);
+        int paddingRight = 6;
+        int minBoxW = 80;
+
+        // 计算当前锚点下的最大可用宽度，底部时严格防止触碰并遮挡原版快捷栏（Hotbar）
+        int maxHudW = getMaxHudWidth(res, ModConfig.hudHorizontal, ModConfig.hudVertical, ModConfig.hudMargin);
+        int maxTextW = maxHudW - textX - paddingRight;
+
+        int suffixW = font.getStringWidth(suffix);
+        int availableForName = Math.max(16, maxTextW - suffixW);
+
+        String title;
+        if (font.getStringWidth(name) > availableForName) {
+            // 名字过长：精确截断并追加省略号，适配 UI
+            String ellipsis = "…";
+            int ellipsisW = font.getStringWidth(ellipsis);
+            int targetW = Math.max(8, availableForName - ellipsisW);
+            String trimmed = font.trimStringToWidth(name, targetW).trim();
+            title = trimmed + ellipsis + suffix;
+        } else {
+            title = name + suffix;
+        }
+
+        int width = Math.min(maxHudW, Math.max(font.getStringWidth(title) + textX + paddingRight, minBoxW));
         int barH = cooling ? 4 : 0;
         int height = 20 + barH;
         int x = anchoredPosition(res.getScaledWidth(), width, ModConfig.hudHorizontal, ModConfig.hudMargin);
@@ -92,5 +115,36 @@ public class AbilityHudRenderer {
         int available = Math.max(0, screen - size);
         int position = anchor == 0 ? margin : anchor == 1 ? available / 2 : available - margin;
         return Math.max(0, Math.min(available, position));
+    }
+
+    /**
+     * 计算 HUD 最大允许宽度，避免遮挡原版快捷栏（Hotbar）或超出屏幕
+     */
+    private static int getMaxHudWidth(ScaledResolution res, int anchorH, int anchorV, int margin) {
+        int maxW = 120; // 默认精致紧凑宽度
+
+        // 当位于底部（与快捷栏处于同一水平线）时，严格留出安全呼吸间距：
+        if (anchorV == 2) {
+            int hotbarLeft = res.getScaledWidth() / 2 - 91;
+            int hotbarRight = res.getScaledWidth() / 2 + 91;
+
+            if (anchorH == 0) {
+                // 左下角：右边缘绝不触碰快捷栏左边缘（预留 4px 呼吸间距）
+                int available = (hotbarLeft - margin) - 4;
+                if (available > 40) {
+                    maxW = Math.min(maxW, available);
+                }
+            } else if (anchorH == 2) {
+                // 右下角：左边缘绝不触碰快捷栏右边缘
+                int available = (res.getScaledWidth() - margin - hotbarRight) - 4;
+                if (available > 40) {
+                    maxW = Math.min(maxW, available);
+                }
+            }
+        } else {
+            maxW = Math.min(maxW, Math.max(80, res.getScaledWidth() / 2 - 32));
+        }
+
+        return Math.max(60, maxW);
     }
 }
