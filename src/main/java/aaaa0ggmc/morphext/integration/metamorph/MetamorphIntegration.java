@@ -38,6 +38,9 @@ public final class MetamorphIntegration {
         aaaa0ggmc.morphext.variant.VariantRegistry.init();
         aaaa0ggmc.morphext.variant.VariantEventListener.register();
         aaaa0ggmc.morphext.integration.metamorph.vanilla.VanillaActions.registerAll();
+        // 注册宿主安全索敌指挥动作，覆盖 Metamorph Max 的自锁缺陷
+        MorphManager.INSTANCE.actions.put("mob_act", new SafeMobActAction());
+        MorphManager.INSTANCE.actions.put("ai_target", new SafeMobActAction());
         AbilityRegistry.register(new DemorphAbility());
         MetamorphBridge.markInitialized();
     }
@@ -188,20 +191,16 @@ public final class MetamorphIntegration {
         AbilityRegistry.replaceGrants("metamorph:current", granted, mc.player);
     }
 
-    /** 判断是否已是 AITarget（避免和配置里显式配置的 ai_target 重复注入）。 */
+    /** 判断是否已是 AITarget 或 SafeMobActAction（避免和配置里显式配置的条目重复注入）。 */
     private static boolean isAITarget(mchorse.metamorph.api.abilities.IAction action) {
-        return action != null
-                && "jones.metamorphmax.metamorph.actions.AITarget".equals(action.getClass().getName());
+        if (action == null) return false;
+        return action instanceof SafeMobActAction
+                || "jones.metamorphmax.metamorph.actions.AITarget".equals(action.getClass().getName());
     }
 
-    /** 反射创建 Metamorph Max 的 AITarget（软依赖：没装 Max 时返回 null）。 */
+    /** 创建宿主安全索敌动作（彻底消除锁定宿主自身的死穴）。 */
     private static mchorse.metamorph.api.abilities.IAction createMobActAction() {
-        try {
-            Class<?> clazz = Class.forName("jones.metamorphmax.metamorph.actions.AITarget");
-            return (mchorse.metamorph.api.abilities.IAction) clazz.newInstance();
-        } catch (Throwable t) {
-            return null;
-        }
+        return new SafeMobActAction();
     }
 
     /** 从 MorphManager 注册表反查 action 名（如 blaze_fireball）。 */

@@ -92,12 +92,8 @@ public final class MetamorphServerAbilities implements ServerAbilityService.Hand
                 if (act != null) return act;
             }
         }
-        if ("mob_act".equals(name) && current instanceof EntityMorph) {
-            try {
-                return (IAction) Class.forName("jones.metamorphmax.metamorph.actions.AITarget")
-                        .getDeclaredConstructor().newInstance();
-            } catch (ReflectiveOperationException ignored) {
-            }
+        if (("mob_act".equals(name) || "ai_target".equals(name)) && current instanceof EntityMorph) {
+            return new SafeMobActAction();
         }
         return null;
     }
