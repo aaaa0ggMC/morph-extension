@@ -52,6 +52,9 @@ public class GuiAbilityStatus extends GuiScreen {
     private int detailPanelY;
     private int detailPanelH;
 
+    private static final org.apache.logging.log4j.Logger LOGGER =
+            org.apache.logging.log4j.LogManager.getLogger("morph-extension");
+
     public GuiAbilityStatus(GuiAbilityConfig parent) {
         this.parent = parent;
     }
@@ -71,15 +74,25 @@ public class GuiAbilityStatus extends GuiScreen {
         this.active.clear();
         this.passives.clear();
         this.passiveSource = "";
-        for (IAbility ability : AbilityRegistry.all()) {
-            if (!(ability instanceof IStatefulAbility) || !ability.isStatusVisible()) {
+        java.util.Collection<IAbility> all = AbilityRegistry.all();
+        LOGGER.info("[GuiAbilityStatus] collect: total abilities in registry={}", all.size());
+        for (IAbility ability : all) {
+            boolean isStateful = ability instanceof IStatefulAbility;
+            boolean isVisible = ability != null && ability.isStatusVisible();
+            boolean isUnlocked = AbilityUnlocks.isUnlocked(ability);
+            boolean isGranted = ability != null && AbilityRegistry.isGranted(ability.getId());
+            if (!isStateful || !isVisible) {
                 continue;
             }
-            if (!AbilityUnlocks.isUnlocked(ability)) {
+            if (!isUnlocked) {
+                LOGGER.info("[GuiAbilityStatus] skipped locked ability: id={} isGranted={} isReady={}",
+                        ability.getId(), isGranted, AbilityUnlocks.isReady());
                 continue;
             }
             IStatefulAbility stateful = (IStatefulAbility) ability;
-            if (!stateful.isActive(this.mc.player)) {
+            boolean isActive = stateful.isActive(this.mc.player);
+            if (!isActive) {
+                LOGGER.info("[GuiAbilityStatus] skipped inactive ability: id={}", ability.getId());
                 continue;
             }
             if (stateful.isPassive()) {
@@ -91,6 +104,8 @@ public class GuiAbilityStatus extends GuiScreen {
                 this.active.add(stateful);
             }
         }
+        LOGGER.info("[GuiAbilityStatus] collected: active={} passives={} source={}",
+                this.active.size(), this.passives.size(), this.passiveSource);
     }
 
     @Override

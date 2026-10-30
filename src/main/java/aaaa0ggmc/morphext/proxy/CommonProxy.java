@@ -21,6 +21,7 @@ public class CommonProxy {
         aaaa0ggmc.morphext.ability.ServerAbilityService.register("morphext:",
                 new aaaa0ggmc.morphext.ability.CoreServerAbilities());
         if (net.minecraftforge.fml.common.Loader.isModLoaded("metamorph")) {
+            aaaa0ggmc.morphext.integration.metamorph.vanilla.VanillaActions.registerAll();
             aaaa0ggmc.morphext.integration.metamorph.MetamorphServerAbilities.register();
             aaaa0ggmc.morphext.integration.metamorph.MorphImmunityHandler.register();
             aaaa0ggmc.morphext.integration.metamorph.MetamorphOverwriteHandler.register();

@@ -9,6 +9,7 @@ import java.util.List;
 public class MorphAbilityDefinition {
     public List<String> abilities = new ArrayList<>();
     public String action = "";
+    public List<String> actions = new ArrayList<>();
     public List<String> immunities = new ArrayList<>();
     public List<String> damageImmunities = new ArrayList<>();
 

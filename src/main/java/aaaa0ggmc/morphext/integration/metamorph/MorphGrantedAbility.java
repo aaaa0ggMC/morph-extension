@@ -82,7 +82,11 @@ public class MorphGrantedAbility extends Ability implements IStatefulAbility {
         if (player == null || this.passiveType) {
             return 0;
         }
-        return externalCooldown(player);
+        int ext = externalCooldown(player);
+        if (this.action instanceof ICooldownAction) {
+            ext = Math.max(ext, ((ICooldownAction) this.action).getCooldownTicks(player));
+        }
+        return ext;
     }
 
     private int externalCooldown(EntityPlayer player) {

@@ -50,15 +50,11 @@ public final class MetamorphServerAbilities implements ServerAbilityService.Hand
         if (!id.startsWith(prefix)) { return false; }
         String name = id.substring(prefix.length());
 
-        // 检查数据驱动的 JSON 配置能力
-        MorphAbilityDefinition def = MorphJsonConfig.get(current.name);
-        if (def != null && def.action != null && def.action.equals(name)) {
+        if (findAction(current, name) != null) {
             return true;
         }
 
         if (current.getSettings() == null) { return false; }
-        if (current.getSettings().action != null && name.equals(nameOf(MorphManager.INSTANCE.actions,
-                current.getSettings().action, "action"))) { return true; }
         if (current.getSettings().attack != null && name.equals(nameOf(MorphManager.INSTANCE.attacks,
                 current.getSettings().attack, "attack"))) { return true; }
         if (current.getSettings().abilities != null) {
@@ -67,8 +63,57 @@ public final class MetamorphServerAbilities implements ServerAbilityService.Hand
                         passive.getClass().getSimpleName().toLowerCase(java.util.Locale.ROOT)))) { return true; }
             }
         }
-        return "mob_act".equals(name) && current instanceof EntityMorph
-                && MorphManager.INSTANCE.actions.containsKey("ai_target");
+        return false;
+    }
+
+    private static IAction findAction(AbstractMorph current, String name) {
+        if (current == null) return null;
+        IAction action = current.getSettings() != null ? current.getSettings().action : null;
+        if (action != null) {
+            String registeredName = "action";
+            for (Map.Entry<String, IAction> entry : MorphManager.INSTANCE.actions.entrySet()) {
+                if (entry.getValue() == action) {
+                    registeredName = entry.getKey();
+                    break;
+                }
+            }
+            if (registeredName.equals(name)) return action;
+        }
+        MorphAbilityDefinition def = MorphJsonConfig.get(current.name);
+        if (def != null) {
+            if (def.action != null && def.action.equals(name)) {
+                IAction act = MorphManager.INSTANCE.actions.get(def.action);
+                if (act != null) return act;
+            }
+            if (def.actions != null && def.actions.contains(name)) {
+                IAction act = MorphManager.INSTANCE.actions.get(name);
+                if (act != null) return act;
+            }
+        }
+        if ("mob_act".equals(name) && current instanceof EntityMorph) {
+            try {
+                return (IAction) Class.forName("jones.metamorphmax.metamorph.actions.AITarget")
+                        .getDeclaredConstructor().newInstance();
+            } catch (ReflectiveOperationException ignored) {
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public int getCooldownTicks(EntityPlayerMP player, String id) {
+        IMorphing morphing = Morphing.get(player);
+        if (morphing == null) return 0;
+        AbstractMorph current = morphing.getCurrentMorph();
+        if (current == null) return 0;
+        String prefix = GRANTED + current.name + ":";
+        if (!id.startsWith(prefix)) return 0;
+        String name = id.substring(prefix.length());
+        IAction action = findAction(current, name);
+        if (action instanceof ICooldownAction) {
+            return ((ICooldownAction) action).getCooldownTicks(player);
+        }
+        return 0;
     }
 
     private static String nameOf(Map<String, ?> registry, Object instance, String fallback) {
@@ -117,38 +162,8 @@ public final class MetamorphServerAbilities implements ServerAbilityService.Hand
             return ActivationResult.unavailable(); // 变身已变化/旧形态能力请求。
         }
         String name = id.substring(prefix.length());
-        IAction action = current.getSettings() != null ? current.getSettings().action : null;
-        boolean matches = false;
-        if (action != null) {
-            String registeredName = "action";
-            for (Map.Entry<String, IAction> entry : MorphManager.INSTANCE.actions.entrySet()) {
-                if (entry.getValue() == action) {
-                    registeredName = entry.getKey();
-                    break;
-                }
-            }
-            matches = registeredName.equals(name);
-        }
-        if (!matches) {
-            // 检查 JSON 数据驱动配置的 action
-            MorphAbilityDefinition def = MorphJsonConfig.get(current.name);
-            if (def != null && def.action != null && def.action.equals(name)) {
-                action = MorphManager.INSTANCE.actions.get(def.action);
-                if (action != null) {
-                    matches = true;
-                }
-            }
-        }
-        if (!matches && "mob_act".equals(name) && current instanceof EntityMorph) {
-            try {
-                action = (IAction) Class.forName("jones.metamorphmax.metamorph.actions.AITarget")
-                        .getDeclaredConstructor().newInstance();
-                matches = true;
-            } catch (ReflectiveOperationException error) {
-                return ActivationResult.unavailable();
-            }
-        }
-        if (!matches) {
+        IAction action = findAction(current, name);
+        if (action == null) {
             return ActivationResult.unavailable();
         }
         int remaining = externalCooldown(player);
@@ -157,7 +172,11 @@ public final class MetamorphServerAbilities implements ServerAbilityService.Hand
         }
         action.execute(player, current);
         MinecraftForge.EVENT_BUS.post(new MorphActionEvent(player, action, current));
-        return ActivationResult.success(externalCooldown(player));
+        int cd = externalCooldown(player);
+        if (action instanceof ICooldownAction) {
+            cd = Math.max(cd, ((ICooldownAction) action).getCooldownTicks(player));
+        }
+        return ActivationResult.success(cd);
     }
 
     /** 服务端权威冷却，不把客户端预测时间当作放行依据。 */

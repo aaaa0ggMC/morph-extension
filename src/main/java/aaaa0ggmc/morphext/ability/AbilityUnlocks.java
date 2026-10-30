@@ -54,21 +54,32 @@ public final class AbilityUnlocks {
         }
     }
 
-    /** 该能力当前是否被玩家拥有（天生能力可被卷轴显式剔除）。 */
+    /** 该能力当前是否被玩家拥有（天生能力可被卷轴显式剔除；变身临时能力由当前形态保证）。 */
     public static boolean isUnlocked(IAbility ability) {
-        if (!ready || ability == null || REMOVED.contains(ability.getId())) {
+        if (!ready || ability == null) {
             return false;
         }
-        if (ability.isInnate() || AbilityRegistry.isGranted(ability.getId())) {
+        // 变身临时授予的能力（包含被动与动作）属于当前形态专属，不受旧 removed 污染影响
+        if (AbilityRegistry.isGranted(ability.getId())) {
+            return true;
+        }
+        if (REMOVED.contains(ability.getId())) {
+            return false;
+        }
+        if (ability.isInnate()) {
             return true;
         }
         return UNLOCKED.contains(ability.getId());
     }
 
     public static boolean isUnlocked(String abilityId) {
-        if (!ready || abilityId == null || REMOVED.contains(abilityId)) { return false; }
+        if (!ready || abilityId == null) { return false; }
+        if (AbilityRegistry.isGranted(abilityId)) {
+            return true;
+        }
+        if (REMOVED.contains(abilityId)) { return false; }
         IAbility ability = AbilityRegistry.get(abilityId);
-        return ability != null ? isUnlocked(ability) : abilityId != null && UNLOCKED.contains(abilityId);
+        return ability != null ? isUnlocked(ability) : UNLOCKED.contains(abilityId);
     }
 
     /** @deprecated 权威变更请用服务端 PlayerAbilityStore.update，随后同步快照。 */

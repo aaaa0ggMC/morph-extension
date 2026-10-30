@@ -139,6 +139,13 @@ public final class MorphJsonConfig {
                 if (incoming.action != null && !incoming.action.isEmpty()) {
                     existing.action = incoming.action;
                 }
+                if (incoming.actions != null) {
+                    for (String act : incoming.actions) {
+                        if (!existing.actions.contains(act)) {
+                            existing.actions.add(act);
+                        }
+                    }
+                }
                 for (String imm : incoming.immunities) {
                     if (!existing.immunities.contains(imm)) {
                         existing.immunities.add(imm);
@@ -165,7 +172,15 @@ public final class MorphJsonConfig {
 
     public static MorphAbilityDefinition get(String morphName) {
         if (morphName == null) return null;
-        return DEFINITIONS.get(morphName);
+        MorphAbilityDefinition def = DEFINITIONS.get(morphName);
+        if (def != null) {
+            return def;
+        }
+        if (morphName.contains(":")) {
+            return DEFINITIONS.get(morphName.substring(morphName.indexOf(':') + 1));
+        } else {
+            return DEFINITIONS.get("minecraft:" + morphName);
+        }
     }
 
     public static Map<String, MorphAbilityDefinition> getAll() {

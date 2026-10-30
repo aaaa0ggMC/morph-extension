@@ -35,6 +35,7 @@ public final class MetamorphIntegration {
     }
 
     public static void init() {
+        aaaa0ggmc.morphext.integration.metamorph.vanilla.VanillaActions.registerAll();
         AbilityRegistry.register(new DemorphAbility());
         MetamorphBridge.markInitialized();
     }
@@ -150,20 +151,31 @@ public final class MetamorphIntegration {
                     }
                 }
             }
+            java.util.List<String> actionList = new ArrayList<>();
             if (def.action != null && !def.action.isEmpty()) {
+                actionList.add(def.action);
+            }
+            if (def.actions != null) {
+                for (String act : def.actions) {
+                    if (act != null && !act.isEmpty() && !actionList.contains(act)) {
+                        actionList.add(act);
+                    }
+                }
+            }
+            for (String actName : actionList) {
                 boolean actionAlready = false;
                 for (aaaa0ggmc.morphext.ability.IAbility g : granted) {
-                    if (g.getId().endsWith(":" + def.action)) {
+                    if (g.getId().endsWith(":" + actName)) {
                         actionAlready = true;
                         break;
                     }
                 }
                 if (!actionAlready) {
-                    mchorse.metamorph.api.abilities.IAction metaAct = MorphManager.INSTANCE.actions.get(def.action);
+                    mchorse.metamorph.api.abilities.IAction metaAct = MorphManager.INSTANCE.actions.get(actName);
                     if (metaAct != null) {
-                        granted.add(new MorphGrantedAbility(morph.name, def.action, null, metaAct, icon));
+                        granted.add(new MorphGrantedAbility(morph.name, actName, null, metaAct, icon));
                     } else {
-                        aaaa0ggmc.morphext.ability.IAbility customAbility = AbilityRegistry.get(def.action);
+                        aaaa0ggmc.morphext.ability.IAbility customAbility = AbilityRegistry.get(actName);
                         if (customAbility != null) {
                             granted.add(customAbility);
                         }
