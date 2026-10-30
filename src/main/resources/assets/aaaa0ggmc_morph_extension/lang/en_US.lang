@@ -148,6 +148,24 @@ morphext.metamorph.desc.snowstorm_volley=Snowstorm Volley: Unleash a rapid-fire 
 morphext.metamorph.desc.blaze_fire_ring=Inferno Ring: Erupt in an 8-way radial burst of blazing fireballs, igniting and repelling all approaching threats.
 morphext.metamorph.desc.web_trap=Web Trap: Spit a sticky cobweb strand that entangles enemies with heavy Slowness IV and Weakness, or spins a cobweb block at target location.
 morphext.metamorph.desc.pigman_rage=Nether Fury: Let out an enraged pigman roar, unleashing berserk combat instincts that grant Strength II, Speed I, and Resistance I for 7 seconds.
+morphext.metamorph.desc.iron_fortitude=Iron Fortitude: Tighten your armored chassis into a defensive stance, gaining Resistance II and Knockback Resistance at the cost of slight Slowness I.
+morphext.metamorph.desc.heavy_toss=Heavy Toss: Deliver a devastating upward swing with your iron arms, dealing heavy damage and launching the enemy into the air.
+morphext.metamorph.desc.ultrasonic_shriek=Ultrasonic Shriek: Release a high-pitch disorienting screech that inflicts Nausea, Weakness, and sonic disruption to nearby enemies.
+morphext.metamorph.desc.spike_burst=Spike Burst: Rapidly deploy prismarine spikes across your body, puncturing adjacent foes and knocking them away.
+morphext.metamorph.desc.spectral_daze=Spectral Daze: Unleash an elder temple manifestation that blinds nearby enemies and inflicts severe Slowness and Weakness.
+morphext.metamorph.desc.furious_bite=Furious Bite: Lunge forward and sink razor fangs into the enemy, dealing rending damage, Slowness, and Hunger.
+morphext.metamorph.desc.blaze_fireball=Blaze Fireball: Launch a small flaming projectile forward, igniting the target on contact.
+morphext.metamorph.desc.venom_strike=Venom Strike: Spring forward and deliver a venomous fang strike, poisoning and slowing the victim.
+morphext.metamorph.desc.strafe_dodge=Strafe Dodge: Perform a nimble tactical roll backward to escape danger and gain a brief speed surge.
+morphext.metamorph.desc.frost_aura=Frost Aura: Release a chilling burst of glacial wind, heavily damaging and freezing surrounding hostile entities.
+
+# Human Stature
+ability.morphext.human_stature=Human Stature
+ability.morphext.human_stature.desc=Morph model & size adapter: Cycle through 3 modes:\n1. [Human Model]: Keep all skills but force standard player model & hitbox;\n2. [Smart Scale]: Keep monster appearance but smartly scale height to 1.8 blocks;\n3. [Off]: Natural morph size (default).
+morphext.stature.mode.0=Off
+morphext.stature.mode.1=Human Model
+morphext.stature.mode.2=Smart Scale
+morphext.stature.switched=Human Stature set to: %s
 
 # Variants
 morphext.variant.baby=(Baby)

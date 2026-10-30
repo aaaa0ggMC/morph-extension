@@ -78,15 +78,11 @@ public class MorphGrantedAbility extends Ability implements IStatefulAbility {
 
     @Override
     public int getExternalCooldownTicks(EntityPlayer player) {
-        /* 只有主动型（action / mob act）有 Metamorph 自带冷却 */
+        /* 只有主动型（action / mob act）有 Metamorph 自带冷却（如药水效果） */
         if (player == null || this.passiveType) {
             return 0;
         }
-        int ext = externalCooldown(player);
-        if (this.action instanceof ICooldownAction) {
-            ext = Math.max(ext, ((ICooldownAction) this.action).getCooldownTicks(player));
-        }
-        return ext;
+        return externalCooldown(player);
     }
 
     private int externalCooldown(EntityPlayer player) {

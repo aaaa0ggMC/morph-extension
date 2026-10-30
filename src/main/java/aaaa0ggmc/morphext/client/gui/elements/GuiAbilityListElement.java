@@ -2,6 +2,8 @@ package aaaa0ggmc.morphext.client.gui.elements;
 
 import aaaa0ggmc.morphext.ability.AbilityRegistry;
 import aaaa0ggmc.morphext.ability.IAbility;
+import aaaa0ggmc.morphext.ability.IStatefulAbility;
+import aaaa0ggmc.morphext.client.ClientAbilityExecutor;
 import mchorse.mclib.client.gui.framework.elements.GuiElement;
 import mchorse.mclib.client.gui.framework.elements.utils.GuiContext;
 import net.minecraft.client.Minecraft;
@@ -72,9 +74,42 @@ public class GuiAbilityListElement extends GuiElement {
                 context.mc.getRenderItem().renderItemIntoGUI(icon, this.area.x + 2, ry + 1);
                 RenderHelper.disableStandardItemLighting();
             }
+
+            int btnW = 76;
+            int btnH = 14;
+            int btnX = this.area.x + this.area.w - btnW - 4;
+            int btnY = ry + 2;
+
+            if (ability instanceof IStatefulAbility) {
+                IStatefulAbility stateful = (IStatefulAbility) ability;
+                boolean active = stateful.isActive(context.mc.player);
+                String label = stateful.getStateLabel(context.mc.player);
+                if (label == null || label.isEmpty()) {
+                    label = active ? "On" : "Off";
+                }
+                boolean btnHover = context.mouseX >= btnX && context.mouseX <= btnX + btnW
+                        && context.mouseY >= btnY && context.mouseY <= btnY + btnH;
+
+                int bgColor = btnHover ? (active ? 0xDD388E3C : 0xAA666666) : (active ? 0xAA2E7D32 : 0x88333333);
+                int borderColor = btnHover ? 0xFFFFFFFF : (active ? 0xFF81C784 : 0xFF777777);
+
+                // 绘制按钮背景与1px边框
+                Gui.drawRect(btnX, btnY, btnX + btnW, btnY + btnH, bgColor);
+                Gui.drawRect(btnX, btnY, btnX + btnW, btnY + 1, borderColor);
+                Gui.drawRect(btnX, btnY + btnH - 1, btnX + btnW, btnY + btnH, borderColor);
+                Gui.drawRect(btnX, btnY, btnX + 1, btnY + btnH, borderColor);
+                Gui.drawRect(btnX + btnW - 1, btnY, btnX + btnW, btnY + btnH, borderColor);
+
+                int textW = this.font.getStringWidth(label);
+                int textX = btnX + (btnW - textW) / 2;
+                int textY = btnY + (btnH - 8) / 2;
+                this.font.drawStringWithShadow(label, textX, textY, active ? 0xFFFFA0 : 0xE0E0E0);
+            }
+
             String name = ability.getDisplayName();
-            if (this.font.getStringWidth(name) > this.area.w - 30) {
-                name = this.font.trimStringToWidth(name, this.area.w - 34) + "…";
+            int nameMaxW = (ability instanceof IStatefulAbility) ? (this.area.w - 24 - btnW - 8) : (this.area.w - 30);
+            if (this.font.getStringWidth(name) > nameMaxW) {
+                name = this.font.trimStringToWidth(name, Math.max(10, nameMaxW - 4)) + "…";
             }
             this.font.drawStringWithShadow(name, this.area.x + 22, ry + 5, 0xFFFFFF);
         }
@@ -83,7 +118,25 @@ public class GuiAbilityListElement extends GuiElement {
     @Override
     public boolean mouseClicked(GuiContext context) {
         if (context.mouseButton == 0 && this.hovered >= 0 && this.hovered < this.filtered.size()) {
-            this.callback.accept(this.filtered.get(this.hovered));
+            IAbility ability = this.filtered.get(this.hovered);
+            if (ability instanceof IStatefulAbility) {
+                int i = this.hovered - this.scroll;
+                int ry = this.area.y + i * ROW_HEIGHT;
+                int btnW = 76;
+                int btnH = 14;
+                int btnX = this.area.x + this.area.w - btnW - 4;
+                int btnY = ry + 2;
+                if (context.mouseX >= btnX && context.mouseX <= btnX + btnW
+                        && context.mouseY >= btnY && context.mouseY <= btnY + btnH) {
+                    // 点击右侧按钮：就地激活/切换状态，不触发 callback 关闭界面选择槽位
+                    ClientAbilityExecutor.activate(ability);
+                    context.mc.getSoundHandler().playSound(
+                            net.minecraft.client.audio.PositionedSoundRecord.getMasterRecord(
+                                    net.minecraft.init.SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                    return true;
+                }
+            }
+            this.callback.accept(ability);
             return true;
         }
         return false;

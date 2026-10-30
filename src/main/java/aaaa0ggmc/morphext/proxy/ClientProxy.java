@@ -39,10 +39,12 @@ public class ClientProxy extends CommonProxy {
                 .executionSide(aaaa0ggmc.morphext.ability.ExecutionSide.SERVER));
         // 代码级内置能力：直接触发行为（不模拟按键）
         AbilityRegistry.register(new SprintAbility());
+        AbilityRegistry.register(new aaaa0ggmc.morphext.ability.HumanStatureAbility());
         // Metamorph 集成（软依赖：仅当 Metamorph 存在时启用）
         if (Loader.isModLoaded("metamorph")) {
             MetamorphIntegration.init();
             MetamorphEventHandler.register();
+            aaaa0ggmc.morphext.variant.HumanStatureRenderHandler.register();
         }
         // 注：不再自动注册 vanilla 键位（那会产生 Hotbar/Perspective 之类的噪音）。
         // 需要键位型能力时由 addon 显式 new KeybindAbility(specificKeyBinding) 注册。

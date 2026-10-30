@@ -1,5 +1,6 @@
 package aaaa0ggmc.morphext.variant;
 
+import aaaa0ggmc.morphext.ability.HumanStatureAbility;
 import aaaa0ggmc.morphext.variant.vanilla.AgeableVariantHandler;
 
 import mchorse.metamorph.api.events.AcquireMorphEvent;
@@ -142,6 +143,21 @@ public final class VariantEventListener {
             return;
         }
 
+        // 身形规整 (Human Stature) 对所有变身生效，无论该生物是否有变种处理器
+        HumanStatureAbility.Mode statureMode = getStatureMode(player);
+        if (statureMode == HumanStatureAbility.Mode.HUMAN_MODEL) {
+            setBox(player, 0.6F, 1.8F, player.getDefaultEyeHeight());
+            return;
+        }
+        if (statureMode == HumanStatureAbility.Mode.SMART_SCALE) {
+            float baseH = current.getHeight(player);
+            float baseW = current.getWidth(player);
+            float ratio = baseH > 0.1F ? (baseW / baseH) : 0.33F;
+            float smartW = Math.max(0.6F, Math.min(1.0F, 1.8F * ratio));
+            setBox(player, smartW, 1.8F, 1.62F);
+            return;
+        }
+
         IVariantHandler handler = VariantRegistry.getHandler(current);
         if (handler == null) {
             return;
@@ -158,7 +174,22 @@ public final class VariantEventListener {
 
     private static void updatePlayerScale(EntityPlayer player, AbstractMorph morph,
                                          IVariantHandler handler, String variantKey, NBTTagCompound data) {
-        float scale = handler.getScale(variantKey, data);
+        HumanStatureAbility.Mode statureMode = getStatureMode(player);
+        if (statureMode == HumanStatureAbility.Mode.HUMAN_MODEL) {
+            setBox(player, 0.6F, 1.8F, player.getDefaultEyeHeight());
+            return;
+        }
+
+        if (statureMode == HumanStatureAbility.Mode.SMART_SCALE) {
+            float baseH = morph.getHeight(player);
+            float baseW = morph.getWidth(player);
+            float ratio = baseH > 0.1F ? (baseW / baseH) : 0.33F;
+            float smartW = Math.max(0.6F, Math.min(1.0F, 1.8F * ratio));
+            setBox(player, smartW, 1.8F, 1.62F);
+            return;
+        }
+
+        float scale = handler != null ? handler.getScale(variantKey, data) : 1.0F;
         if (scale <= 0.0F || scale == 1.0F) {
             return;
         }
@@ -169,19 +200,36 @@ public final class VariantEventListener {
         float newWidth = Math.max(0.2F, baseWidth * scale);
         float newHeight = Math.max(0.4F, baseHeight * scale);
 
-        // 如果尺寸有变化，更新玩家判定箱
-        if (Math.abs(player.width - newWidth) > 0.01F || Math.abs(player.height - newHeight) > 0.01F) {
-            player.width = newWidth;
-            player.height = newHeight;
-            double halfW = newWidth / 2.0D;
+        setBox(player, newWidth, newHeight, Math.max(0.2F, morph.getEyeHeight(player) * scale));
+    }
+
+    private static void setBox(EntityPlayer player, float w, float h, float eyeHeight) {
+        if (Math.abs(player.width - w) > 0.01F || Math.abs(player.height - h) > 0.01F) {
+            player.width = w;
+            player.height = h;
+            double halfW = w / 2.0D;
             player.setEntityBoundingBox(new net.minecraft.util.math.AxisAlignedBB(
                     player.posX - halfW, player.posY, player.posZ - halfW,
-                    player.posX + halfW, player.posY + newHeight, player.posZ + halfW));
+                    player.posX + halfW, player.posY + h, player.posZ + halfW));
         }
+        player.eyeHeight = eyeHeight;
+    }
 
-        // 校准视线高度（EyeHeight）
-        float defEye = morph.getEyeHeight(player);
-        player.eyeHeight = Math.max(0.2F, defEye * scale);
+    public static HumanStatureAbility.Mode getStatureMode(EntityPlayer player) {
+        if (player == null) {
+            return HumanStatureAbility.Mode.OFF;
+        }
+        if (player.world.isRemote) {
+            return HumanStatureAbility.getClientMode();
+        }
+        if (player instanceof net.minecraft.entity.player.EntityPlayerMP) {
+            com.google.gson.JsonObject state = aaaa0ggmc.morphext.ability.PlayerAbilityStore.getLoadedState(
+                    (net.minecraft.entity.player.EntityPlayerMP) player, HumanStatureAbility.ID);
+            if (state.has("mode") && state.get("mode").isJsonPrimitive()) {
+                return HumanStatureAbility.Mode.fromId(state.get("mode").getAsInt());
+            }
+        }
+        return HumanStatureAbility.Mode.OFF;
     }
 
     private static void applyDynamicHealth(EntityPlayer player, float dynamicMaxHealth) {

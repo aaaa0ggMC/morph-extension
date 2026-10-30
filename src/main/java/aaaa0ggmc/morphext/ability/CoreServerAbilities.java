@@ -3,6 +3,7 @@ package aaaa0ggmc.morphext.ability;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 
 /** 内置能力的服务端执行器，不依赖客户端注册表，不把玩家状态存到共享能力实例里。 */
 public final class CoreServerAbilities implements ServerAbilityService.Handler {
@@ -10,7 +11,7 @@ public final class CoreServerAbilities implements ServerAbilityService.Handler {
 
     @Override
     public boolean isAvailable(EntityPlayerMP player, String id) {
-        return SPRINT.equals(id) || "morphext:demo_hello".equals(id);
+        return SPRINT.equals(id) || "morphext:demo_hello".equals(id) || HumanStatureAbility.ID.equals(id);
     }
 
     @Override
@@ -26,6 +27,20 @@ public final class CoreServerAbilities implements ServerAbilityService.Handler {
             state.addProperty("enabled", enabled);
             PlayerAbilityStore.update(player, data -> data.putState(SPRINT, state));
             player.setSprinting(enabled);
+            return ActivationResult.success(0);
+        }
+        if (HumanStatureAbility.ID.equals(id)) {
+            JsonObject state = PlayerAbilityStore.get(player).getState(HumanStatureAbility.ID);
+            int currentId = 0;
+            if (state.has("mode") && state.get("mode").isJsonPrimitive()) {
+                currentId = state.get("mode").getAsInt();
+            }
+            HumanStatureAbility.Mode next = HumanStatureAbility.Mode.fromId(currentId).next();
+            state.addProperty("mode", next.id);
+            PlayerAbilityStore.update(player, data -> data.putState(HumanStatureAbility.ID, state));
+
+            TextComponentTranslation modeText = new TextComponentTranslation("morphext.stature.mode." + next.id);
+            player.sendStatusMessage(new TextComponentTranslation("morphext.stature.switched", modeText), true);
             return ActivationResult.success(0);
         }
         if ("morphext:demo_hello".equals(id)) {

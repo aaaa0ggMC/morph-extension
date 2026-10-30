@@ -38,7 +38,18 @@ public final class VanillaActions {
         register(WebTrapAction.ID, new WebTrapAction());
         register(PigmanRageAction.ID, new PigmanRageAction());
 
-        LOGGER.info("[morphext] Registered {} vanilla mob actions into MorphManager", 15);
+        register(IronFortitudeAction.ID, new IronFortitudeAction());
+        register(HeavyTossAction.ID, new HeavyTossAction());
+        register(UltrasonicShriekAction.ID, new UltrasonicShriekAction());
+        register(SpikeBurstAction.ID, new SpikeBurstAction());
+        register(SpectralDazeAction.ID, new SpectralDazeAction());
+        register(FuriousBiteAction.ID, new FuriousBiteAction());
+        register(BlazeFireballAction.ID, new BlazeFireballAction());
+        register(VenomStrikeAction.ID, new VenomStrikeAction());
+        register(StrafeDodgeAction.ID, new StrafeDodgeAction());
+        register(FrostAuraAction.ID, new FrostAuraAction());
+
+        LOGGER.info("[morphext] Registered {} vanilla mob actions into MorphManager", 25);
     }
 
     private static void register(String id, IAction action) {

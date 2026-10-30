@@ -1,7 +1,7 @@
 {
   "bat": {
     "abilities": ["fly", "night_vision", "prevent_fall"],
-    "action": "echolocation",
+    "actions": ["echolocation", "ultrasonic_shriek"],
     "damageImmunities": ["fall"]
   },
   "shulker": {
@@ -11,69 +11,69 @@
   },
   "guardian": {
     "abilities": ["water_breath", "swim", "night_vision", "jumping"],
-    "action": "prismarine_laser",
+    "actions": ["prismarine_laser", "spike_burst"],
     "immunities": ["mining_fatigue"],
     "damageImmunities": ["drown"]
   },
   "elder_guardian": {
     "abilities": ["water_breath", "swim", "night_vision", "jumping"],
-    "action": "elder_curse",
+    "actions": ["elder_curse", "prismarine_laser", "spectral_daze"],
     "immunities": ["mining_fatigue", "weakness", "slowness"],
     "damageImmunities": ["drown"]
   },
   "villager_golem": {
     "abilities": ["prevent_fall", "step_up"],
-    "action": "ground_slam",
+    "actions": ["ground_slam", "heavy_toss", "iron_fortitude"],
     "immunities": ["slowness", "poison"],
     "damageImmunities": ["fall", "cactus"]
   },
   "skeleton": {
     "abilities": ["sun_allergy", "rotten"],
-    "action": "rapid_shot",
+    "actions": ["rapid_shot", "strafe_dodge"],
     "immunities": ["poison"]
   },
   "stray": {
     "abilities": ["sun_allergy", "rotten"],
-    "action": "frost_shot",
+    "actions": ["frost_shot", "strafe_dodge"],
     "immunities": ["poison", "slowness"]
   },
   "squid": {
     "abilities": ["water_breath", "swim", "night_vision"],
-    "action": "ink_jet",
+    "actions": ["ink_jet"],
     "immunities": ["blindness"],
     "damageImmunities": ["drown"]
   },
   "wolf": {
-    "action": "wolf_howl"
+    "actions": ["wolf_howl", "furious_bite"]
   },
   "ocelot": {
     "abilities": ["prevent_fall"],
-    "action": "feline_pounce",
+    "actions": ["feline_pounce"],
     "damageImmunities": ["fall"]
   },
   "snowman": {
     "abilities": ["snow_walk", "water_allergy"],
-    "action": "snowstorm_volley",
+    "actions": ["snowstorm_volley", "frost_aura"],
     "immunities": ["slowness"],
     "damageImmunities": ["fall"]
   },
   "blaze": {
     "abilities": ["fly", "fire_proof", "water_allergy"],
-    "action": "blaze_fire_ring",
+    "actions": ["blaze_fire_ring", "blaze_fireball"],
     "damageImmunities": ["inFire", "onFire", "lava"]
   },
   "spider": {
     "abilities": ["climb"],
-    "action": "web_trap"
+    "actions": ["web_trap", "venom_strike"]
   },
   "cave_spider": {
     "abilities": ["climb"],
-    "action": "web_trap",
+    "actions": ["web_trap", "venom_strike"],
     "immunities": ["poison"]
   },
   "zombie_pigman": {
     "abilities": ["fire_proof", "hungerless", "rotten"],
-    "action": "pigman_rage",
+    "actions": ["pigman_rage"],
     "immunities": ["poison"],
     "damageImmunities": ["inFire", "onFire", "lava"]
   }

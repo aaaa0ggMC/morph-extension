@@ -148,6 +148,24 @@ morphext.metamorph.desc.snowstorm_volley=暴风雪连珠雪球：极速倾泻连
 morphext.metamorph.desc.blaze_fire_ring=烈焰火环爆发：向四周 8 个方向爆发喷射一圈环形烈焰火球弹幕，点燃并击退触碰到的敌人。
 morphext.metamorph.desc.web_trap=吐丝结网：喷吐极具黏性的蛛丝，命中生物将造成缠绕伤害并附加极高程度的迟滞减速（缓慢 IV），命中方块则会在目标位置织就一张蜘蛛网。
 morphext.metamorph.desc.pigman_rage=狂怒战意：发出地狱猪人被激怒时的狂暴咆哮，瞬间激活狂战士本能，获得力量 II、速度 I 与抗性提升 I（持续 7 秒）。
+morphext.metamorph.desc.iron_fortitude=铁躯坚固：瞬间紧缩钢铁躯壳进入重甲防守姿态，获得抗性提升 II 与抗击退，但因机体沉重附带短暂缓慢 I，攻守平衡。
+morphext.metamorph.desc.heavy_toss=铁臂挑飞：挥动沉重铁臂对身前敌人进行致命上挑打击，造成单体高额伤害并将其狠狠挑飞至半空。
+morphext.metamorph.desc.ultrasonic_shriek=超声尖啸：释放刺耳的高频超声波冲击，使周围敌人的神经陷入紊乱，附带反胃、虚弱与声波破防伤害。
+morphext.metamorph.desc.spike_burst=尖刺爆发：瞬间展开周身海晶石尖刺，刺伤周围贴身敌人并将其强力击退。
+morphext.metamorph.desc.spectral_daze=幻影震慑：释放远古幽灵的威严震慑，致盲周围大范围内的敌人并施加严重迟缓与虚弱。
+morphext.metamorph.desc.furious_bite=狂暴撕咬：向正前方猛扑撕咬敌人，造成暴击撕裂伤害并施加流血减速与饥饿。
+morphext.metamorph.desc.blaze_fireball=烈焰飞弹：顺着视线射出一枚小型烈焰火球，引燃目标并造成火焰伤害。
+morphext.metamorph.desc.venom_strike=剧毒蛰刺：迅猛向前扑袭刺击目标，注入致命蛛毒，造成中毒与迟缓。
+morphext.metamorph.desc.strafe_dodge=战术后撤：展现不死射手的战术机动，迅速向后翻滚拉开射击距离并获得短暂移速增益。
+morphext.metamorph.desc.frost_aura=极寒冰环：爆发周身刺骨极寒气旋，重创并冰冻周围敌对生物，造成减速与虚弱。
+
+# 身形规整能力
+ability.morphext.human_stature=身形规整
+ability.morphext.human_stature.desc=变身身形与外观适配拟态：按键循环切换三个状态：\n1. [人类模型]：保留全部技能，但强制使用人类模型与标准碰撞箱；\n2. [等高缩放]：保留变身怪物外观，但智能将其高度缩放到标准人类等身高（约 1.8 格高）；\n3. [关闭]：自然大小（默认）。
+morphext.stature.mode.0=关闭
+morphext.stature.mode.1=人类模型
+morphext.stature.mode.2=等高缩放
+morphext.stature.switched=身形规整已切换为：%s
 
 # 变种相关
 morphext.variant.baby=(幼年)
