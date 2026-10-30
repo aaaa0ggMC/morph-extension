@@ -6,13 +6,17 @@ import mchorse.metamorph.api.morphs.AbstractMorph;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntitySmallFireball;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 
 /**
  * 烈焰人主动技能：烈焰飞弹 (Blaze Fireball)。
- * 向视线方向射出一枚小型烈焰火球，引燃目标并造成火焰伤害。安全偏移生成，杜绝 self-hit。
+ * 向视线方向射出一枚小型烈焰火球，引燃目标并造成火焰伤害。
+ * 具备主手施法动作、枪口火光与微后坐力反冲。
  */
 public class BlazeFireballAction implements IAction, ICooldownAction {
     public static final String ID = "blaze_fireball";
@@ -31,6 +35,12 @@ public class BlazeFireballAction implements IAction, ICooldownAction {
 
         World world = entity.world;
         Vec3d look = entity.getLookVec();
+
+        entity.swingArm(EnumHand.MAIN_HAND);
+        entity.motionX -= look.x * 0.05D;
+        entity.motionZ -= look.z * 0.05D;
+        entity.velocityChanged = true;
+
         double forwardOffset = 1.4D;
         double spawnX = entity.posX + look.x * forwardOffset;
         double spawnY = entity.posY + entity.getEyeHeight() - 0.1D + look.y * forwardOffset;
@@ -40,7 +50,13 @@ public class BlazeFireballAction implements IAction, ICooldownAction {
         fireball.setPosition(spawnX, spawnY, spawnZ);
         world.spawnEntity(fireball);
 
+        if (world instanceof WorldServer) {
+            WorldServer ws = (WorldServer) world;
+            ws.spawnParticle(EnumParticleTypes.FLAME, spawnX, spawnY, spawnZ, 10, 0.15, 0.15, 0.15, 0.05);
+            ws.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, spawnX, spawnY, spawnZ, 5, 0.1, 0.1, 0.1, 0.02);
+        }
+
         world.playSound(null, entity.posX, entity.posY, entity.posZ,
-                SoundEvents.ENTITY_BLAZE_SHOOT, SoundCategory.PLAYERS, 1.2F, 1.0F);
+                SoundEvents.ENTITY_BLAZE_SHOOT, SoundCategory.PLAYERS, 1.4F, 1.0F);
     }
 }

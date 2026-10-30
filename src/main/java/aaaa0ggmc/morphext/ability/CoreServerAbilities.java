@@ -26,7 +26,9 @@ public final class CoreServerAbilities implements ServerAbilityService.Handler {
             boolean enabled = !isEnabled(state);
             state.addProperty("enabled", enabled);
             PlayerAbilityStore.update(player, data -> data.putState(SPRINT, state));
-            player.setSprinting(enabled);
+            if (!enabled) {
+                player.setSprinting(false);
+            }
             return ActivationResult.success(0);
         }
         if (HumanStatureAbility.ID.equals(id)) {
@@ -60,12 +62,8 @@ public final class CoreServerAbilities implements ServerAbilityService.Handler {
 
     /** 仅在服务端玩家 tick 中调用；读取该玩家自己的持久开关。 */
     public static void tick(EntityPlayerMP player) {
-        if (!PlayerAbilityStore.isLoaded(player)) { return; }
-        JsonObject state = PlayerAbilityStore.getLoadedState(player, SPRINT);
-        if (isEnabled(state)
-                && !PlayerAbilityStore.isRemoved(player, SPRINT)) {
-            player.setSprinting(true);
-        }
+        // 服务端不需要每 tick 强行覆盖 player.setSprinting(true)；
+        // 疾跑状态由客户端根据实际移动输入通过动作包同步，静止时强行覆盖会导致脚底持续喷扬尘粒子。
     }
 
     public static boolean isEnabled(JsonObject state) {

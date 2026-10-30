@@ -34,6 +34,10 @@ public class SnowstormVolleyAction implements IAction, ICooldownAction {
 
         World world = entity.world;
         Vec3d look = entity.getLookVec();
+        entity.swingArm(net.minecraft.util.EnumHand.MAIN_HAND);
+        entity.motionX -= look.x * 0.05D;
+        entity.motionZ -= look.z * 0.05D;
+        entity.velocityChanged = true;
         double eyeY = entity.posY + (double) entity.getEyeHeight() - 0.1D;
 
         // 发射 5 发带散布的连珠雪球

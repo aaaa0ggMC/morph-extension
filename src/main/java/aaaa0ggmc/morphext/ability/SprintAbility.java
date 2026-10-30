@@ -45,8 +45,20 @@ public class SprintAbility extends Ability implements IStatefulAbility {
 
     @Override
     public void onTick(EntityPlayer player) {
-        if (enabled() && player != null && !player.isSprinting()) {
-            player.setSprinting(true);
+        if (!enabled() || player == null) {
+            return;
+        }
+        // 自动疾跑判定：仅在玩家有明确向前移动输入且未潜行、饥饿足够、未水平碰撞阻挡时保持疾跑
+        // 玩家静止时绝不强行维持疾跑，避免原版在脚底每 tick 持续生成奔跑扬尘方块粒子
+        if (player.world.isRemote && player instanceof net.minecraft.client.entity.EntityPlayerSP) {
+            net.minecraft.client.entity.EntityPlayerSP sp = (net.minecraft.client.entity.EntityPlayerSP) player;
+            if (sp.movementInput != null && sp.movementInput.moveForward > 0.8F && !sp.isSneaking()
+                    && (sp.capabilities.isCreativeMode || sp.getFoodStats().getFoodLevel() > 6)
+                    && !sp.collidedHorizontally) {
+                if (!sp.isSprinting()) {
+                    sp.setSprinting(true);
+                }
+            }
         }
     }
 

@@ -35,6 +35,12 @@ public class FrostShotAction implements IAction, ICooldownAction {
         }
 
         World world = entity.world;
+        entity.swingArm(net.minecraft.util.EnumHand.MAIN_HAND);
+        net.minecraft.util.math.Vec3d look = entity.getLookVec();
+        entity.motionX -= look.x * 0.05D;
+        entity.motionZ -= look.z * 0.05D;
+        entity.velocityChanged = true;
+
         float baseYaw = entity.rotationYaw;
         float pitch = entity.rotationPitch;
         double eyeY = entity.posY + (double) entity.getEyeHeight() - 0.1D;

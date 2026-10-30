@@ -25,7 +25,7 @@
     "abilities": ["prevent_fall", "step_up"],
     "actions": ["ground_slam", "heavy_toss", "iron_fortitude"],
     "immunities": ["slowness", "poison"],
-    "damageImmunities": ["fall", "cactus"]
+    "damageImmunities": ["fall", "cactus", "drown"]
   },
   "skeleton": {
     "abilities": ["sun_allergy", "rotten"],
@@ -60,11 +60,12 @@
   "blaze": {
     "abilities": ["fly", "fire_proof", "water_allergy"],
     "actions": ["blaze_fire_ring", "blaze_fireball"],
-    "damageImmunities": ["inFire", "onFire", "lava"]
+    "damageImmunities": ["inFire", "onFire", "lava", "hotFloor", "fall"]
   },
   "spider": {
     "abilities": ["climb"],
-    "actions": ["web_trap", "venom_strike"]
+    "actions": ["web_trap", "venom_strike"],
+    "immunities": ["poison"]
   },
   "cave_spider": {
     "abilities": ["climb"],
