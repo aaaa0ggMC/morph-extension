@@ -52,7 +52,7 @@
     "damageImmunities": ["fall"]
   },
   "snowman": {
-    "abilities": ["snow_walk"],
+    "abilities": ["snow_walk", "water_allergy"],
     "action": "snowstorm_volley",
     "immunities": ["slowness"],
     "damageImmunities": ["fall"]

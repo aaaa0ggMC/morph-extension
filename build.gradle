@@ -36,6 +36,10 @@ dependencies {
     compile files("libs/metamorph-1.4-1.12.2.jar")
 }
 
+jar {
+    finalizedBy 'reobfJar'
+}
+
 processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", "1.12.2"

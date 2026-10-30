@@ -17,6 +17,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
+import java.util.List;
+
 /**
  * 蜘蛛/洞穴蜘蛛主动技能：吐丝结网 (Web Trap)。
  * 向准星目标喷吐极具黏性的蛛丝。直接命中生物将造成缠绕伤害并附加极高程度的迟滞减速（缓慢 IV）；
@@ -60,9 +62,18 @@ public class WebTrapAction implements IAction, ICooldownAction {
             target.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 100, 3, false, true));
             target.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 100, 0, false, true));
         } else if (blockHit != null && blockHit.typeOfHit == RayTraceResult.Type.BLOCK) {
-            BlockPos placePos = blockHit.getBlockPos().offset(blockHit.sideHit);
-            if (world.isAirBlock(placePos) && world.getGameRules().getBoolean("mobGriefing")) {
-                world.setBlockState(placePos, Blocks.WEB.getDefaultState());
+            // 命中地面或墙面：爆发蛛丝缠绕效果，施加小范围迟滞减速，不残留永久方块污染世界
+            if (world instanceof WorldServer) {
+                WorldServer ws = (WorldServer) world;
+                int webState = net.minecraft.block.Block.getStateId(Blocks.WEB.getDefaultState());
+                ws.spawnParticle(EnumParticleTypes.BLOCK_DUST, hitVec.x, hitVec.y, hitVec.z, 35, 0.6, 0.4, 0.6, 0.05, webState);
+            }
+            List<EntityLivingBase> splashTargets = world.getEntitiesWithinAABB(EntityLivingBase.class,
+                    new net.minecraft.util.math.AxisAlignedBB(hitVec.x - 2.5, hitVec.y - 1.5, hitVec.z - 2.5,
+                            hitVec.x + 2.5, hitVec.y + 1.5, hitVec.z + 2.5),
+                    e -> e != null && e != entity && e.isEntityAlive());
+            for (EntityLivingBase e : splashTargets) {
+                e.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 80, 2, false, true));
             }
         }
 
