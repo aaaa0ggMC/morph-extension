@@ -56,7 +56,12 @@ public final class MorphAbilityManager {
 
     public List<IPassiveAbility> getActivePassives(EntityPlayer player) {
         if (player == null) return Collections.emptyList();
-        List<IPassiveAbility> list = activePassives.get(player.getUniqueID());
+        return getActivePassives(player.getUniqueID());
+    }
+
+    public List<IPassiveAbility> getActivePassives(UUID uuid) {
+        if (uuid == null) return Collections.emptyList();
+        List<IPassiveAbility> list = activePassives.get(uuid);
         return list != null ? list : Collections.emptyList();
     }
 
@@ -145,6 +150,23 @@ public final class MorphAbilityManager {
                         def.damageImmunities.toArray(new String[0]));
                 AbilityRegistry.register(dip);
                 resolved.add(dip);
+            }
+        }
+
+        // 5. 解析阵营被动 (factions)
+        if (def.factions != null && !def.factions.isEmpty()) {
+            for (Map.Entry<String, String> entry : def.factions.entrySet()) {
+                String fId = entry.getKey();
+                String rankStr = entry.getValue();
+                aaaa0ggmc.morphext.faction.Faction faction = aaaa0ggmc.morphext.faction.FactionRegistry.get(fId);
+                if (faction != null) {
+                    aaaa0ggmc.morphext.faction.FactionRank rank = aaaa0ggmc.morphext.faction.FactionRank.fromName(rankStr);
+                    String pid = "faction_" + faction.getId() + "_" + rank.getId();
+                    IAbility ab = AbilityRegistry.get(pid);
+                    if (ab != null && !resolved.contains(ab)) {
+                        resolved.add(ab);
+                    }
+                }
             }
         }
 

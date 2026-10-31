@@ -429,5 +429,57 @@ morphext.passive.morphext.undead_horse_water.name=Ocean Trench Gallop
 morphext.passive.morphext.undead_horse_water.desc=Undead steed nature: Gallop and leap unimpeded across the deep sea floor, retaining infinite breath and total immunity to drowning damage.
 morphext.metamorph.desc.undead_horse_water=Ocean Trench Gallop: Gallop and leap unimpeded across the deep sea floor, retaining infinite breath and total immunity to drowning damage.
 
+# Faction & Relationship System
+morphext.faction.rank.member=Member
+morphext.faction.rank.relative=Relative
+morphext.faction.rank.lord=Lord
+morphext.faction.merged.name=Faction Affiliations & Ranks
+morphext.faction.merged.desc=Summary of all active faction affiliations, relationship ranks, and lordship perks.
+
+morphext.faction.undead.name=Undead
+morphext.faction.undead.desc=Includes zombies, skeletons, husks, strays, withers and undead horrors.
+morphext.faction.wither.name=Wither
+morphext.faction.wither.desc=Includes the Wither and Wither Skeletons.
+morphext.faction.illager.name=Illager
+morphext.faction.illager.desc=Includes evokers, vindicators, illusioners, vexes and witches.
+morphext.faction.witch.name=Witch
+morphext.faction.witch.desc=Witch covens brewing potions and black magic.
+morphext.faction.arthropod.name=Arthropod
+morphext.faction.arthropod.desc=Includes spiders, cave spiders, silverfish and endermites.
+morphext.faction.nether.name=Nether
+morphext.faction.nether.desc=Includes blazes, ghasts, magma cubes and nether horrors.
+morphext.faction.ender.name=Ender
+morphext.faction.ender.desc=Includes endermen, the ender dragon, shulkers and void horrors.
+morphext.faction.villager.name=Villager
+morphext.faction.villager.desc=Includes villagers, iron golems and snow golems.
+morphext.faction.golem.name=Golem
+morphext.faction.golem.desc=Includes iron golems and snow golems.
+morphext.faction.animal.name=Animal
+morphext.faction.animal.desc=Includes passive wildlife and livestock.
+morphext.faction.beast.name=Beast
+morphext.faction.beast.desc=Includes wolves, cats, ocelots and polar bears.
+morphext.faction.slime.name=Slime
+morphext.faction.slime.desc=Includes slimes and magma cubes.
+morphext.faction.aquatic.name=Aquatic
+morphext.faction.aquatic.desc=Includes squids and ocean guardians.
+morphext.faction.guardian.name=Guardian
+morphext.faction.guardian.desc=Includes guardians and elder guardians.
+morphext.faction.creeper.name=Creeper
+morphext.faction.creeper.desc=Creeper kind.
+morphext.faction.abyssal.name=Abyssal Wasteland
+morphext.faction.abyssal.desc=Includes abyssal zombies, depths ghouls and coralium horrors.
+morphext.faction.dread.name=Dreadlands
+morphext.faction.dread.desc=Includes dreadguards, dreadlings, dread golems and Cha'garoth.
+morphext.faction.omothol.name=Omothol
+morphext.faction.omothol.desc=Includes remnants, J'zahar, Sacthoth and great old ones.
+morphext.faction.shadow.name=Shadow
+morphext.faction.shadow.desc=Includes shadow creatures, monsters and beasts.
+morphext.faction.shoggoth.name=Shoggoth
+morphext.faction.shoggoth.desc=Includes lesser, regular and greater shoggoths.
+morphext.faction.antimatter.name=Antimatter
+morphext.faction.antimatter.desc=Includes all antimatter organisms.
+morphext.faction.demon.name=Demon
+morphext.faction.demon.desc=Includes demon animals and evil beasts.
+
 
 

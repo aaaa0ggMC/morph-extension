@@ -22,11 +22,13 @@ public class CommonProxy {
                 new aaaa0ggmc.morphext.ability.CoreServerAbilities());
         aaaa0ggmc.morphext.ability.passive.StandardPassives.registerAll();
         aaaa0ggmc.morphext.ability.MorphAbilityManager.register();
+        aaaa0ggmc.morphext.faction.FactionManager.register();
         if (net.minecraftforge.fml.common.Loader.isModLoaded("metamorph")) {
             aaaa0ggmc.morphext.integration.metamorph.vanilla.VanillaActions.registerAll();
             aaaa0ggmc.morphext.integration.metamorph.MetamorphServerAbilities.register();
             aaaa0ggmc.morphext.integration.metamorph.MorphImmunityHandler.register();
             aaaa0ggmc.morphext.integration.metamorph.MetamorphOverwriteHandler.register();
+            aaaa0ggmc.morphext.config.ModConfig.applyMetamorphBypass();
         }
     }
 
@@ -37,5 +39,6 @@ public class CommonProxy {
     public void onPlayerSnapshot(String json, String wipedAbility) { }
 
     public void postInit(FMLPostInitializationEvent event) {
+        aaaa0ggmc.morphext.config.ModConfig.applyMetamorphBypass();
     }
 }

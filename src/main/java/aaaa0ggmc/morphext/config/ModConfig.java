@@ -25,6 +25,9 @@ public class ModConfig {
     /** 是否接管并禁用生存模式下的 Metamorph 自主操作（禁止自主变回、禁止打开形态菜单、锁死灵魂掉落）。 */
     public static boolean overwriteMetamorph = true;
 
+    /** 是否接管并禁用 Metamorph 原生的盲目 Hostile 伪装判定，改由细分阵营被动系统 (Faction System) 接管。 */
+    public static boolean bypassMetamorphHostile = true;
+
     public static void init(File file) {
         config = new Configuration(file);
         load();
@@ -36,6 +39,9 @@ public class ModConfig {
         hudMargin = config.getInt("margin", "hud", 0, 0, 200, "HUD margin in GUI pixels");
         overwriteMetamorph = config.getBoolean("overwrite_metamorph", Configuration.CATEGORY_GENERAL,
                 true, "Completely disable survival Metamorph operations (demorphing, morph menu, soul drops)");
+        bypassMetamorphHostile = config.getBoolean("bypass_metamorph_hostile", Configuration.CATEGORY_GENERAL,
+                true, "Disable Metamorph's naive blanket Hostile disguise check and use morphext's Faction System instead");
+        applyMetamorphBypass();
         maxSlots = config.getInt("maxSlots", Configuration.CATEGORY_GENERAL,
                 MAX_SLOTS_HARD_CAP, 1, MAX_SLOTS_HARD_CAP,
                 "Max abilities bound to the wheel (the circle is evenly divided by this count)");
@@ -94,5 +100,15 @@ public class ModConfig {
     /** 当前生效槽位数（受 maxSlots 限制）。 */
     public static int activeSlotCount() {
         return Math.max(1, Math.min(maxSlots, MAX_SLOTS_HARD_CAP));
+    }
+
+    /** 动态应用 Metamorph 敌对伪装禁用设置。 */
+    public static void applyMetamorphBypass() {
+        if (net.minecraftforge.fml.common.Loader.isModLoaded("metamorph")) {
+            try {
+                mchorse.metamorph.Metamorph.disableMorphDisguise.set(bypassMetamorphHostile);
+            } catch (Throwable ignored) {
+            }
+        }
     }
 }

@@ -1,216 +1,228 @@
 {
   "bat": {
-    "abilities": ["fly", "night_vision", "prevent_fall"],
+    "abilities": ["fly", "night_vision", "prevent_fall", "faction_animal"],
     "actions": ["echolocation", "ultrasonic_shriek", "bat_roost"],
     "damageImmunities": ["fall"]
   },
   "shulker": {
-    "abilities": ["shulker_defense"],
+    "abilities": ["shulker_defense", "faction_ender"],
     "actions": ["shulker_bullet", "shulker_shell"],
     "immunities": ["levitation"],
     "damageImmunities": ["fall"]
   },
   "guardian": {
-    "abilities": ["water_breath", "swim", "night_vision", "jumping", "thorns"],
+    "abilities": ["water_breath", "swim", "night_vision", "jumping", "thorns", "faction_aquatic", "faction_guardian"],
     "actions": ["prismarine_laser", "spike_burst"],
     "immunities": ["mining_fatigue"],
     "damageImmunities": ["drown"]
   },
   "elder_guardian": {
-    "abilities": ["water_breath", "swim", "night_vision", "jumping", "thorns"],
+    "abilities": ["water_breath", "swim", "night_vision", "jumping", "thorns", "faction_aquatic_lord", "faction_guardian_lord"],
     "actions": ["elder_curse", "prismarine_laser", "spectral_daze", "spike_burst"],
     "immunities": ["mining_fatigue", "weakness", "slowness"],
     "damageImmunities": ["drown"]
   },
   "villager_golem": {
-    "abilities": ["prevent_fall", "step_up", "iron_knockback_res", "iron_golem_nature"],
+    "abilities": ["prevent_fall", "step_up", "iron_knockback_res", "iron_golem_nature", "faction_villager_relative", "faction_golem_relative"],
     "actions": ["heavy_toss", "ground_slam", "iron_fortitude", "iron_repair"],
     "immunities": ["slowness", "poison"],
     "damageImmunities": ["fall", "cactus", "drown"]
   },
   "iron_golem": {
-    "abilities": ["prevent_fall", "step_up", "iron_knockback_res", "iron_golem_nature"],
+    "abilities": ["prevent_fall", "step_up", "iron_knockback_res", "iron_golem_nature", "faction_villager_relative", "faction_golem_relative"],
     "actions": ["heavy_toss", "ground_slam", "iron_fortitude", "iron_repair"],
     "immunities": ["slowness", "poison"],
     "damageImmunities": ["fall", "cactus", "drown"]
   },
   "cow": {
+    "abilities": ["faction_animal"],
     "actions": ["cow_milk"]
   },
   "mooshroom": {
+    "abilities": ["faction_animal"],
     "actions": ["mooshroom_harvest"]
   },
   "sheep": {
+    "abilities": ["faction_animal"],
     "actions": ["sheep_graze"]
   },
   "chicken": {
-    "abilities": ["prevent_fall"],
+    "abilities": ["prevent_fall", "faction_animal"],
     "actions": ["chicken_lay_egg"]
   },
   "pig": {
+    "abilities": ["faction_animal"],
     "actions": ["pig_rooting"]
   },
   "skeleton": {
-    "abilities": ["sun_allergy", "rotten"],
+    "abilities": ["sun_allergy", "rotten", "faction_undead"],
     "actions": ["skeleton_rapid_shot", "skeleton_melee_jab", "strafe_dodge"],
     "immunities": ["poison"]
   },
   "stray": {
-    "abilities": ["stray_frost_aura", "sun_allergy", "rotten"],
+    "abilities": ["stray_frost_aura", "sun_allergy", "rotten", "faction_undead"],
     "actions": ["stray_frost_arrow", "frost_shot", "strafe_dodge"],
     "immunities": ["poison", "slowness"]
   },
   "squid": {
-    "abilities": ["water_breath", "swim", "squid_swim", "night_vision"],
+    "abilities": ["water_breath", "swim", "squid_swim", "night_vision", "faction_aquatic"],
     "actions": ["ink_jet"],
     "immunities": ["blindness"],
     "damageImmunities": ["drown"]
   },
   "wolf": {
+    "abilities": ["faction_animal", "faction_beast"],
     "actions": ["wolf_howl", "wolf_bite"]
   },
   "ocelot": {
-    "abilities": ["creeper_panic", "prevent_fall"],
+    "abilities": ["creeper_panic", "prevent_fall", "faction_animal", "faction_beast"],
     "actions": ["feline_pounce"],
     "damageImmunities": ["fall"]
   },
   "snowman": {
-    "abilities": ["snowman_snow_trail", "water_allergy"],
+    "abilities": ["snowman_snow_trail", "water_allergy", "faction_villager", "faction_golem"],
     "actions": ["snowman_blizzard", "frost_aura", "snowstorm_volley"],
     "immunities": ["slowness"],
     "damageImmunities": ["fall"]
   },
   "blaze": {
-    "abilities": ["fly", "fire_proof", "water_allergy", "prevent_fall"],
+    "abilities": ["fly", "fire_proof", "water_allergy", "prevent_fall", "faction_nether"],
     "actions": ["blaze_fireball", "blaze_fire_ring"],
     "damageImmunities": ["inFire", "onFire", "lava", "hotFloor", "fall"]
   },
   "spider": {
-    "abilities": ["climb", "web_immunity"],
+    "abilities": ["climb", "web_immunity", "faction_arthropod"],
     "actions": ["spider_leap", "web_trap"],
     "immunities": ["poison"]
   },
   "cave_spider": {
-    "abilities": ["climb", "web_immunity", "cave_spider_poison"],
+    "abilities": ["climb", "web_immunity", "cave_spider_poison", "faction_arthropod"],
     "actions": ["spider_leap", "web_trap", "venom_strike"],
     "immunities": ["poison"]
   },
   "zombie_pigman": {
-    "abilities": ["fire_proof", "hungerless", "rotten"],
+    "abilities": ["fire_proof", "hungerless", "rotten", "faction_undead", "faction_nether"],
     "actions": ["pigman_rage"],
     "immunities": ["poison"],
     "damageImmunities": ["inFire", "onFire", "lava"]
   },
   "creeper": {
+    "abilities": ["faction_creeper"],
     "actions": ["creeper_fuse", "creeper_hiss"],
     "damageImmunities": ["explosion"]
   },
   "wither_skeleton": {
-    "abilities": ["fire_proof", "rotten"],
+    "abilities": ["fire_proof", "rotten", "faction_undead", "faction_nether", "faction_wither"],
     "actions": ["wither_strike", "wither_skull_throw"],
     "immunities": ["wither", "poison"],
     "damageImmunities": ["inFire", "onFire", "lava", "wither"]
   },
   "witch": {
-    "abilities": ["witch_magic_resistance"],
+    "abilities": ["witch_magic_resistance", "faction_illager", "faction_witch"],
     "actions": ["witch_throw_potion", "witch_drink_potion"],
     "immunities": ["poison"]
   },
   "evocation_illager": {
+    "abilities": ["faction_illager_lord"],
     "actions": ["evoker_fangs", "evoker_vex_summon", "evoker_wololo"]
   },
   "evoker": {
+    "abilities": ["faction_illager_lord"],
     "actions": ["evoker_fangs", "evoker_vex_summon", "evoker_wololo"]
   },
   "vex": {
-    "abilities": ["fly", "prevent_fall"],
+    "abilities": ["fly", "prevent_fall", "faction_illager"],
     "actions": ["vex_phase"],
     "damageImmunities": ["inWall", "fall"]
   },
   "vindication_illager": {
+    "abilities": ["faction_illager"],
     "actions": ["vindicator_axe_charge"]
   },
   "vindicator": {
+    "abilities": ["faction_illager"],
     "actions": ["vindicator_axe_charge"]
   },
   "illusion_illager": {
+    "abilities": ["faction_illager"],
     "actions": ["illusion_blindness", "illusion_mirror", "illusion_arrow_volley"]
   },
   "illusioner": {
+    "abilities": ["faction_illager"],
     "actions": ["illusion_blindness", "illusion_mirror", "illusion_arrow_volley"]
   },
   "enderman": {
-    "abilities": ["enderman_arrow_dodge", "enderman_water_stress", "prevent_fall", "night_vision"],
+    "abilities": ["enderman_arrow_dodge", "enderman_water_stress", "prevent_fall", "night_vision", "faction_ender"],
     "actions": ["enderman_teleport", "enderman_screech"]
   },
   "endermite": {
-    "abilities": ["endermite_bait", "prevent_fall"],
+    "abilities": ["endermite_bait", "prevent_fall", "faction_arthropod", "faction_ender"],
     "actions": ["endermite_burrow", "endermite_bite"],
     "damageImmunities": ["fall"]
   },
   "slime": {
-    "abilities": ["jumping", "prevent_fall"],
+    "abilities": ["jumping", "prevent_fall", "faction_slime"],
     "actions": ["slime_bounce_slam"],
     "damageImmunities": ["fall"]
   },
   "magma_cube": {
-    "abilities": ["jumping", "fire_proof", "prevent_fall"],
+    "abilities": ["jumping", "fire_proof", "prevent_fall", "faction_slime", "faction_nether"],
     "actions": ["magma_slam"],
     "damageImmunities": ["inFire", "onFire", "lava", "fall"]
   },
   "llama": {
-    "abilities": ["llama_caravan"],
+    "abilities": ["llama_caravan", "faction_animal"],
     "actions": ["llama_spit_barrage"]
   },
   "rabbit": {
-    "abilities": ["jumping", "prevent_fall"],
+    "abilities": ["jumping", "prevent_fall", "faction_animal"],
     "actions": ["rabbit_hop"],
     "damageImmunities": ["fall"]
   },
   "polar_bear": {
-    "abilities": ["polar_bear_cub_protection", "swim"],
+    "abilities": ["polar_bear_cub_protection", "swim", "faction_animal", "faction_beast"],
     "actions": ["polar_bear_maul"]
   },
   "ghast": {
-    "abilities": ["fly", "fire_proof", "prevent_fall", "night_vision"],
+    "abilities": ["fly", "fire_proof", "prevent_fall", "night_vision", "faction_nether"],
     "actions": ["ghast_fireball", "ghast_screech"],
     "damageImmunities": ["inFire", "onFire", "lava", "hotFloor", "fall"]
   },
   "parrot": {
-    "abilities": ["fly", "prevent_fall", "cookie_allergy"],
+    "abilities": ["fly", "prevent_fall", "cookie_allergy", "faction_animal"],
     "actions": ["parrot_mimic", "parrot_dance"],
     "damageImmunities": ["fall"]
   },
   "zombie": {
-    "abilities": ["sun_allergy", "rotten", "hungerless"],
+    "abilities": ["sun_allergy", "rotten", "hungerless", "faction_undead"],
     "actions": ["zombie_infectious_strike"],
     "immunities": ["poison"]
   },
   "husk": {
-    "abilities": ["rotten", "hungerless"],
+    "abilities": ["rotten", "hungerless", "faction_undead"],
     "actions": ["husk_sand_strike"],
     "immunities": ["poison"]
   },
   "ender_dragon": {
-    "abilities": ["fly", "prevent_fall", "fire_proof", "night_vision"],
+    "abilities": ["fly", "prevent_fall", "fire_proof", "night_vision", "faction_ender_lord"],
     "actions": ["dragon_breath", "dragon_wing_flap", "dragon_dive"],
     "immunities": ["slowness", "weakness"],
     "damageImmunities": ["fall", "inFire", "onFire", "lava", "hotFloor", "inWall"]
   },
   "wither": {
-    "abilities": ["fly", "prevent_fall", "wither_armor", "fire_proof", "undead", "rotten", "hungerless"],
+    "abilities": ["fly", "prevent_fall", "wither_armor", "fire_proof", "undead", "rotten", "hungerless", "faction_undead_lord", "faction_nether_lord", "faction_wither_lord"],
     "actions": ["wither_skull", "wither_blue_skull", "wither_birth_blast"],
     "immunities": ["wither", "poison"],
     "damageImmunities": ["wither", "inFire", "onFire", "lava", "hotFloor", "inWall", "drown", "fall"]
   },
   "skeleton_horse": {
-    "abilities": ["undead_horse_water", "hungerless", "rotten"],
+    "abilities": ["undead_horse_water", "hungerless", "rotten", "faction_undead", "faction_animal"],
     "actions": ["skeleton_trap_slam"],
     "immunities": ["poison"],
     "damageImmunities": ["drown", "fall"]
   },
   "zombie_horse": {
-    "abilities": ["undead_horse_water", "hungerless", "rotten"],
+    "abilities": ["undead_horse_water", "hungerless", "rotten", "faction_undead", "faction_animal"],
     "actions": ["skeleton_trap_slam"],
     "immunities": ["poison"],
     "damageImmunities": ["drown", "fall"]

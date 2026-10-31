@@ -12,6 +12,7 @@ public class MorphAbilityDefinition {
     public List<String> actions = new ArrayList<>();
     public List<String> immunities = new ArrayList<>();
     public List<String> damageImmunities = new ArrayList<>();
+    public java.util.Map<String, String> factions = new java.util.LinkedHashMap<>();
 
     public MorphAbilityDefinition() {
     }

@@ -104,6 +104,19 @@ public class GuiAbilityStatus extends GuiScreen {
                 this.active.add(stateful);
             }
         }
+
+        // 智能合并多阵营状态：若宿主拥有多个细分阵营被动，在 Status 列表中聚合为一个整洁的 MergedFactionStatus 展现
+        List<aaaa0ggmc.morphext.faction.FactionPassive> factionPassives = new ArrayList<>();
+        for (IStatefulAbility p : this.passives) {
+            if (p instanceof aaaa0ggmc.morphext.faction.FactionPassive) {
+                factionPassives.add((aaaa0ggmc.morphext.faction.FactionPassive) p);
+            }
+        }
+        if (factionPassives.size() > 1) {
+            this.passives.removeAll(factionPassives);
+            this.passives.add(0, new aaaa0ggmc.morphext.faction.MergedFactionStatus(factionPassives));
+        }
+
         LOGGER.info("[GuiAbilityStatus] collected: active={} passives={} source={}",
                 this.active.size(), this.passives.size(), this.passiveSource);
     }

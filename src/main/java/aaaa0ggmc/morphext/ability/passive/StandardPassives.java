@@ -20,6 +20,9 @@ public final class StandardPassives {
         if (registered) return;
         registered = true;
 
+        // 0. 注册细分阵营体系 (Faction Passive System)
+        aaaa0ggmc.morphext.faction.FactionRegistry.registerAll();
+
         // 1. 移动与环境生存原生被动
         register(new FlightPassive());
         register(new FlightPassive("fly"));

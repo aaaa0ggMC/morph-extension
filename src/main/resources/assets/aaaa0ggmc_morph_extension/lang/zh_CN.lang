@@ -429,5 +429,57 @@ morphext.passive.morphext.undead_horse_water.name=深海疾驰
 morphext.passive.morphext.undead_horse_water.desc=不死坐骑特性：在深海底部无阻碍疾驰与跳跃，始终保持充足肺活量，完全免疫溺水伤害。
 morphext.metamorph.desc.undead_horse_water=深海疾驰：在深海底部无阻碍疾驰与跳跃，始终保持充足肺活量，完全免疫溺水伤害。
 
+# 细分阵营与关系系统 (Faction & Ranks)
+morphext.faction.rank.member=成员
+morphext.faction.rank.relative=亲友
+morphext.faction.rank.lord=领主
+morphext.faction.merged.name=阵营归属与领主统御
+morphext.faction.merged.desc=汇总宿主当前具备的全部细分阵营生态、关系层级与统御特权。
+
+morphext.faction.undead.name=亡灵
+morphext.faction.undead.desc=包含僵尸、骷髅、尸壳、流髑、凋灵骷髅、僵尸猪人与各界死灵生物。
+morphext.faction.wither.name=凋灵
+morphext.faction.wither.desc=包含凋灵之首与凋灵骷髅暗黑族裔。
+morphext.faction.illager.name=灾厄
+morphext.faction.illager.desc=包含唤魔者、卫道士、幻术师、恼鬼与女巫同盟。
+morphext.faction.witch.name=女巫
+morphext.faction.witch.desc=精通黑魔法与炼金草药的女巫同盟。
+morphext.faction.arthropod.name=节肢
+morphext.faction.arthropod.desc=包含蜘蛛、洞穴蜘蛛、蠹虫与末影螨等节肢毒虫。
+morphext.faction.nether.name=下界
+morphext.faction.nether.desc=包含烈焰人、恶魂、岩浆怪、凋灵骷髅等下界焦热原生怪兽。
+morphext.faction.ender.name=末影
+morphext.faction.ender.desc=包含末影人、末影龙、潜影贝与末影螨等末地虚空生灵。
+morphext.faction.villager.name=村民
+morphext.faction.villager.desc=包含村庄居民、铁傀儡与雪傀儡守护者。
+morphext.faction.golem.name=傀儡
+morphext.faction.golem.desc=包含铁傀儡与雪傀儡等构装护卫。
+morphext.faction.animal.name=动物
+morphext.faction.animal.desc=包含牛、羊、猪、鸡、马、兔、羊驼与蝙蝠等自然生灵。
+morphext.faction.beast.name=野兽
+morphext.faction.beast.desc=包含狼、猫、豹猫与北极熊等敏捷凶猛捕食者。
+morphext.faction.slime.name=黏液
+morphext.faction.slime.desc=包含史莱姆与岩浆怪等分裂弹跳胶质生命。
+morphext.faction.aquatic.name=水生
+morphext.faction.aquatic.desc=包含鱿鱼、守卫者与远古守卫者等深海住民。
+morphext.faction.guardian.name=海晶守卫
+morphext.faction.guardian.desc=包含守卫者与远古守卫者等海底神殿坚甲护卫。
+morphext.faction.creeper.name=苦力怕
+morphext.faction.creeper.desc=苦力怕族裔。
+morphext.faction.abyssal.name=深渊荒原
+morphext.faction.abyssal.desc=包含深渊僵尸、深渊食尸鬼与珊瑚鱿鱼等深渊荒原感染生物。
+morphext.faction.dread.name=恐惧之地
+morphext.faction.dread.desc=包含恐惧守卫、恐惧仆从、恐惧巨像、恐惧野兽与查伽洛斯等恐惧生灵。
+morphext.faction.omothol.name=奥穆索
+morphext.faction.omothol.desc=包含奥穆索遗民、扎哈尔、萨克索斯与旧日高维支配者。
+morphext.faction.shadow.name=暗影
+morphext.faction.shadow.desc=包含暗影生物、暗影怪物与暗影巨兽等黑曜虚无阴影。
+morphext.faction.shoggoth.name=修格斯
+morphext.faction.shoggoth.desc=包含次级修格斯、普通修格斯与巨型修格斯等高腐蚀软体不定形生物。
+morphext.faction.antimatter.name=反物质
+morphext.faction.antimatter.desc=包含反物质全家桶生物族裔。
+morphext.faction.demon.name=恶魔
+morphext.faction.demon.desc=包含深渊恶魔动物与地狱火邪恶生物。
+
 
 
