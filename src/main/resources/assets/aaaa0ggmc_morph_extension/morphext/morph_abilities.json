@@ -23,9 +23,25 @@
   },
   "villager_golem": {
     "abilities": ["prevent_fall", "step_up"],
-    "actions": ["ground_slam", "heavy_toss", "iron_fortitude"],
+    "actions": ["ground_slam", "heavy_toss", "iron_fortitude", "iron_repair"],
     "immunities": ["slowness", "poison"],
     "damageImmunities": ["fall", "cactus", "drown"]
+  },
+  "cow": {
+    "actions": ["cow_milk"]
+  },
+  "mooshroom": {
+    "actions": ["mooshroom_harvest"]
+  },
+  "sheep": {
+    "actions": ["sheep_graze"]
+  },
+  "chicken": {
+    "abilities": ["prevent_fall"],
+    "actions": ["chicken_lay_egg"]
+  },
+  "pig": {
+    "actions": ["pig_rooting"]
   },
   "skeleton": {
     "abilities": ["sun_allergy", "rotten"],

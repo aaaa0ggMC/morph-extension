@@ -40,7 +40,6 @@ morphext.metamorph.desc.bow_movement_up=拉弓不减速：拉弓射击时可以�
 morphext.metamorph.desc.chicken_egg_lay=定时下蛋：像鸡一样每隔一段时间在脚下生出一颗蛋，可以捡起来用。
 morphext.metamorph.desc.chicken_riding=骑乘鸡：右键一只鸡就能骑上去，鸡会获得速度并朝你面对的方向走。
 morphext.metamorph.desc.climb=攀爬：贴着垂直的墙面按前进键就能向上爬，不需要梯子。
-morphext.metamorph.desc.cow_milk=产出牛奶：别人用空桶右键你就能获得一桶牛奶，桶会被消耗掉。
 morphext.metamorph.desc.cpae=苦力怕引信接管：引信快燃尽时爆炸改在你当前位置触发，高压苦力怕范围翻倍；非创造模式会受到致命伤害并短暂隐身，随后引信重置。
 morphext.metamorph.desc.creeper_charge=闪电充能：被雷电击中时自动变成高压苦力怕，爆炸范围翻倍。
 morphext.metamorph.desc.demorph=解除变身：变成该形态后会自动退出变身，恢复成玩家的样子。
@@ -158,6 +157,27 @@ morphext.metamorph.desc.blaze_fireball=烈焰飞弹：顺着视线射出一枚�
 morphext.metamorph.desc.venom_strike=剧毒蛰刺：迅猛向前扑袭刺击目标，注入致命蛛毒，造成中毒与迟缓。
 morphext.metamorph.desc.strafe_dodge=战术后撤：展现不死射手的战术机动，迅速向后翻滚拉开射击距离并获得短暂移速增益。
 morphext.metamorph.desc.frost_aura=极寒冰环：爆发周身刺骨极寒气旋，重创并冰冻周围敌对生物，造成减速与虚弱。
+
+# 原版家畜与被动生物动作
+morphext.metamorph.action.cow_milk=挤奶与反刍
+morphext.metamorph.desc.cow_milk=挤奶与反刍：手持空桶可挤出鲜牛奶（冷却 5 秒）；若未手持空桶则触发反刍，恢复 1 点饥饿度与饱和度并消除自身 1 个负面药水效果（冷却 15 秒）。
+morphext.metamorph.action.mooshroom_harvest=哞菇采撷
+morphext.metamorph.desc.mooshroom_harvest=哞菇采撷：手持碗盛取蘑菇煲（冷却 3 秒），手持空桶挤牛奶（冷却 5 秒），手持剪刀修剪采摘 5 个红蘑菇（冷却 60 秒）。
+morphext.metamorph.action.sheep_graze=啃食啃草
+morphext.metamorph.desc.sheep_graze=啃食啃草：低头啃食脚下或正前方草方块将其变为泥土，恢复 2 点饥饿度与饱和度（冷却 20 秒）；手持剪刀可剪下 1-3 团白色羊毛（冷却 45 秒）。
+morphext.metamorph.action.chicken_lay_egg=母鸡下蛋
+morphext.metamorph.desc.chicken_lay_egg=母鸡下蛋：产下一枚新鲜鸡蛋，冷却 45 秒。
+morphext.metamorph.action.pig_rooting=拱地寻宝
+morphext.metamorph.desc.pig_rooting=拱地寻宝：在草方块或泥土上用力拱掘，随机挖掘出胡萝卜、马铃薯、甜菜根或甜菜种子，冷却 30 秒。
+morphext.metamorph.action.iron_repair=精铁自修
+morphext.metamorph.desc.iron_repair=精铁自修：手持铁锭敲击重铸身躯，消耗 1 个铁锭瞬间恢复 25 点生命值，冷却 5 秒。
+
+# 家畜原生动作提示
+morphext.action.cow_milk.prompt=手持空桶可挤奶
+morphext.action.mooshroom_harvest.prompt=手持碗盛蘑菇煲，手持铁桶挤奶，手持剪刀采蘑菇
+morphext.action.sheep_graze.prompt=需站在草方块上吃草，或手持剪刀剪羊毛
+morphext.action.pig_rooting.prompt=需在草方块或泥土上拱地寻宝
+morphext.action.iron_repair.prompt=手持铁锭可修复
 
 # 身形规整能力
 ability.morphext.human_stature=身形规整

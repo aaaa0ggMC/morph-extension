@@ -44,6 +44,17 @@ public class MorphGrantedAbility extends Ability implements IStatefulAbility {
     }
 
     @Override
+    public String getDisplayName() {
+        if (!this.passiveType) {
+            String actionName = MetamorphAbilityDescriptions.getActionName(this.metamName);
+            if (actionName != null && !actionName.isEmpty()) {
+                return actionName;
+            }
+        }
+        return super.getDisplayName();
+    }
+
+    @Override
     public String getStatusGroup() {
         return this.sourceMorph;
     }

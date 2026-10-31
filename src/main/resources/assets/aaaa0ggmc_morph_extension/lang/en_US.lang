@@ -40,7 +40,6 @@ morphext.metamorph.desc.bow_movement_up=Agile Archer: Move at full speed while d
 morphext.metamorph.desc.chicken_egg_lay=Egg Laying: Periodically lay an egg at your feet like a chicken.
 morphext.metamorph.desc.chicken_riding=Chicken Jockey: Right-click a chicken to mount it; the chicken gains speed and follows your look direction.
 morphext.metamorph.desc.climb=Climb: Walk into vertical walls to scale them upward without ladders.
-morphext.metamorph.desc.cow_milk=Milk Production: Other players can right-click you with an empty bucket to obtain a bucket of milk.
 morphext.metamorph.desc.cpae=Creeper Fuse Overhaul: Detonates at your current position when fuse burns out; blast radius doubled if charged. In survival mode, deals lethal damage, grants brief invisibility, then resets fuse.
 morphext.metamorph.desc.creeper_charge=Charged Creeper: Automatically become charged when struck by lightning, doubling explosion radius.
 morphext.metamorph.desc.demorph=Demorph: Automatically reverts to normal player form upon transforming into this morph.
@@ -158,6 +157,27 @@ morphext.metamorph.desc.blaze_fireball=Blaze Fireball: Launch a small flaming pr
 morphext.metamorph.desc.venom_strike=Venom Strike: Spring forward and deliver a venomous fang strike, poisoning and slowing the victim.
 morphext.metamorph.desc.strafe_dodge=Strafe Dodge: Perform a nimble tactical roll backward to escape danger and gain a brief speed surge.
 morphext.metamorph.desc.frost_aura=Frost Aura: Release a chilling burst of glacial wind, heavily damaging and freezing surrounding hostile entities.
+
+# Vanilla Livestock & Passive Mob Actions
+morphext.metamorph.action.cow_milk=Milk & Ruminate
+morphext.metamorph.desc.cow_milk=Milk & Ruminate: Hold an empty bucket to milk fresh milk (5s cooldown); if not holding an empty bucket, ruminate to restore 1 hunger and saturation and cure 1 negative potion effect (15s cooldown).
+morphext.metamorph.action.mooshroom_harvest=Mooshroom Harvest
+morphext.metamorph.desc.mooshroom_harvest=Mooshroom Harvest: Hold a bowl to get mushroom stew (3s cooldown), an empty bucket for milk (5s cooldown), or shears to harvest 5 red mushrooms (60s cooldown).
+morphext.metamorph.action.sheep_graze=Graze & Shear
+morphext.metamorph.desc.sheep_graze=Graze & Shear: Graze on grass beneath or in front of you to turn it into dirt and restore 2 hunger and saturation (20s cooldown); hold shears to harvest 1-3 wool (45s cooldown).
+morphext.metamorph.action.chicken_lay_egg=Lay Egg
+morphext.metamorph.desc.chicken_lay_egg=Lay Egg: Lay a fresh egg beneath you, 45s cooldown.
+morphext.metamorph.action.pig_rooting=Rooting Forage
+morphext.metamorph.desc.pig_rooting=Rooting Forage: Snout-root through grass or dirt to uncover hidden treasures (carrots, potatoes, beetroots, or beetroot seeds), 30s cooldown.
+morphext.metamorph.action.iron_repair=Iron Repair
+morphext.metamorph.desc.iron_repair=Iron Repair: Hold an iron ingot to hammer-repair your iron chassis, consuming 1 iron ingot to restore 25 health, 5s cooldown.
+
+# Livestock Action Prompts
+morphext.action.cow_milk.prompt=Hold empty bucket to milk
+morphext.action.mooshroom_harvest.prompt=Hold bowl for stew, bucket for milk, or shears for mushrooms
+morphext.action.sheep_graze.prompt=Stand on grass to graze, or hold shears to harvest wool
+morphext.action.pig_rooting.prompt=Must root on grass or dirt
+morphext.action.iron_repair.prompt=Hold iron ingot to repair
 
 # Human Stature
 ability.morphext.human_stature=Human Stature

@@ -49,7 +49,14 @@ public final class VanillaActions {
         register(StrafeDodgeAction.ID, new StrafeDodgeAction());
         register(FrostAuraAction.ID, new FrostAuraAction());
 
-        LOGGER.info("[morphext] Registered {} vanilla mob actions into MorphManager", 25);
+        register(CowMilkAction.ID, new CowMilkAction());
+        register(MooshroomHarvestAction.ID, new MooshroomHarvestAction());
+        register(SheepGrazeAction.ID, new SheepGrazeAction());
+        register(ChickenLayEggAction.ID, new ChickenLayEggAction());
+        register(PigRootingAction.ID, new PigRootingAction());
+        register(IronRepairAction.ID, new IronRepairAction());
+
+        LOGGER.info("[morphext] Registered {} vanilla mob actions into MorphManager", 31);
     }
 
     private static void register(String id, IAction action) {

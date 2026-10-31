@@ -33,6 +33,27 @@ public final class MetamorphAbilityDescriptions {
         return MorphGrantedAbility.prettify(key);
     }
 
+    /**
+     * 获取形态动作（主动技能）的本地化名称。
+     * 遵循 morphext.metamorph.action.<key> 规范，无本地化时返回 null。
+     */
+    public static String getActionName(String key) {
+        if (key == null || key.isEmpty()) {
+            return null;
+        }
+
+        String langKey = "morphext.metamorph.action." + key;
+
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+            String clientText = getClientLocalized(langKey);
+            if (clientText != null) {
+                return clientText;
+            }
+        }
+
+        return null;
+    }
+
     @SideOnly(Side.CLIENT)
     private static String getClientLocalized(String langKey) {
         try {
