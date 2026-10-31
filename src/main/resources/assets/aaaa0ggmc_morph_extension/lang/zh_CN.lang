@@ -182,6 +182,12 @@ morphext.action.mooshroom_harvest.prompt=手持碗盛蘑菇煲，手持铁桶挤
 morphext.action.sheep_graze.prompt=需站在草方块上吃草，或手持剪刀剪羊毛
 morphext.action.pig_rooting.prompt=需在草方块或泥土上拱地寻宝
 morphext.action.iron_repair.prompt=手持铁锭可修复
+morphext.action.villager_harvest.success=已丰收 %s 处成熟农作物，并自动补种 %s 块耕地！
+morphext.action.villager_harvest.no_crops=前方 3x3 区域内没有可收割的成熟农作物。
+morphext.action.villager_panic_alarm.triggered=发出惊恐求救警报！唤醒了 %s 个铁傀儡疾驰护驾，震慑了 %s 个敌对生物！
+morphext.action.golem_flower_gift.success=捧出纯洁红花祝福！为周围 %s 个友方赋予 15 秒生命恢复 II 与抗性提升 I！
+morphext.action.golem_taunt_roar.success=重捶钢铁胸膛战吼！强行嘲讽周围 %s 个敌对生物并标记高亮！
+morphext.action.snowman_frost_barrier.activated=极地暴风雪凝结！击退并急冻了 %s 个敌人，已激活 8 秒急冻冰霜护盾！
 
 # 身形规整能力
 ability.morphext.human_stature=身形规整
@@ -410,6 +416,32 @@ morphext.metamorph.action.snowman_blizzard=暴雪机枪扫射
 morphext.metamorph.desc.snowman_blizzard=暴雪机枪扫射：按住连续朝准星高速轰出 10 发高能压制雪球，击退并迟缓目标 (迟缓 II)，冷却 6 秒。
 morphext.metamorph.action.skeleton_trap_slam=雷霆四骑士践踏
 morphext.metamorph.desc.skeleton_trap_slam=雷霆四骑士践踏：前蹄高高扬起引发雷鸣音效与天雷电光冲击波，击退周围 8 格所有敌人并造成高额冲击伤害与电击麻痹，冷却 20 秒。
+
+# 村民社会与构装傀儡生态专精动作
+morphext.metamorph.action.villager_harvest=农耕丰收与播种
+morphext.metamorph.desc.villager_harvest=农耕丰收与播种：面向正前方 3x3 范围成熟农作物（小麦、胡萝卜、马铃薯、甜菜根）一键收割并将作物掉落物直接收纳给玩家，同时自动将耕地 (Blocks.FARMLAND) 重新补种；若无成熟作物则播放村民点头音效，冷却 5 秒。
+morphext.metamorph.action.morphext:villager_harvest=农耕丰收与播种
+morphext.metamorph.desc.morphext:villager_harvest=农耕丰收与播种：面向正前方 3x3 范围成熟农作物（小麦、胡萝卜、马铃薯、甜菜根）一键收割并将作物掉落物直接收纳给玩家，同时自动将耕地 (Blocks.FARMLAND) 重新补种；若无成熟作物则播放村民点头音效，冷却 5 秒。
+
+morphext.metamorph.action.villager_panic_alarm=惊慌呼救与警戒警报
+morphext.metamorph.desc.villager_panic_alarm=惊慌呼救与警戒警报：发出极度惊恐尖叫警报，使周围 24 格内的铁傀儡立刻向玩家位置狂奔集结护驾，并使周围敌对生物受到震慑短暂迟缓 II 与虚弱 (5秒)，自身获得 5 秒极速奔逃，冷却 20 秒。
+morphext.metamorph.action.morphext:villager_panic_alarm=惊慌呼救与警戒警报
+morphext.metamorph.desc.morphext:villager_panic_alarm=惊慌呼救与警戒警报：发出极度惊恐尖叫警报，使周围 24 格内的铁傀儡立刻向玩家位置狂奔集结护驾，并使周围敌对生物受到震慑短暂迟缓 II 与虚弱 (5秒)，自身获得 5 秒极速奔逃，冷却 20 秒。
+
+morphext.metamorph.action.golem_flower_gift=纯洁红花赠礼
+morphext.metamorph.desc.golem_flower_gift=纯洁红花赠礼：原版铁傀儡送红花经典动作，手中捧出一朵鲜艳红罂粟花，对视线内的村民或友方玩家赠予祝福，赋予周围 12 格友方 15 秒生命恢复 II 与抗性提升 I，飘散爱心微粒，冷却 30 秒。
+morphext.metamorph.action.morphext:golem_flower_gift=纯洁红花赠礼
+morphext.metamorph.desc.morphext:golem_flower_gift=纯洁红花赠礼：原版铁傀儡送红花经典动作，手中捧出一朵鲜艳红罂粟花，对视线内的村民或友方玩家赠予祝福，赋予周围 12 格友方 15 秒生命恢复 II 与抗性提升 I，飘散爱心微粒，冷却 30 秒。
+
+morphext.metamorph.action.golem_taunt_roar=构装嘲讽战吼
+morphext.metamorph.desc.golem_taunt_roar=构装嘲讽战吼：重拳捶击钢铁胸膛激荡震颤金属回音，强行嘲讽周围 16 格内所有正在攻击村民或友方的敌对生物，将其攻击目标重定向到自身并标记高亮，自身获得 4 秒抗性提升 II 与 10 秒伤害吸收 I，冷却 15 秒。
+morphext.metamorph.action.morphext:golem_taunt_roar=构装嘲讽战吼
+morphext.metamorph.desc.morphext:golem_taunt_roar=构装嘲讽战吼：重拳捶击钢铁胸膛激荡震颤金属回音，强行嘲讽周围 16 格内所有正在攻击村民或友方的敌对生物，将其攻击目标重定向到自身并标记高亮，自身获得 4 秒抗性提升 II 与 10 秒伤害吸收 I，冷却 15 秒。
+
+morphext.metamorph.action.snowman_frost_barrier=极地暴风雪凝结结界
+morphext.metamorph.desc.snowman_frost_barrier=极地暴风雪凝结结界：周身瞬间爆发刺骨寒流与呼啸雪风，在周围 5 格地面瞬间凝结厚雪层与浮冰，向外减速击退所有进入的敌人并造成 4 点魔法急冻伤害，同时赋予自身 8 秒急冻冰霜护盾（减免 50% 物理伤害并反弹冰冻），冷却 18 秒。
+morphext.metamorph.action.morphext:snowman_frost_barrier=极地暴风雪凝结结界
+morphext.metamorph.desc.morphext:snowman_frost_barrier=极地暴风雪凝结结界：周身瞬间爆发刺骨寒流与呼啸雪风，在周围 5 格地面瞬间凝结厚雪层与浮冰，向外减速击退所有进入的敌人并造成 4 点魔法急冻伤害，同时赋予自身 8 秒急冻冰霜护盾（减免 50% 物理伤害并反弹冰冻），冷却 18 秒。
 
 morphext.passive.stray_frost_aura.name=极寒霜冻光环
 morphext.passive.stray_frost_aura.desc=周围 5 格敌对生物持续受到轻度缓慢侵袭；踏水短暂凝结为浮冰，如履平地。

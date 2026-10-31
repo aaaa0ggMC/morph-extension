@@ -112,6 +112,18 @@ public final class VanillaActions {
         register(SnowmanBlizzardAction.ID, new SnowmanBlizzardAction());
         register(SkeletonTrapAction.ID, new SkeletonTrapAction());
 
+        // 村民社会与构装傀儡生态专精技能动作
+        register(VillagerHarvestAction.ID, new VillagerHarvestAction());
+        register(VillagerHarvestAction.ALIAS_ID, new VillagerHarvestAction());
+        register(VillagerPanicAlarmAction.ID, new VillagerPanicAlarmAction());
+        register(VillagerPanicAlarmAction.ALIAS_ID, new VillagerPanicAlarmAction());
+        register(GolemFlowerGiftAction.ID, new GolemFlowerGiftAction());
+        register(GolemFlowerGiftAction.ALIAS_ID, new GolemFlowerGiftAction());
+        register(GolemTauntRoarAction.ID, new GolemTauntRoarAction());
+        register(GolemTauntRoarAction.ALIAS_ID, new GolemTauntRoarAction());
+        register(SnowmanFrostBarrierAction.ID, new SnowmanFrostBarrierAction());
+        register(SnowmanFrostBarrierAction.ALIAS_ID, new SnowmanFrostBarrierAction());
+
         LOGGER.info("[morphext] Registered {} vanilla mob actions into MorphManager", MorphManager.INSTANCE.actions.size());
     }
 

@@ -69,6 +69,15 @@ public class AbilityRegistry {
         return false;
     }
 
+    /** 获取当前所有已授权/激活的临时能力，避免全量遍历所有注册能力 */
+    public static Collection<IAbility> getGrantedAbilities() {
+        Map<String, IAbility> result = new LinkedHashMap<>();
+        for (Map<String, IAbility> grants : GRANTS.values()) {
+            result.putAll(grants);
+        }
+        return result.values();
+    }
+
     /** 客户端主线程：按来源差量替换临时能力，不写永久解锁文件，不重复触发生命周期。 */
     public static void replaceGrants(String source, Collection<IAbility> abilities, EntityPlayer player) {
         if (source == null || source.isEmpty()) {

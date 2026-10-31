@@ -50,9 +50,9 @@ public class AbilityTickHandler {
             return;
         }
         AbilityCooldowns.tick();
-        /* 同步外部冷却（Metamorph 动作自带的 MOB_ABILITY_COOLDOWN 等），让 HUD/轮盘能显示 */
+        /* 同步外部冷却（Metamorph 动作自带的 MOB_ABILITY_COOLDOWN 等），仅轮询当前玩家已生效的能力 */
         if (mc.player != null) {
-            for (IAbility ability : AbilityRegistry.all()) {
+            for (IAbility ability : AbilityRegistry.getGrantedAbilities()) {
                 int external = ability.getExternalCooldownTicks(mc.player);
                 AbilityCooldowns.syncExternal(ability.getId(), external);
             }

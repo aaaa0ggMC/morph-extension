@@ -22,15 +22,19 @@
     "immunities": ["mining_fatigue", "weakness", "slowness"],
     "damageImmunities": ["drown"]
   },
+  "villager": {
+    "abilities": ["faction_villager"],
+    "actions": ["villager_harvest", "villager_panic_alarm"]
+  },
   "villager_golem": {
     "abilities": ["prevent_fall", "step_up", "iron_knockback_res", "iron_golem_nature", "faction_villager_relative", "faction_golem_relative"],
-    "actions": ["heavy_toss", "ground_slam", "iron_fortitude", "iron_repair"],
+    "actions": ["heavy_toss", "ground_slam", "iron_fortitude", "iron_repair", "golem_flower_gift", "golem_taunt_roar"],
     "immunities": ["slowness", "poison"],
     "damageImmunities": ["fall", "cactus", "drown"]
   },
   "iron_golem": {
     "abilities": ["prevent_fall", "step_up", "iron_knockback_res", "iron_golem_nature", "faction_villager_relative", "faction_golem_relative"],
-    "actions": ["heavy_toss", "ground_slam", "iron_fortitude", "iron_repair"],
+    "actions": ["heavy_toss", "ground_slam", "iron_fortitude", "iron_repair", "golem_flower_gift", "golem_taunt_roar"],
     "immunities": ["slowness", "poison"],
     "damageImmunities": ["fall", "cactus", "drown"]
   },
@@ -81,7 +85,7 @@
   },
   "snowman": {
     "abilities": ["snowman_snow_trail", "water_allergy", "faction_villager", "faction_golem"],
-    "actions": ["snowman_blizzard", "frost_aura", "snowstorm_volley"],
+    "actions": ["snowman_blizzard", "frost_aura", "snowstorm_volley", "snowman_frost_barrier"],
     "immunities": ["slowness"],
     "damageImmunities": ["fall"]
   },

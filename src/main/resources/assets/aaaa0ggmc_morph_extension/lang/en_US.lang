@@ -182,6 +182,12 @@ morphext.action.mooshroom_harvest.prompt=Hold bowl for stew, bucket for milk, or
 morphext.action.sheep_graze.prompt=Stand on grass to graze, or hold shears to harvest wool
 morphext.action.pig_rooting.prompt=Must root on grass or dirt
 morphext.action.iron_repair.prompt=Hold iron ingot to repair
+morphext.action.villager_harvest.success=Harvested %s mature crops and replanted %s farmland blocks!
+morphext.action.villager_harvest.no_crops=No mature crops found in the 3x3 area ahead.
+morphext.action.villager_panic_alarm.triggered=Sounded panic alarm! Alerted %s Iron Golems to rush and protect, shaking %s hostiles!
+morphext.action.golem_flower_gift.success=Offered pure poppy flower! Blessed %s nearby allies with Regeneration II and Resistance I for 15s!
+morphext.action.golem_taunt_roar.success=Pounded iron chestplate in taunting roar! Forcibly redirected and glowing-marked %s hostiles!
+morphext.action.snowman_frost_barrier.activated=Frozen blizzard erupted! Repelled & froze %s hostiles, 8s Frost Barrier active!
 
 # Human Stature
 ability.morphext.human_stature=Human Stature
@@ -410,6 +416,32 @@ morphext.metamorph.action.snowman_blizzard=Blizzard Barrage
 morphext.metamorph.desc.snowman_blizzard=Blizzard Barrage: Unleash a rapid machine-gun barrage of 10 suppressing snowballs that damage, knock back, and inflict Slowness II on targets, 6s cooldown.
 morphext.metamorph.action.skeleton_trap_slam=Four Horsemen Thunder Slam
 morphext.metamorph.desc.skeleton_trap_slam=Four Horsemen Thunder Slam: Rear front hooves high to summon thunder and a lightning shockwave, heavily knocking back and damaging all enemies within 8 blocks, 20s cooldown.
+
+# Villager & Golem Ecosystem Actions
+morphext.metamorph.action.villager_harvest=Harvest & Sowing
+morphext.metamorph.desc.villager_harvest=Harvest & Sowing: Facing forward, automatically harvests all mature crops (wheat, carrots, potatoes, beetroots) in a 3x3 area, collects drops directly into inventory, and automatically replants farmland; plays villager nodding sound if no mature crops found, 5s cooldown.
+morphext.metamorph.action.morphext:villager_harvest=Harvest & Sowing
+morphext.metamorph.desc.morphext:villager_harvest=Harvest & Sowing: Facing forward, automatically harvests all mature crops (wheat, carrots, potatoes, beetroots) in a 3x3 area, collects drops directly into inventory, and automatically replants farmland; plays villager nodding sound if no mature crops found, 5s cooldown.
+
+morphext.metamorph.action.villager_panic_alarm=Panic Alarm
+morphext.metamorph.desc.villager_panic_alarm=Panic Alarm: Let out a piercing panic shriek that alerts all Iron Golems within 24 blocks to rush to your rescue, shakes and slows (Slowness II & Weakness for 5s) hostiles within 20 blocks, and grants you 5s fleeing speed boost, 20s cooldown.
+morphext.metamorph.action.morphext:villager_panic_alarm=Panic Alarm
+morphext.metamorph.desc.morphext:villager_panic_alarm=Panic Alarm: Let out a piercing panic shriek that alerts all Iron Golems within 24 blocks to rush to your rescue, shakes and slows (Slowness II & Weakness for 5s) hostiles within 20 blocks, and grants you 5s fleeing speed boost, 20s cooldown.
+
+morphext.metamorph.action.golem_flower_gift=Poppy Flower Gift
+morphext.metamorph.desc.golem_flower_gift=Poppy Flower Gift: Classic Iron Golem gesture holding a vibrant red poppy to bestow blessings on targeted villagers or friendly players, granting nearby allies within 12 blocks 15s of Regeneration II and Resistance I amidst drifting hearts, 30s cooldown.
+morphext.metamorph.action.morphext:golem_flower_gift=Poppy Flower Gift
+morphext.metamorph.desc.morphext:golem_flower_gift=Poppy Flower Gift: Classic Iron Golem gesture holding a vibrant red poppy to bestow blessings on targeted villagers or friendly players, granting nearby allies within 12 blocks 15s of Regeneration II and Resistance I amidst drifting hearts, 30s cooldown.
+
+morphext.metamorph.action.golem_taunt_roar=Golem Taunt Roar
+morphext.metamorph.desc.golem_taunt_roar=Golem Taunt Roar: Strike your iron chest to produce a reverberating metallic bellow that forcibly taunts all hostiles within 16 blocks attacking villagers/allies, redirecting their targets to yourself with glowing outlines, while gaining Resistance II (4s) and Absorption I (10s), 15s cooldown.
+morphext.metamorph.action.morphext:golem_taunt_roar=Golem Taunt Roar
+morphext.metamorph.desc.morphext:golem_taunt_roar=Golem Taunt Roar: Strike your iron chest to produce a reverberating metallic bellow that forcibly taunts all hostiles within 16 blocks attacking villagers/allies, redirecting their targets to yourself with glowing outlines, while gaining Resistance II (4s) and Absorption I (10s), 15s cooldown.
+
+morphext.metamorph.action.snowman_frost_barrier=Frost Blizzard Barrier
+morphext.metamorph.desc.snowman_frost_barrier=Frost Blizzard Barrier: Instantly release biting cold and blizzard airflow, freezing thick snow layers and packed ice on ground within 5 blocks, repelling and slowing enemies with 4 magic frost damage, and granting yourself an 8s Frost Barrier that reduces physical damage by 50% and reflects freezing chill, 18s cooldown.
+morphext.metamorph.action.morphext:snowman_frost_barrier=Frost Blizzard Barrier
+morphext.metamorph.desc.morphext:snowman_frost_barrier=Frost Blizzard Barrier: Instantly release biting cold and blizzard airflow, freezing thick snow layers and packed ice on ground within 5 blocks, repelling and slowing enemies with 4 magic frost damage, and granting yourself an 8s Frost Barrier that reduces physical damage by 50% and reflects freezing chill, 18s cooldown.
 
 morphext.passive.stray_frost_aura.name=Glacial Aura
 morphext.passive.stray_frost_aura.desc=Hostile mobs within 5 blocks continuously suffer light slowness; walking on water freezes it temporarily into frosted ice.
