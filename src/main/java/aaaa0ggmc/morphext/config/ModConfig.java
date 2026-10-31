@@ -1,24 +1,31 @@
 package aaaa0ggmc.morphext.config;
 
+import aaaa0ggmc.morphext.ability.WheelConfigState;
+import com.google.gson.JsonObject;
 import net.minecraftforge.common.config.Configuration;
 
 import java.io.File;
 
 /**
- * 轮盘配置：最大槽位数（1-8）、多套 Profile（每套独立槽位与当前选中能力）以及 HUD 位置。
+ * 全局结构性配置：轮盘上限（maxSlots / profileCount）、HUD 位置、快捷键与接管开关。
  *
- * <p>Profile 用于保存不同的“配装方案”：切换 Profile 时轮盘上 1..8 号槽位的绑定一起切换，
- * 因此玩家可以为战斗/探索/副本站位准备不同的技能组合。</p>
+ * <p>轮盘的槽位绑定、激活 profile、profile 名与各 profile 选中能力属于“玩家+存档”数据，
+ * 存在 {@code <存档>/data/morphext/players/<uuid>.json} 的
+ * {@code states["morphext:wheel"]}（见 {@link WheelConfigState}），不再存全局。</p>
  *
- * <p>存储兼容旧配置：Profile 1 继续读写旧的 {@code slot1..slot8} / {@code activeAbility}，
- * Profile 2 起使用 {@code profile2_slot1..} / {@code profile2_active}。</p>
+ * <p>本文件里的 {@code slotN}/{@code profileN_slotM}/{@code activeAbility}/
+ * {@code profileN_active}/{@code activeProfile}/{@code profileN_name} 键现在只作为
+ * <b>一次性迁移种子</b>保留：第一个缺少轮盘状态的玩家数据创建时读取一次，随后写入
+ * {@code wheel_state_migrated=true}，之后新建的存档/玩家一律从默认轮盘布局开始，
+ * 不会反复继承这份全局种子。</p>
  *
- * <p>本类在专用服务器上也会加载，因此不能引用 LWJGL 的 {@code Keyboard}。
- * Profile 快捷键以字符串形式保存（按键名或数字键码），由客户端解析。</p>
+ * <p>Profile 快捷键（{@code profileN_key}）是输入设备绑定，仍属全局配置。
+ * 本类在专用服务器上也会加载，因此不能引用 LWJGL 的 {@code Keyboard}；
+ * 快捷键以字符串形式保存（按键名或数字键码），由客户端解析。</p>
  */
 public class ModConfig {
-    public static final int MAX_SLOTS_HARD_CAP = 8;
-    public static final int MAX_PROFILES = 6;
+    public static final int MAX_SLOTS_HARD_CAP = WheelConfigState.SLOT_COUNT;
+    public static final int MAX_PROFILES = WheelConfigState.PROFILE_COUNT;
 
     private static final String[] DEFAULT_PROFILE_KEYS = {"Q", "W", "E", "R", "T", "Y"};
 
@@ -26,16 +33,20 @@ public class ModConfig {
 
     public static int maxSlots = MAX_SLOTS_HARD_CAP;
     public static int profileCount = 3;
-    public static int activeProfile = 0;
 
-    /** [profile][slot] 绑定的能力 id。 */
+    /** [profile][slot] 绑定的能力 id（迁移种子，见类注释）。 */
     private static final String[][] PROFILE_SLOT_ABILITY_IDS = new String[MAX_PROFILES][MAX_SLOTS_HARD_CAP];
-    /** 每套 Profile 当前选中的能力（按释放键触发）。 */
+    /** 每套 Profile 当前选中的能力（迁移种子）。 */
     private static final String[] PROFILE_ACTIVE_ABILITY = new String[MAX_PROFILES];
-    /** 每套 Profile 的显示名。 */
+    /** 每套 Profile 的显示名（迁移种子）。 */
     private static final String[] PROFILE_NAMES = new String[MAX_PROFILES];
-    /** 每套 Profile 的快捷切换键（按键名或数字键码的字符串）。 */
+    /** 每套 Profile 的快捷切换键（按键名或数字键码的字符串；全局输入绑定）。 */
     private static final String[] PROFILE_KEYS = new String[MAX_PROFILES];
+    /** 迁移种子中的激活 profile（迁移种子）。 */
+    private static int seedActiveProfile = 0;
+
+    /** 轮盘布局迁移是否已完成（一次性全局标记，防止每个新存档重复继承种子）。 */
+    private static boolean wheelStateMigrated = false;
 
     public static int hudHorizontal = 0;
     public static int hudVertical = 2;
@@ -47,12 +58,12 @@ public class ModConfig {
     /** 是否接管并禁用 Metamorph 原生的盲目 Hostile 伪装判定，改由细分阵营被动系统 (Faction System) 接管。 */
     public static boolean bypassMetamorphHostile = true;
 
-    public static void init(File file) {
+    public static synchronized void init(File file) {
         config = new Configuration(file);
         load();
     }
 
-    public static void load() {
+    public static synchronized void load() {
         hudHorizontal = config.getInt("hudHorizontal", "hud", 0, 0, 2, "0=left, 1=middle, 2=right");
         hudVertical = config.getInt("hudVertical", "hud", 2, 0, 2, "0=top, 1=center, 2=bottom");
         hudMargin = config.getInt("margin", "hud", 0, 0, 200, "HUD margin in GUI pixels");
@@ -67,12 +78,13 @@ public class ModConfig {
 
         profileCount = config.getInt("profileCount", Configuration.CATEGORY_GENERAL,
                 3, 1, MAX_PROFILES, "Number of wheel profiles (each profile has its own slot bindings)");
-        activeProfile = clampProfile(config.getInt("activeProfile", Configuration.CATEGORY_GENERAL,
-                0, 0, MAX_PROFILES - 1, "Currently active wheel profile (0-based)"));
+        wheelStateMigrated = config.getBoolean("wheel_state_migrated", Configuration.CATEGORY_GENERAL,
+                false, "One-time migration marker: the legacy global wheel layout has been seeded "
+                        + "into the first player data and must not be inherited by new saves");
 
         for (int p = 0; p < MAX_PROFILES; p++) {
             PROFILE_NAMES[p] = config.getString("profile" + (p + 1) + "_name", Configuration.CATEGORY_GENERAL,
-                    "Profile " + (p + 1), "Display name of wheel profile " + (p + 1));
+                    "Profile " + (p + 1), "Legacy wheel layout seed: display name of profile " + (p + 1));
             PROFILE_KEYS[p] = config.getString("profile" + (p + 1) + "_key", Configuration.CATEGORY_GENERAL,
                     DEFAULT_PROFILE_KEYS[p], "Quick-switch key for profile " + (p + 1)
                             + " (key name such as Q, or a numeric LWJGL key code; empty disables it)");
@@ -80,132 +92,34 @@ public class ModConfig {
             for (int s = 0; s < MAX_SLOTS_HARD_CAP; s++) {
                 String key = p == 0 ? "slot" + (s + 1) : "profile" + (p + 1) + "_slot" + (s + 1);
                 PROFILE_SLOT_ABILITY_IDS[p][s] = config.getString(key, Configuration.CATEGORY_GENERAL, "",
-                        "Ability id bound to profile " + (p + 1) + " wheel slot " + (s + 1));
+                        "Legacy wheel layout seed: ability id bound to profile " + (p + 1) + " slot " + (s + 1));
             }
             String activeKey = p == 0 ? "activeAbility" : "profile" + (p + 1) + "_active";
             PROFILE_ACTIVE_ABILITY[p] = config.getString(activeKey, Configuration.CATEGORY_GENERAL, "",
-                    "Currently selected ability of profile " + (p + 1) + " (triggered by the cast key)");
+                    "Legacy wheel layout seed: selected ability of profile " + (p + 1));
         }
+        seedActiveProfile = Math.max(0, Math.min(MAX_PROFILES - 1, config.getInt("activeProfile",
+                Configuration.CATEGORY_GENERAL, 0, 0, MAX_PROFILES - 1,
+                "Legacy wheel layout seed: active wheel profile (0-based)")));
 
         if (config.hasChanged()) {
             config.save();
         }
     }
 
-    private static int clampProfile(int profile) {
-        return Math.max(0, Math.min(MAX_PROFILES - 1, profile));
-    }
-
-    /* ---------------- Profile ---------------- */
+    /* ---------------- 结构性上限 ---------------- */
 
     public static int profileCount() {
         return Math.max(1, Math.min(MAX_PROFILES, profileCount));
     }
 
-    public static int activeProfile() {
-        return Math.max(0, Math.min(profileCount() - 1, activeProfile));
-    }
-
-    public static void setActiveProfile(int profile) {
-        activeProfile = clampProfile(profile);
-        config.get(Configuration.CATEGORY_GENERAL, "activeProfile", 0).set(activeProfile);
-        config.save();
-    }
-
-    public static String getProfileName(int profile) {
-        int p = clampProfile(profile);
-        String name = PROFILE_NAMES[p];
-        return name == null || name.trim().isEmpty() ? "Profile " + (p + 1) : name;
-    }
-
-    public static String getProfileKeyName(int profile) {
-        int p = clampProfile(profile);
-        String key = PROFILE_KEYS[p];
-        return key == null ? "" : key.trim();
-    }
-
-    public static void setProfileCount(int value) {
+    public static synchronized void setProfileCount(int value) {
         profileCount = Math.max(1, Math.min(MAX_PROFILES, value));
-        if (activeProfile >= profileCount) {
-            activeProfile = profileCount - 1;
-            config.get(Configuration.CATEGORY_GENERAL, "activeProfile", 0).set(activeProfile);
-        }
         config.get(Configuration.CATEGORY_GENERAL, "profileCount", 3, "", 1, MAX_PROFILES).set(profileCount);
         config.save();
     }
 
-    public static String getProfileSlot(int profile, int index) {
-        int p = clampProfile(profile);
-        if (index < 0 || index >= MAX_SLOTS_HARD_CAP) {
-            return "";
-        }
-        String id = PROFILE_SLOT_ABILITY_IDS[p][index];
-        return id == null ? "" : id;
-    }
-
-    public static void setProfileSlot(int profile, int index, String abilityId) {
-        int p = clampProfile(profile);
-        if (index < 0 || index >= MAX_SLOTS_HARD_CAP) {
-            return;
-        }
-        PROFILE_SLOT_ABILITY_IDS[p][index] = abilityId == null ? "" : abilityId;
-        String key = p == 0 ? "slot" + (index + 1) : "profile" + (p + 1) + "_slot" + (index + 1);
-        config.get(Configuration.CATEGORY_GENERAL, key, "", "").set(PROFILE_SLOT_ABILITY_IDS[p][index]);
-        config.save();
-    }
-
-    public static String getProfileActiveAbility(int profile) {
-        int p = clampProfile(profile);
-        String id = PROFILE_ACTIVE_ABILITY[p];
-        return id == null ? "" : id;
-    }
-
-    public static void setProfileActiveAbility(int profile, String abilityId) {
-        int p = clampProfile(profile);
-        PROFILE_ACTIVE_ABILITY[p] = abilityId == null ? "" : abilityId;
-        String key = p == 0 ? "activeAbility" : "profile" + (p + 1) + "_active";
-        config.get(Configuration.CATEGORY_GENERAL, key, "", "").set(PROFILE_ACTIVE_ABILITY[p]);
-        config.save();
-    }
-
-    /* ---------------- 当前 Profile 的兼容入口 ---------------- */
-
-    /** 当前 Profile 的槽位绑定 id。 */
-    public static String getSlot(int index) {
-        return getProfileSlot(activeProfile(), index);
-    }
-
-    public static void setSlot(int index, String abilityId) {
-        setProfileSlot(activeProfile(), index, abilityId);
-    }
-
-    public static void clearSlot(int index) {
-        setSlot(index, "");
-    }
-
-    /** 当前 Profile 选中的能力。 */
-    public static String getActiveAbility() {
-        return getProfileActiveAbility(activeProfile());
-    }
-
-    public static void setActiveAbility(String abilityId) {
-        setProfileActiveAbility(activeProfile(), abilityId);
-    }
-
-    /* ---------------- 其他 ---------------- */
-
-    /** HUD 位置修改，立即持久化。 */
-    public static void setHudPosition(int horizontal, int vertical, int margin) {
-        hudHorizontal = Math.max(0, Math.min(2, horizontal));
-        hudVertical = Math.max(0, Math.min(2, vertical));
-        hudMargin = Math.max(0, Math.min(200, margin));
-        config.get("hud", "hudHorizontal", 0).set(hudHorizontal);
-        config.get("hud", "hudVertical", 2).set(hudVertical);
-        config.get("hud", "margin", 0).set(hudMargin);
-        config.save();
-    }
-
-    public static void setMaxSlots(int value) {
+    public static synchronized void setMaxSlots(int value) {
         maxSlots = Math.max(1, Math.min(MAX_SLOTS_HARD_CAP, value));
         config.get(Configuration.CATEGORY_GENERAL, "maxSlots", MAX_SLOTS_HARD_CAP, "", 1, MAX_SLOTS_HARD_CAP).set(maxSlots);
         config.save();
@@ -214,6 +128,47 @@ public class ModConfig {
     /** 当前生效槽位数（受 maxSlots 限制）。 */
     public static int activeSlotCount() {
         return Math.max(1, Math.min(maxSlots, MAX_SLOTS_HARD_CAP));
+    }
+
+    /** Profile 快捷切换键（全局输入绑定，不属于存档数据）。 */
+    public static String getProfileKeyName(int profile) {
+        int p = Math.max(0, Math.min(MAX_PROFILES - 1, profile));
+        String key = PROFILE_KEYS[p];
+        return key == null ? "" : key.trim();
+    }
+
+    /* ---------------- 一次性迁移种子 ---------------- */
+
+    /**
+     * 消费全局轮盘布局种子（每个玩家数据首次缺少 {@code morphext:wheel} 时调用一次）。
+     *
+     * <p>第一次调用返回 cfg 里的旧全局布局并写入 {@code wheel_state_migrated=true}；
+     * 之后（含重载配置后）永远返回默认布局，防止每个新存档重复继承。</p>
+     */
+    public static synchronized JsonObject consumeWheelSeed() {
+        if (wheelStateMigrated || config == null) {
+            return WheelConfigState.defaults().toJson();
+        }
+        wheelStateMigrated = true;
+        config.get(Configuration.CATEGORY_GENERAL, "wheel_state_migrated", false,
+                "One-time migration marker: the legacy global wheel layout has been seeded "
+                        + "into the first player data and must not be inherited by new saves").set(true);
+        config.save();
+        return WheelConfigState.of(seedActiveProfile, PROFILE_SLOT_ABILITY_IDS,
+                PROFILE_ACTIVE_ABILITY, PROFILE_NAMES).toJson();
+    }
+
+    /* ---------------- 其他 ---------------- */
+
+    /** HUD 位置修改，立即持久化。 */
+    public static synchronized void setHudPosition(int horizontal, int vertical, int margin) {
+        hudHorizontal = Math.max(0, Math.min(2, horizontal));
+        hudVertical = Math.max(0, Math.min(2, vertical));
+        hudMargin = Math.max(0, Math.min(200, margin));
+        config.get("hud", "hudHorizontal", 0).set(hudHorizontal);
+        config.get("hud", "hudVertical", 2).set(hudVertical);
+        config.get("hud", "margin", 0).set(hudMargin);
+        config.save();
     }
 
     /** 动态应用 Metamorph 敌对伪装禁用设置。 */

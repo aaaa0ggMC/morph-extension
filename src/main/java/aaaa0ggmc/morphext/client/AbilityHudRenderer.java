@@ -40,7 +40,7 @@ public class AbilityHudRenderer {
         if (mc.player == null || mc.gameSettings.hideGUI) {
             return;
         }
-        IAbility ability = AbilityRegistry.get(ModConfig.getActiveAbility());
+        IAbility ability = AbilityRegistry.get(ClientWheelConfig.getActiveAbility());
         if (ability == null) {
             return;
         }

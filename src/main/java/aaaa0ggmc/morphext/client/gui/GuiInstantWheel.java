@@ -6,6 +6,7 @@ import aaaa0ggmc.morphext.ability.AbilityUnlocks;
 import aaaa0ggmc.morphext.ability.IAbility;
 import aaaa0ggmc.morphext.ability.IStatefulAbility;
 import aaaa0ggmc.morphext.client.ClientAbilityExecutor;
+import aaaa0ggmc.morphext.client.ClientWheelConfig;
 import aaaa0ggmc.morphext.config.ModConfig;
 import aaaa0ggmc.morphext.client.RenderUtil;
 import net.minecraft.client.Minecraft;
@@ -363,7 +364,7 @@ public class GuiInstantWheel extends GuiScreen {
         this.slots.clear();
         int count = ModConfig.activeSlotCount();
         for (int i = 0; i < count; i++) {
-            String id = ModConfig.getSlot(i);
+            String id = ClientWheelConfig.getSlot(i);
             boolean empty = id == null || id.isEmpty();
             IAbility ability = empty ? null : AbilityRegistry.get(id);
             boolean locked = !empty && AbilityUnlocks.isReady()
@@ -382,7 +383,7 @@ public class GuiInstantWheel extends GuiScreen {
             }
             this.slots.add(new SlotEntry(id, ability, empty, locked, name, icon));
         }
-        this.activeAbility = ModConfig.getActiveAbility();
+        this.activeAbility = ClientWheelConfig.getActiveAbility();
     }
 
     private static String prettifyId(String id) {
@@ -410,15 +411,15 @@ public class GuiInstantWheel extends GuiScreen {
 
     /** 切换到指定 Profile（0-based），并重新装载该方案的槽位与选中能力。 */
     private void switchProfile(int profile) {
-        if (profile < 0 || profile >= ModConfig.profileCount() || profile == ModConfig.activeProfile()) {
+        if (profile < 0 || profile >= ModConfig.profileCount() || profile == ClientWheelConfig.activeProfile()) {
             return;
         }
-        ModConfig.setActiveProfile(profile);
+        ClientWheelConfig.setActiveProfile(profile);
         this.reloadSlots();
         this.hoveredSector = -1;
         this.mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
         LOGGER.info("[wheel] profile switched: {} ({})",
-                ModConfig.activeProfile() + 1, ModConfig.getProfileName(ModConfig.activeProfile()));
+                ClientWheelConfig.activeProfile() + 1, ClientWheelConfig.getProfileName(ClientWheelConfig.activeProfile()));
     }
 
     private int profileKeyToIndex(int keyCode) {
@@ -469,7 +470,7 @@ public class GuiInstantWheel extends GuiScreen {
     private void updateHoveredTab(int mouseX, int mouseY) {
         int hovered = this.profileTabAt(mouseX, mouseY);
         this.hoveredProfile = hovered;
-        if (hovered >= 0 && hovered != ModConfig.activeProfile()) {
+        if (hovered >= 0 && hovered != ClientWheelConfig.activeProfile()) {
             // 鼠标划到 Tab 上即切换（需求：悬停高亮 + 切换轮盘）
             this.switchProfile(hovered);
         }
@@ -652,7 +653,7 @@ public class GuiInstantWheel extends GuiScreen {
             this.drawCenteredString(this.fontRenderer,
                     I18n.translateToLocalFormatted("gui.morphext.wheel.count", bound, n)
                             + "  ·  " + I18n.translateToLocalFormatted("gui.morphext.wheel.profile",
-                            ModConfig.getProfileName(ModConfig.activeProfile())),
+                            ClientWheelConfig.getProfileName(ClientWheelConfig.activeProfile())),
                     cx, infoY, 0xFFFFFF);
         }
 
@@ -820,7 +821,7 @@ public class GuiInstantWheel extends GuiScreen {
         int count = ModConfig.profileCount();
         for (int i = 0; i < count; i++) {
             int y = this.tabY + i * (this.tabH + this.tabGap);
-            boolean active = i == ModConfig.activeProfile();
+            boolean active = i == ClientWheelConfig.activeProfile();
             boolean hover = i == this.hoveredProfile;
             int bg = active ? 0xDD2F6F9F : hover ? 0xAA3A4A5E : 0x77101418;
             this.drawRect(this.tabX, y, this.tabX + this.tabW, y + this.tabH, bg);
@@ -837,7 +838,7 @@ public class GuiInstantWheel extends GuiScreen {
 
     private String profileTabLabel(int profile) {
         String keyName = profileKeyLabel(profile);
-        String name = ModConfig.getProfileName(profile);
+        String name = ClientWheelConfig.getProfileName(profile);
         return keyName.isEmpty()
                 ? name
                 : I18n.translateToLocalFormatted("gui.morphext.profile.tab", keyName, name);
@@ -1053,7 +1054,7 @@ public class GuiInstantWheel extends GuiScreen {
         if (slot.empty) {
             return false;
         }
-        ModConfig.setActiveAbility(slot.id);
+        ClientWheelConfig.setActiveAbility(slot.id);
         this.activeAbility = slot.id;
         this.mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
         LOGGER.info("[wheel] slot-select: {} ({}{})", slot.id, index + 1, slot.locked ? ", locked" : "");
@@ -1078,7 +1079,7 @@ public class GuiInstantWheel extends GuiScreen {
     /** 轮盘切换：选中能力（持久化），不触发；触发由释放键负责。 */
     private void select(IAbility ability) {
         if (ability != null) {
-            ModConfig.setActiveAbility(ability.getId());
+            ClientWheelConfig.setActiveAbility(ability.getId());
             this.activeAbility = ability.getId();
         }
         this.close();

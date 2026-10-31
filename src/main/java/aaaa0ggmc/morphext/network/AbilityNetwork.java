@@ -31,6 +31,12 @@ public final class AbilityNetwork {
         CHANNEL.registerMessage(SyncHandler.class, SyncRequest.class, 3, Side.SERVER);
         CHANNEL.registerMessage(MorphSyncHandler.class, MorphSyncPacket.class, 4, Side.CLIENT);
         CHANNEL.registerMessage(CreeperSwellingHandler.class, CreeperSwellingPacket.class, 5, Side.CLIENT);
+        CHANNEL.registerMessage(WheelConfigHandler.class, WheelConfigUpdate.class, 6, Side.SERVER);
+    }
+
+    /** 客户端 UI 把完整的轮盘配置状态（states["morphext:wheel"]）发往服务端落盘。 */
+    public static void sendWheelConfig(com.google.gson.JsonObject state) {
+        CHANNEL.sendToServer(new WheelConfigUpdate(state.toString()));
     }
 
     public static void syncPlayer(EntityPlayerMP player, String wipedAbility) {
@@ -108,6 +114,61 @@ public final class AbilityNetwork {
     public static class SnapshotHandler implements IMessageHandler<Snapshot, IMessage> {
         @Override public IMessage onMessage(Snapshot message, MessageContext context) {
             MorphExtension.proxy.onPlayerSnapshot(message.json, message.wipedAbility);
+            return null;
+        }
+    }
+
+    /** 轮盘配置（states["morphext:wheel"]）整体上行：只传状态 JSON，不传玩家身份。 */
+    public static class WheelConfigUpdate implements IMessage {
+        /** 轮盘状态远小于玩家快照，给 16KB 上限足够宽松。 */
+        public static final int MAX_BYTES = 16384;
+        public String json;
+        public WheelConfigUpdate() { }
+        public WheelConfigUpdate(String json) { this.json = json; }
+        @Override public void fromBytes(ByteBuf buf) {
+            int size = buf.readInt();
+            if (size < 0 || size > MAX_BYTES || size > buf.readableBytes()) {
+                throw new IllegalArgumentException("Invalid wheel config size");
+            }
+            byte[] bytes = new byte[size];
+            buf.readBytes(bytes);
+            json = new String(bytes, StandardCharsets.UTF_8);
+        }
+        @Override public void toBytes(ByteBuf buf) {
+            byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+            if (bytes.length > MAX_BYTES) {
+                throw new IllegalArgumentException("Wheel config exceeds size limit");
+            }
+            buf.writeInt(bytes.length);
+            buf.writeBytes(bytes);
+        }
+    }
+
+    public static class WheelConfigHandler implements IMessageHandler<WheelConfigUpdate, IMessage> {
+        @Override public IMessage onMessage(WheelConfigUpdate message, MessageContext context) {
+            EntityPlayerMP player = context.getServerHandler().player;
+            player.getServerWorld().addScheduledTask(() -> {
+                if (player.connection == null || player.connection.player != player || player.isDead) {
+                    return;
+                }
+                com.google.gson.JsonObject state;
+                try {
+                    // 归一化解析：越界钳制、坏 id 清空，落盘的永远是合法形状。
+                    com.google.gson.JsonElement parsed = new com.google.gson.JsonParser().parse(message.json);
+                    if (!parsed.isJsonObject()) {
+                        throw new IllegalArgumentException("Wheel config must be a JSON object");
+                    }
+                    state = aaaa0ggmc.morphext.ability.WheelConfigState
+                            .fromJson(parsed.getAsJsonObject()).toJson();
+                } catch (RuntimeException error) {
+                    org.apache.logging.log4j.LogManager.getLogger("morph-extension")
+                            .warn("Rejected invalid wheel config update from {}", player.getName(), error);
+                    return;
+                }
+                PlayerAbilityStore.update(player,
+                        data -> data.putState(aaaa0ggmc.morphext.ability.WheelConfigState.ID, state));
+                syncPlayerIfChanged(player);
+            });
             return null;
         }
     }

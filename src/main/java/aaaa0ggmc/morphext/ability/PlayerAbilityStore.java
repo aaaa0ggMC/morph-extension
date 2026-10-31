@@ -1,5 +1,6 @@
 package aaaa0ggmc.morphext.ability;
 
+import aaaa0ggmc.morphext.config.ModConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -60,7 +61,17 @@ public final class PlayerAbilityStore {
             Path file = path(player);
             try {
                 if (Files.exists(file)) {
-                    data = new PlayerAbilityData(player.getUniqueID(), readObject(file));
+                    JsonObject json = readObject(file);
+                    if (json.has("states") && json.get("states").isJsonObject()
+                            && !json.getAsJsonObject("states").has(WheelConfigState.ID)) {
+                        // 旧玩家文件没有轮盘状态：一次性迁移种子（ModConfig 内有全局“已迁移”标记，
+                        // 种子只消费一次，之后的新玩家/新存档一律从默认轮盘布局开始）。
+                        json.getAsJsonObject("states").add(WheelConfigState.ID, ModConfig.consumeWheelSeed());
+                        data = new PlayerAbilityData(player.getUniqueID(), json);
+                        save(file, data);
+                    } else {
+                        data = new PlayerAbilityData(player.getUniqueID(), json);
+                    }
                 } else {
                     data = createInitial(player);
                     save(file, data);
@@ -137,6 +148,9 @@ public final class PlayerAbilityStore {
             }
         }
         json.addProperty("legacyImported", imported);
+        // 轮盘布局迁移：必须在 legacy 导入（可能整体替换 states）之后补进 states。
+        // consumeWheelSeed 全局只消费一次，之后的新玩家文件从默认轮盘布局开始。
+        json.getAsJsonObject("states").add(WheelConfigState.ID, ModConfig.consumeWheelSeed());
         return new PlayerAbilityData(player.getUniqueID(), json);
     }
 

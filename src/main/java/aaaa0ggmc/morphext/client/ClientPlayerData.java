@@ -57,6 +57,7 @@ public final class ClientPlayerData {
         boolean wasSprintAllowed = AbilityUnlocks.isUnlocked(sprint);
         AbilityUnlocks.replaceSnapshot(snapshot);
         AbilityStateStore.replaceSnapshot(snapshot.getAsJsonObject("states"));
+        ClientWheelConfig.replaceSnapshot(snapshot.getAsJsonObject("states"));
         JsonObject cooldowns = snapshot.getAsJsonObject("cooldowns");
         AbilityCooldowns.replaceConfirmed(cooldowns, snapshot.get("serverTick").getAsLong());
         if (wasSprintAllowed && !AbilityUnlocks.isUnlocked(sprint) && mc.player != null) {
@@ -87,6 +88,7 @@ public final class ClientPlayerData {
         AbilityUnlocks.load();
         AbilityStateStore.load();
         AbilityCooldowns.clear();
+        ClientWheelConfig.reset();
         AbilityStateStore.applyToAbilities();
     }
 }

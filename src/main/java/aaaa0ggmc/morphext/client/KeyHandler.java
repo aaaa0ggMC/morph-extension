@@ -9,7 +9,6 @@ import aaaa0ggmc.morphext.ability.IAbility;
 import aaaa0ggmc.morphext.client.gui.GuiAbilityConfig;
 import aaaa0ggmc.morphext.client.gui.GuiAbilityStatus;
 import aaaa0ggmc.morphext.client.gui.GuiInstantWheel;
-import aaaa0ggmc.morphext.config.ModConfig;
 import aaaa0ggmc.morphext.integration.metamorph.MetamorphBridge;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -166,7 +165,7 @@ public class KeyHandler {
 
     /** 释放键：触发当前选中的能力（未解锁/冷却中则拒绝并提示）。 */
     private static void castActiveAbility(Minecraft mc) {
-        ClientAbilityExecutor.activateById(ModConfig.getActiveAbility());
+        ClientAbilityExecutor.activateById(ClientWheelConfig.getActiveAbility());
     }
 
     @SubscribeEvent

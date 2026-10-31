@@ -2,6 +2,7 @@ package aaaa0ggmc.morphext.client.gui;
 
 import aaaa0ggmc.morphext.ability.AbilityRegistry;
 import aaaa0ggmc.morphext.ability.IAbility;
+import aaaa0ggmc.morphext.client.ClientWheelConfig;
 import aaaa0ggmc.morphext.client.gui.elements.GuiLabelElement;
 import aaaa0ggmc.morphext.config.ModConfig;
 import mchorse.mclib.client.gui.framework.GuiBase;
@@ -44,7 +45,7 @@ public class GuiAbilityConfig extends GuiBase {
         /* ---- Profile 行 ---- */
         GuiButtonElement prevProfile = new GuiButtonElement(this.mc, IKey.str("<"), b -> {
             int count = ModConfig.profileCount();
-            ModConfig.setActiveProfile((ModConfig.activeProfile() - 1 + count) % count);
+            ClientWheelConfig.setActiveProfile((ClientWheelConfig.activeProfile() - 1 + count) % count);
             this.rebuild();
         });
         prevProfile.flex().relative(this.root).x(10).y(28).w(20).h(18);
@@ -56,7 +57,7 @@ public class GuiAbilityConfig extends GuiBase {
 
         GuiButtonElement nextProfile = new GuiButtonElement(this.mc, IKey.str(">"), b -> {
             int count = ModConfig.profileCount();
-            ModConfig.setActiveProfile((ModConfig.activeProfile() + 1) % count);
+            ClientWheelConfig.setActiveProfile((ClientWheelConfig.activeProfile() + 1) % count);
             this.rebuild();
         });
         nextProfile.flex().relative(this.root).x(w - 148).y(28).w(20).h(18);
@@ -116,7 +117,7 @@ public class GuiAbilityConfig extends GuiBase {
         for (int i = 0; i < ModConfig.MAX_SLOTS_HARD_CAP; i++) {
             final int slot = i;
             boolean active = i < ModConfig.activeSlotCount();
-            String id = ModConfig.getSlot(i);
+            String id = ClientWheelConfig.getSlot(i);
             IAbility ability = AbilityRegistry.get(id);
             String label = (i + 1) + ". " + (ability != null ? ability.getDisplayName()
                     : id.isEmpty() ? "(empty)" : id);
@@ -137,10 +138,10 @@ public class GuiAbilityConfig extends GuiBase {
     }
 
     private String profileText() {
-        int p = ModConfig.activeProfile();
+        int p = ClientWheelConfig.activeProfile();
         String key = ModConfig.getProfileKeyName(p);
         return "Profile " + (p + 1) + "/" + ModConfig.profileCount()
-                + ": " + ModConfig.getProfileName(p)
+                + ": " + ClientWheelConfig.getProfileName(p)
                 + (key == null || key.isEmpty() ? "" : "  [" + key + "]");
     }
 
@@ -164,7 +165,7 @@ public class GuiAbilityConfig extends GuiBase {
         this.editingSlot = slot;
         this.mc.displayGuiScreen(new GuiAbilityPicker(this, ability -> {
             if (this.editingSlot >= 0) {
-                ModConfig.setSlot(this.editingSlot, ability == null ? "" : ability.getId());
+                ClientWheelConfig.setSlot(this.editingSlot, ability == null ? "" : ability.getId());
             }
             this.mc.displayGuiScreen(this);
         }));
