@@ -70,9 +70,12 @@ public final class VanillaActions {
         register(WitchDrinkPotionAction.ID, new WitchDrinkPotionAction());
         register(EvokerFangsAction.ID, new EvokerFangsAction());
         register(EvokerVexSummonAction.ID, new EvokerVexSummonAction());
+        register(EvokerWololoAction.ID, new EvokerWololoAction());
         register(VexPhaseAction.ID, new VexPhaseAction());
         register(VindicatorAxeChargeAction.ID, new VindicatorAxeChargeAction());
         register(IllusionBlindnessAction.ID, new IllusionBlindnessAction());
+        register(IllusionMirrorAction.ID, new IllusionMirrorAction());
+        register(IllusionArrowVolleyAction.ID, new IllusionArrowVolleyAction());
         register(EndermanTeleportAction.ID, new EndermanTeleportAction());
         register(EndermanScreechAction.ID, new EndermanScreechAction());
         register(SlimeBounceAction.ID, new SlimeBounceAction());
@@ -88,7 +91,17 @@ public final class VanillaActions {
         register(ZombieInfectiousStrikeAction.ID, new ZombieInfectiousStrikeAction());
         register(HuskSandStrikeAction.ID, new HuskSandStrikeAction());
 
-        LOGGER.info("[morphext] Registered {} vanilla mob actions into MorphManager", 57);
+        // 末影与下界终极 Boss 及末地专精技能动作
+        register(DragonBreathAction.ID, new DragonBreathAction());
+        register(DragonWingFlapAction.ID, new DragonWingFlapAction());
+        register(DragonDiveBombAction.ID, new DragonDiveBombAction());
+        register(WitherSkullAction.ID, new WitherSkullAction());
+        register(WitherBlueSkullAction.ID, new WitherBlueSkullAction());
+        register(WitherBirthBlastAction.ID, new WitherBirthBlastAction());
+        register(EndermiteBurrowAction.ID, new EndermiteBurrowAction());
+        register(EndermiteBiteAction.ID, new EndermiteBiteAction());
+
+        LOGGER.info("[morphext] Registered {} vanilla mob actions into MorphManager", MorphManager.INSTANCE.actions.size());
     }
 
     private static void register(String id, IAction action) {

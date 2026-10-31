@@ -223,20 +223,28 @@ morphext.metamorph.action.wither_strike=凋零斩击
 morphext.metamorph.desc.wither_strike=凋零斩击：挥舞凋零重刃横扫身前 3.5 格扇形区域，命中敌人造成 9 点暗黑穿透伤害并附加 10 秒凋零 II 效果，空挥亦有破空剑气与黑色微粒，冷却 6 秒。
 morphext.metamorph.action.wither_skull_throw=投掷凋灵首
 morphext.metamorph.desc.wither_skull_throw=投掷凋灵首：朝准星视线方向射出一枚凋灵之首，命中造成爆炸与凋零伤害，发射点安全前移 1.5 格规避自伤，冷却 12 秒。
-morphext.metamorph.action.witch_throw_potion=投掷剧毒秘药
-morphext.metamorph.desc.witch_throw_potion=投掷剧毒秘药：随机向准星投掷喷溅型有害药水（迟缓、剧毒、虚弱或伤害），发射点安全前移规避自砸，冷却 8 秒。
-morphext.metamorph.action.witch_drink_potion=秘药自愈
-morphext.metamorph.desc.witch_drink_potion=秘药自愈：饮用随身秘制药剂，回复 6 点生命值并获得 15 秒抗火效果，冷却 25 秒。
+morphext.metamorph.action.witch_throw_potion=喷溅秘药投掷
+morphext.metamorph.desc.witch_throw_potion=喷溅秘药投掷：按顺序轮流投掷喷溅型迟缓、剧毒、虚弱与瞬伤药水（若锁定目标则智能匹敌最优药剂），发射起点安全前移 1.5 格规避自砸，冷却 6 秒。
+morphext.metamorph.action.witch_drink_potion=动态智能饮药
+morphext.metamorph.desc.witch_drink_potion=动态智能饮药：顺应女巫智能源码饮药自愈——沉入水中饮用潜水水肺药水，着火或身陷岩浆饮用抗火药水，生命过低时顿饮瞬间治疗药水，追击或潜行时饮用迅捷药水，状态完好时获取金心伤害吸收，冷却 15 秒。
+morphext.passive.witch_magic_resistance.name=女巫秘术抗性
+morphext.passive.witch_magic_resistance.desc=精通黑魔法与草药秘术：受到的魔法与药水伤害减免 85%（仅承受 15% 伤害），且彻底豁免自身投掷药水的溅射反噬伤害。
 morphext.metamorph.action.evoker_fangs=唤魔尖牙
-morphext.metamorph.desc.evoker_fangs=唤魔尖牙：在玩家前方地面沿视线破土召唤一排（12 只）咬合的唤魔尖牙；潜行释放则在身周召唤双层同心防御尖牙环，彻底豁免施法者自身，冷却 15 秒。
-morphext.metamorph.action.evoker_vex_summon=召唤恼鬼仆从
-morphext.metamorph.desc.evoker_vex_summon=召唤恼鬼仆从：吟唱灾厄咒文召唤 2 只身披铁剑短暂效忠宿主的幽魂恼鬼，持续 30 秒，冷却 45 秒。
+morphext.metamorph.desc.evoker_fangs=唤魔尖牙：双手高举吟唱紫黑魔咒，在准星前方破土连续咬合 16 只唤魔尖牙；潜行释放则在身周召唤内外两圈同心防御尖牙环，底层严格豁免施法者自身伤害，冷却 10 秒。
+morphext.metamorph.action.evoker_vex_summon=召唤恼鬼群
+morphext.metamorph.desc.evoker_vex_summon=召唤恼鬼群：吟唱灾厄召唤咒文唤出 2-3 只手持铁剑的幽魂恼鬼助战 30 秒，锁定攻击宿主准星判定的目标，冷却 30 秒。
+morphext.metamorph.action.evoker_wololo=转色法咒 (Wololo!)
+morphext.metamorph.desc.evoker_wololo=转色法咒：高举双手飘散橙黄魔纹并念出经典 Wololo 咒文，将周围 16 格内的蓝色绵羊瞬间转化为纯红绵羊；周围无羊亦可随心自由施法，冷却 3 秒。
 morphext.metamorph.action.vex_phase=血怒虚化穿刺
 morphext.metamorph.desc.vex_phase=血怒虚化穿刺：浑身泛起嗜血红光朝准星高速突刺 12 格，留下一路猩红拖尾；遇到 ≤ 3 格厚的障碍物墙体可直接虚化穿墙透体而过，对沿途生物造成 8 点无视护甲穿刺伤害与穿透重击，冷却 7 秒。
-morphext.metamorph.action.vindicator_axe_charge=夺命斧冲
-morphext.metamorph.desc.vindicator_axe_charge=夺命斧冲：举起铁斧向前暴走冲锋（获得速度 II 持续 3 秒），对身前首个敌人造成致命劈砍（12 点伤害）并强行破除举盾防御，冷却 12 秒。
+morphext.metamorph.action.vindicator_axe_charge=举斧狂怒冲刺
+morphext.metamorph.desc.vindicator_axe_charge=举斧狂怒冲刺：双手高举铁斧狂奔暴走（获得速度 II 持续 3 秒），挥出 12 点纯正物理重击与击退；若目标举盾防御，调用底层破盾机制强行破盾并禁用盾牌 5 秒，冷却 10 秒。
 morphext.metamorph.action.illusion_blindness=致盲幻咒
-morphext.metamorph.desc.illusion_blindness=致盲幻咒：吟唱幻术咒文向准星发射致盲光球，命中致盲敌人 8 秒；同时自身获得 6 秒隐形与速度 II，并在原地留下迷惑敌人的幻影微粒，冷却 20 秒。
+morphext.metamorph.desc.illusion_blindness=致盲幻咒：高举双手吟唱致盲幽黑魔咒，向准星投射致盲光球，命中目标附加 8 秒致盲、4 秒迟缓与 5 点暗黑魔法伤害，冷却 10 秒。
+morphext.metamorph.action.illusion_mirror=镜像分身遁逃
+morphext.metamorph.desc.illusion_mirror=镜像分身遁逃：吟唱遁影咒文使自身获得 6 秒完全隐身与速度 II，并在身周四方召唤 4 个手持长弓的虚假幻象分身迷惑敌人，6 秒后化为迷雾消散，冷却 18 秒。
+morphext.metamorph.action.illusion_arrow_volley=幻影箭雨齐射
+morphext.metamorph.desc.illusion_arrow_volley=幻影箭雨齐射：拉开幻术长弓向准星扇形散射一波（5 支）附带荧光微粒的发光幻术箭矢，高亮标记沿途目标，冷却 7 秒。
 morphext.metamorph.action.enderman_teleport=视线瞬移
 morphext.metamorph.desc.enderman_teleport=视线瞬移：朝准星视线方向瞬移至目标方块表面或最远 32 格安全空间，带有智能防卡墙与悬空校验，伴随传送门微粒与折跃音效，冷却 8 秒。
 morphext.metamorph.action.enderman_screech=暴怒尖啸
@@ -322,3 +330,45 @@ morphext.passive.iron_golem_nature.name=钢铁之躯
 morphext.passive.iron_golem_nature.desc=获得 100% 击退抗性与溺水、坠落、仙人掌伤害免疫；普通攻击将敌人挑飞至半空。
 morphext.passive.iron_knockback_res.name=坚如磐石
 morphext.passive.iron_knockback_res.desc=钢铁重躯赋予 100% 击退抗性。
+
+# 末影与下界终极 Boss 及末地专精技能动作
+morphext.metamorph.action.dragon_breath=终末龙息弹
+morphext.metamorph.desc.dragon_breath=终末龙息弹：向前喷吐高能末影龙息弹，命中地面或敌人后唤醒大范围高危紫雾滞留云（附加持续瞬间伤害 II），发射起点安全前移 3.5 格彻底防自伤，冷却 5 秒。
+morphext.metamorph.action.dragon_wing_flap=巨翼风压扇击
+morphext.metamorph.desc.dragon_wing_flap=巨翼风压扇击：猛烈振翅爆发狂暴气流风压，将周围 10 格内的所有非同队生物强力击退并抛向半空，造成 8 点物理风刃伤害与迟缓，冷却 7 秒。
+morphext.metamorph.action.dragon_dive=盘旋俯冲强袭
+morphext.metamorph.desc.dragon_dive=盘旋俯冲强袭：以极高速度朝准星极速俯冲突刺，对身前沿途撞击到的目标造成 16 点无视护甲的重创贯穿伤害并暴力撞飞，突刺期间全维度免除坠落伤害，冷却 10 秒。
+morphext.metamorph.action.wither_skull=黑色高爆凋灵首
+morphext.metamorph.desc.wither_skull=黑色高爆凋灵首：凋灵主头朝准星射出一枚标准黑色凋灵首，命中引发爆炸并附加凋零效果，安全发射点前移 2.0 格防自炸，冷却 2.5 秒。
+morphext.metamorph.action.wither_blue_skull=双子追踪蓝色无敌凋灵首
+morphext.metamorph.desc.wither_blue_skull=双子追踪蓝色无敌凋灵首：左右副头齐射两枚纯正的追踪型蓝色无敌凋灵首（invulnerable=true），自动锁定追踪准星前方的敌对目标，威力与破防能力更加致命，安全起点前移 2.0 格，冷却 7 秒。
+morphext.metamorph.action.wither_birth_blast=凋灵诞生冲击波
+morphext.metamorph.desc.wither_birth_blast=凋灵诞生冲击波：进入 3 秒无敌蓄能状态，期间持续回溯生命并伴随全服广播巨响；充能完毕引爆威力 7.0 的灭世冲击波，对周围 15 格敌人造成 25 点破甲伤害、15 秒凋零 II 并狠狠轰飞，施法者自身绝对豁免，不破坏方块，冷却 30 秒。
+morphext.metamorph.action.endermite_burrow=短程钻地跳窜
+morphext.metamorph.desc.endermite_burrow=短程钻地跳窜：朝准星方向进行极速贴地跳窜折跃，穿梭狭小缝隙并扬起土石迷雾，获得 3 秒隐形与速度 II，冷却 3 秒。
+morphext.metamorph.action.endermite_bite=异界寄生撕咬
+morphext.metamorph.desc.endermite_bite=异界寄生撕咬：扑咬前方贴身敌人造成 5 点伤害与 4 秒缓慢 II、虚弱，同时汲取异界精气恢复自身 2 点生命值，冷却 2.5 秒。
+
+# 末影与下界终极 Boss 及末地专精被动属性本地化
+morphext.passive.wither_armor.name=凋灵护甲
+morphext.passive.wither_armor.desc=生命值低于或等于 50% 时周身环绕白光电弧，100% 弹开并完全免疫所有弓箭、投掷物与飞行弹丸。
+morphext.passive.morphext.wither_armor.name=凋灵护甲
+morphext.passive.morphext.wither_armor.desc=生命值低于或等于 50% 时周身环绕白光电弧，100% 弹开并完全免疫所有弓箭、投掷物与飞行弹丸。
+morphext.passive.enderman_arrow_dodge.name=末影避矢
+morphext.passive.enderman_arrow_dodge.desc=末影人的绝对防御神技：受到任何远程箭矢或投掷物攻击时瞬间判定无效并自动随机折跃闪开，永远无法被弓箭射中。
+morphext.passive.morphext.enderman_arrow_dodge.name=末影避矢
+morphext.passive.morphext.enderman_arrow_dodge.desc=末影人的绝对防御神技：受到任何远程箭矢或投掷物攻击时瞬间判定无效并自动随机折跃闪开，永远无法被弓箭射中。
+morphext.passive.enderman_water_stress.name=触水应激折跃
+morphext.passive.enderman_water_stress.desc=接触雨水或浸入水中时每秒受到水侵蚀伤害，并立即触发求生应激反应，自动安全折跃至周围干燥无水的陆地。
+morphext.passive.morphext.enderman_water_stress.name=触水应激折跃
+morphext.passive.morphext.enderman_water_stress.desc=接触雨水或浸入水中时每秒受到水侵蚀伤害，并立即触发求生应激反应，自动安全折跃至周围干燥无水的陆地。
+morphext.passive.endermite_bait.name=末影天敌仇恨
+morphext.passive.endermite_bait.desc=末影螨微小躯体散发的异界振荡极具诱惑与挑衅，强制将周围 24 格内所有末影人的攻击仇恨吸引至自身。
+morphext.passive.morphext.endermite_bait.name=末影天敌仇恨
+morphext.passive.morphext.endermite_bait.desc=末影螨微小躯体散发的异界振荡极具诱惑与挑衅，强制将周围 24 格内所有末影人的攻击仇恨吸引至自身。
+
+# 创造模式形态变体与分类
+morph.category.variants=变体与幼年形态
+morph.section.variants=形态变体区
+morphext.variant.baby=幼年
+

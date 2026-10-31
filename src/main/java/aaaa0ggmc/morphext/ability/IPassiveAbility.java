@@ -54,6 +54,18 @@ public interface IPassiveAbility extends IAbility {
     }
 
     /**
+     * 受到伤害数值计算时的修饰与减免钩子（在 LivingHurtEvent 中触发）。
+     * @param player 受击玩家
+     * @param source 伤害源
+     * @param amount 当前伤害数值
+     * @param context 变身上下文
+     * @return 经减免修饰后的最终伤害数值（如果未做改动应原样返回 amount）
+     */
+    default float onHurt(EntityPlayer player, DamageSource source, float amount, MorphContext context) {
+        return amount;
+    }
+
+    /**
      * 对其他目标发起攻击时的判定钩子（可用于附加攻击特效、攻击附加药水等）。
      * @param player 攻击者
      * @param target 被攻击的目标

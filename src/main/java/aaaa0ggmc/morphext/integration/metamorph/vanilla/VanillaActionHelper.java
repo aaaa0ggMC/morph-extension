@@ -1,10 +1,16 @@
 package aaaa0ggmc.morphext.integration.metamorph.vanilla;
 
 import mchorse.metamorph.api.EntityUtils;
+import mchorse.metamorph.api.morphs.AbstractMorph;
+import mchorse.metamorph.api.morphs.EntityMorph;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntitySpellcasterIllager;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -81,6 +87,73 @@ public final class VanillaActionHelper {
             double currentDist = i * (dist / steps);
             Vec3d point = start.add(dir.scale(currentDist));
             ws.spawnParticle(type, point.x, point.y, point.z, 1, 0.0, 0.0, 0.0, speed, args);
+        }
+    }
+
+    /**
+     * 驱动灾厄施法者（唤魔者、幻术师等）施法动作姿态、施法长吟音效与对应法术颜色的魔纹粒子。
+     */
+    public static void triggerSpellEffects(World world, EntityLivingBase caster, AbstractMorph morph,
+                                          EntitySpellcasterIllager.SpellType spellType,
+                                          SoundEvent prepareSound, SoundEvent castSound) {
+        if (caster == null || world == null) {
+            return;
+        }
+
+        // 1. 设置底层实体姿态为施法 (SPELLCASTING)
+        if (morph instanceof EntityMorph) {
+            EntityLivingBase dummy = ((EntityMorph) morph).getEntity();
+            if (dummy instanceof EntitySpellcasterIllager) {
+                EntitySpellcasterIllager illager = (EntitySpellcasterIllager) dummy;
+                illager.setSpellType(spellType);
+                ServerActionScheduler.schedule(40, () -> {
+                    if (illager.isSpellcasting()) {
+                        illager.setSpellType(EntitySpellcasterIllager.SpellType.NONE);
+                    }
+                });
+            }
+        }
+
+        // 2. 音效长吟与施法驱动
+        if (prepareSound != null) {
+            world.playSound(null, caster.posX, caster.posY, caster.posZ,
+                    prepareSound, SoundCategory.PLAYERS, 1.5F, 1.0F);
+        }
+        if (castSound != null) {
+            world.playSound(null, caster.posX, caster.posY, caster.posZ,
+                    castSound, SoundCategory.PLAYERS, 1.3F, 1.0F);
+        }
+
+        // 3. 粒子驱动：按照源码对应颜色在头顶摇曳双手及身周飘散魔纹粒子
+        if (world instanceof WorldServer) {
+            WorldServer ws = (WorldServer) world;
+            double[] rgb = new double[] { 0.4, 0.3, 0.35 }; // FANGS 紫黑
+            if (spellType == EntitySpellcasterIllager.SpellType.SUMMON_VEX) {
+                rgb = new double[] { 0.7, 0.7, 0.8 }; // VEX 白烟/银色
+            } else if (spellType == EntitySpellcasterIllager.SpellType.WOLOLO) {
+                rgb = new double[] { 0.7, 0.5, 0.2 }; // WOLOLO 橙黄
+            } else if (spellType == EntitySpellcasterIllager.SpellType.DISAPPEAR) {
+                rgb = new double[] { 0.3, 0.3, 0.8 }; // DISAPPEAR 幻象蓝
+            } else if (spellType == EntitySpellcasterIllager.SpellType.BLINDNESS) {
+                rgb = new double[] { 0.1, 0.1, 0.2 }; // BLINDNESS 暗夜幽黑
+            }
+
+            float yawOffset = (float) Math.toRadians(caster.renderYawOffset);
+            float f1 = MathHelper.cos(yawOffset);
+            float f2 = MathHelper.sin(yawOffset);
+            double headY = caster.posY + caster.getEyeHeight() + 0.35D;
+
+            // 双手摇曳位置生成专属魔纹粒子（SPELL_MOB 当 count=0 时 x,y,zOffset 对应 RGB 通道）
+            ws.spawnParticle(EnumParticleTypes.SPELL_MOB, caster.posX + f1 * 0.6D, headY, caster.posZ + f2 * 0.6D, 0, rgb[0], rgb[1], rgb[2], 1.0D);
+            ws.spawnParticle(EnumParticleTypes.SPELL_MOB, caster.posX - f1 * 0.6D, headY, caster.posZ - f2 * 0.6D, 0, rgb[0], rgb[1], rgb[2], 1.0D);
+
+            // 周身飘散魔纹粒子
+            for (int i = 0; i < 16; i++) {
+                double px = caster.posX + (ws.rand.nextDouble() - 0.5D) * 1.3D;
+                double py = caster.posY + ws.rand.nextDouble() * (caster.height + 0.4D);
+                double pz = caster.posZ + (ws.rand.nextDouble() - 0.5D) * 1.3D;
+                ws.spawnParticle(EnumParticleTypes.SPELL_MOB, px, py, pz, 0, rgb[0], rgb[1], rgb[2], 1.0D);
+            }
         }
     }
 }

@@ -281,6 +281,23 @@ public final class MorphAbilityManager {
                         LOGGER.error("[morphext] Error in onAttacked for ability {}", p.getId(), t);
                     }
                 }
+
+                // 受到伤害数值的修饰与减免计算
+                float currentAmount = event.getAmount();
+                for (IPassiveAbility p : passives) {
+                    try {
+                        currentAmount = p.onHurt(player, event.getSource(), currentAmount, context);
+                    } catch (Throwable t) {
+                        LOGGER.error("[morphext] Error in onHurt for ability {}", p.getId(), t);
+                    }
+                }
+                if (currentAmount <= 0.0F) {
+                    event.setCanceled(true);
+                    event.setAmount(0.0F);
+                    return;
+                } else if (currentAmount != event.getAmount()) {
+                    event.setAmount(currentAmount);
+                }
             }
         }
 

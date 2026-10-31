@@ -112,15 +112,15 @@
     "damageImmunities": ["inFire", "onFire", "lava", "wither"]
   },
   "witch": {
+    "abilities": ["witch_magic_resistance"],
     "actions": ["witch_throw_potion", "witch_drink_potion"],
-    "immunities": ["poison"],
-    "damageImmunities": ["magic"]
+    "immunities": ["poison"]
   },
   "evocation_illager": {
-    "actions": ["evoker_fangs", "evoker_vex_summon"]
+    "actions": ["evoker_fangs", "evoker_vex_summon", "evoker_wololo"]
   },
   "evoker": {
-    "actions": ["evoker_fangs", "evoker_vex_summon"]
+    "actions": ["evoker_fangs", "evoker_vex_summon", "evoker_wololo"]
   },
   "vex": {
     "abilities": ["fly", "prevent_fall"],
@@ -134,14 +134,19 @@
     "actions": ["vindicator_axe_charge"]
   },
   "illusion_illager": {
-    "actions": ["illusion_blindness"]
+    "actions": ["illusion_blindness", "illusion_mirror", "illusion_arrow_volley"]
   },
   "illusioner": {
-    "actions": ["illusion_blindness"]
+    "actions": ["illusion_blindness", "illusion_mirror", "illusion_arrow_volley"]
   },
   "enderman": {
-    "abilities": ["water_allergy"],
+    "abilities": ["enderman_arrow_dodge", "enderman_water_stress", "prevent_fall", "night_vision"],
     "actions": ["enderman_teleport", "enderman_screech"]
+  },
+  "endermite": {
+    "abilities": ["endermite_bait", "prevent_fall"],
+    "actions": ["endermite_burrow", "endermite_bite"],
+    "damageImmunities": ["fall"]
   },
   "slime": {
     "abilities": ["jumping", "prevent_fall"],
@@ -184,5 +189,17 @@
     "abilities": ["rotten", "hungerless"],
     "actions": ["husk_sand_strike"],
     "immunities": ["poison"]
+  },
+  "ender_dragon": {
+    "abilities": ["fly", "prevent_fall", "fire_proof", "night_vision"],
+    "actions": ["dragon_breath", "dragon_wing_flap", "dragon_dive"],
+    "immunities": ["slowness", "weakness"],
+    "damageImmunities": ["fall", "inFire", "onFire", "lava", "hotFloor", "inWall"]
+  },
+  "wither": {
+    "abilities": ["fly", "prevent_fall", "wither_armor", "fire_proof", "undead", "rotten", "hungerless"],
+    "actions": ["wither_skull", "wither_blue_skull", "wither_birth_blast"],
+    "immunities": ["wither", "poison"],
+    "damageImmunities": ["wither", "inFire", "onFire", "lava", "hotFloor", "inWall", "drown", "fall"]
   }
 }

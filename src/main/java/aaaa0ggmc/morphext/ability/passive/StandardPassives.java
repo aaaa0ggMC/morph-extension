@@ -61,6 +61,23 @@ public final class StandardPassives {
         register(new SquidPassive("morphext:squid_swim"));
         register(new IronGolemPassive("iron_golem_nature"));
         register(new IronGolemPassive("morphext:iron_golem_nature"));
+        register(new WitchMagicResistancePassive());
+        register(new WitchMagicResistancePassive("witch_magic_resistance"));
+        register(new WitchMagicResistancePassive("morphext:witch_magic_resistance"));
+
+        // 末影与下界终极 Boss 及末地专精专属被动
+        register(new WitherArmorPassive());
+        register(new WitherArmorPassive("wither_armor"));
+        register(new WitherArmorPassive("morphext:wither_armor"));
+        register(new EndermanArrowDodgePassive());
+        register(new EndermanArrowDodgePassive("enderman_arrow_dodge"));
+        register(new EndermanArrowDodgePassive("morphext:enderman_arrow_dodge"));
+        register(new EndermanWaterStressPassive());
+        register(new EndermanWaterStressPassive("enderman_water_stress"));
+        register(new EndermanWaterStressPassive("morphext:enderman_water_stress"));
+        register(new EndermiteBaitPassive());
+        register(new EndermiteBaitPassive("endermite_bait"));
+        register(new EndermiteBaitPassive("morphext:endermite_bait"));
 
         // 4. 通用属性修饰被动
         register(new AttributeModifierPassive("iron_knockback_res",

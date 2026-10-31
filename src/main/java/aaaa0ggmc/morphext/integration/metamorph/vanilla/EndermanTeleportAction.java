@@ -23,7 +23,7 @@ import net.minecraft.world.WorldServer;
  */
 public class EndermanTeleportAction implements IAction, ICooldownAction {
     public static final String ID = "enderman_teleport";
-    public static final int COOLDOWN = 160; // 8 秒
+    public static final int COOLDOWN = 120; // 6 秒冷却，增强战斗与跑图机动性
 
     @Override
     public int getCooldownTicks(EntityLivingBase entity) {
