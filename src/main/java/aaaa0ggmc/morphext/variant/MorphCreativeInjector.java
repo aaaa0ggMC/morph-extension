@@ -130,6 +130,16 @@ public final class MorphCreativeInjector {
         for (MorphSection section : sections) {
             if (section.categories == null) continue;
 
+            /*
+             * 只注入实体形态 Section（MetamorphSection，title = "entity"）。
+             * UserSection 是玩家收藏 / 最近使用 / 自定义分类，向其中灌入
+             * animal / hostile / abyssalcraft 等变体分类只会产生一批空标签，
+             * 在 GUI 上方显得残缺又冗长。
+             */
+            if (!"entity".equals(section.title)) {
+                continue;
+            }
+
             // 查找或创建变种专属集中展示分类 "variants"
             MorphCategory variantCategory = null;
             for (MorphCategory cat : section.categories) {
