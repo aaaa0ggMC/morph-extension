@@ -62,12 +62,10 @@ public class PotionImmunityPassive extends AbstractPassiveAbility {
         String regName = rl != null ? rl.toString().toLowerCase() : "";
         String path = rl != null ? rl.getPath().toLowerCase() : "";
         String unloc = potion.getName().toLowerCase();
+        String unlocRaw = unloc.startsWith("potion.") ? unloc.substring(7) : unloc;
 
         for (String imm : immunePotionNames) {
-            if (imm.equals(regName) || imm.equals(path) || imm.equals(unloc)) {
-                return true;
-            }
-            if (regName.contains(imm) || unloc.contains(imm)) {
+            if (imm.equals(regName) || imm.equals(path) || imm.equals(unloc) || imm.equals(unlocRaw)) {
                 return true;
             }
         }

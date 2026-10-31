@@ -11,8 +11,12 @@ import net.minecraft.entity.player.EntityPlayer;
 public class WaterBreathingPassive extends AbstractPassiveAbility {
     public static final String ID = "morphext:water_breath";
 
+    public WaterBreathingPassive(String id) {
+        super(id);
+    }
+
     public WaterBreathingPassive() {
-        super(ID);
+        this(ID);
     }
 
     @Override

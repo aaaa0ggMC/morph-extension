@@ -19,11 +19,12 @@ import net.minecraft.world.World;
  * 潜影贝主动技能：追踪潜影弹 (Shulker Bullet) - 自由释放升级版。
  * 1. 优先自动追踪视线内的存活生物；
  * 2. 若前方无生物，绝不哑火！顺着准星朝视线落点发射，直奔撞击点爆发漂浮魔法；
- * 3. 始终触发主手施法动作与发射音画，手感丝滑。
+ * 3. 发射起点安全前移 1.6 格并赋予外冲初速度，彻底防止撞击施法者自身 (Self-Hit 防御)；
+ * 4. 始终触发主手施法动作与发射音画，手感丝滑。
  */
 public class ShulkerBulletAction implements IAction, ICooldownAction {
     public static final String ID = "shulker_bullet";
-    public static final int COOLDOWN = 80; // 4 秒
+    public static final int COOLDOWN = 70; // 3.5 秒
 
     @Override
     public int getCooldownTicks(EntityLivingBase entity) {
@@ -39,7 +40,9 @@ public class ShulkerBulletAction implements IAction, ICooldownAction {
         World world = entity.world;
         Vec3d look = entity.getLookVec();
         Vec3d eyes = entity.getPositionEyes(1.0F);
-        Vec3d spawnPos = VanillaActionHelper.getSafeSpawnPos(entity, 1.2D);
+
+        // 发射起点大幅前移 1.6 格，完全超越玩家碰撞箱范围
+        Vec3d spawnPos = VanillaActionHelper.getSafeSpawnPos(entity, 1.6D);
 
         // 挥动手臂
         entity.swingArm(EnumHand.MAIN_HAND);
@@ -64,6 +67,12 @@ public class ShulkerBulletAction implements IAction, ICooldownAction {
 
         EntityShulkerBullet bullet = new EntityShulkerBullet(world, entity, bulletTarget, EnumFacing.Axis.Y);
         bullet.setPosition(spawnPos.x, spawnPos.y, spawnPos.z);
+
+        // 赋予前冲微动力，避开上升期碰撞
+        bullet.motionX = look.x * 0.25D;
+        bullet.motionY = look.y * 0.25D + 0.08D;
+        bullet.motionZ = look.z * 0.25D;
+
         world.spawnEntity(bullet);
 
         world.playSound(null, entity.posX, entity.posY, entity.posZ,

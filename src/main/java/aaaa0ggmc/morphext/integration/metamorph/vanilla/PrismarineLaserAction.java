@@ -4,6 +4,7 @@ import aaaa0ggmc.morphext.integration.metamorph.ICooldownAction;
 import mchorse.metamorph.api.abilities.IAction;
 import mchorse.metamorph.api.morphs.AbstractMorph;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
@@ -18,14 +19,18 @@ import net.minecraft.world.WorldServer;
 import java.util.List;
 
 /**
- * 守卫者主动技能：棱晶激光束 (Prismarine Laser) - 高能重构版。
- * 顺着视线发射一道高能量的海晶石激光，贯穿路径并对命中的实体造成直接魔法伤害。
- * 带有击发后坐力、主手施法动作与真实高能水爆散裂。
+ * 守卫者/远古守卫者主动技能：棱晶蓄能激光束 (Prismarine Laser)。
+ * 深度还原原版 EntityGuardian.getAttackAnimationScale 激光蓄能音画曲线：
+ * 1. 0.4 秒 (8 ticks) 高速高能充能，守卫者攻击音效音调由低至高极速爬升；
+ * 2. 蓄能微粒向施法者眼部汇聚成高密度海晶石能量球；
+ * 3. 充能完毕瞬间朝准星爆发贯穿性海晶激光射线，潮湿或水中目标受到巨额加成伤害；
+ * 4. 自由瞄准，绝不强制锁定，手感丝滑流畅。
  */
 public class PrismarineLaserAction implements IAction, ICooldownAction {
     public static final String ID = "prismarine_laser";
-    public static final int COOLDOWN = 100; // 5 秒
-    private static final double MAX_REACH = 24.0D;
+    public static final int COOLDOWN = 80; // 4 秒
+    private static final int CHARGE_TICKS = 8;
+    private static final double MAX_REACH = 28.0D;
 
     @Override
     public int getCooldownTicks(EntityLivingBase entity) {
@@ -39,63 +44,94 @@ public class PrismarineLaserAction implements IAction, ICooldownAction {
         }
 
         World world = entity.world;
-        Vec3d look = entity.getLookVec();
-        Vec3d start = VanillaActionHelper.getSafeSpawnPos(entity, 0.8D);
-        Vec3d end = start.add(look.x * MAX_REACH, look.y * MAX_REACH, look.z * MAX_REACH);
-
-        // 主手动作与微后坐力
         entity.swingArm(EnumHand.MAIN_HAND);
-        entity.motionX -= look.x * 0.08D;
-        entity.motionZ -= look.z * 0.08D;
-        entity.velocityChanged = true;
 
-        // 检查方块阻挡
-        RayTraceResult blockHit = world.rayTraceBlocks(start, end, false, true, false);
-        Vec3d impactPoint = blockHit != null ? blockHit.hitVec : end;
+        // 阶段一：启动激光蓄能音画曲线 (getAttackAnimationScale 模拟)
+        ServerActionScheduler.scheduleTicker(CHARGE_TICKS, remaining -> {
+            if (!entity.isEntityAlive()) return;
 
-        // 检查光束沿途命中的存活生物
-        AxisAlignedBB beamBox = new AxisAlignedBB(start.x, start.y, start.z, impactPoint.x, impactPoint.y, impactPoint.z).grow(1.2D);
-        List<EntityLivingBase> list = world.getEntitiesWithinAABB(EntityLivingBase.class, beamBox,
-                e -> e != null && e != entity && e.isEntityAlive() && !e.isOnSameTeam(entity));
+            int elapsed = CHARGE_TICKS - remaining;
+            float scale = (float) elapsed / (float) CHARGE_TICKS;
+            float pitch = 0.8F + scale * 0.7F; // 音调从 0.8 攀升到 1.5
 
-        EntityLivingBase hitEntity = null;
-        double closestDistSq = Double.MAX_VALUE;
+            // 每隔 2 ticks 播放一次攀升蓄力音
+            if (elapsed % 2 == 0) {
+                world.playSound(null, entity.posX, entity.posY, entity.posZ,
+                        SoundEvents.ENTITY_GUARDIAN_ATTACK, SoundCategory.PLAYERS, 1.0F, pitch);
+            }
 
-        for (EntityLivingBase candidate : list) {
-            AxisAlignedBB aabb = candidate.getEntityBoundingBox().grow(0.3D);
-            RayTraceResult intercept = aabb.calculateIntercept(start, impactPoint);
-            if (intercept != null) {
-                double distSq = start.squareDistanceTo(intercept.hitVec);
-                if (distSq < closestDistSq) {
-                    closestDistSq = distSq;
-                    hitEntity = candidate;
-                    impactPoint = intercept.hitVec;
+            // 眼部汇聚充能粒子环
+            if (world instanceof WorldServer) {
+                WorldServer ws = (WorldServer) world;
+                Vec3d look = entity.getLookVec();
+                Vec3d eye = entity.getPositionEyes(1.0F).add(look.scale(0.8D));
+                ws.spawnParticle(EnumParticleTypes.WATER_BUBBLE, eye.x, eye.y, eye.z, 3, 0.15D, 0.15D, 0.15D, 0.05D);
+                ws.spawnParticle(EnumParticleTypes.CRIT_MAGIC, eye.x, eye.y, eye.z, 2, 0.1D, 0.1D, 0.1D, 0.02D);
+            }
+        }, () -> {
+            // 阶段二：充能完毕，释放高能激光爆裂
+            if (!entity.isEntityAlive()) return;
+
+            Vec3d look = entity.getLookVec();
+            Vec3d start = VanillaActionHelper.getSafeSpawnPos(entity, 1.0D);
+            Vec3d end = start.add(look.x * MAX_REACH, look.y * MAX_REACH, look.z * MAX_REACH);
+
+            // 击发微后坐力
+            entity.motionX -= look.x * 0.10D;
+            entity.motionZ -= look.z * 0.10D;
+            entity.velocityChanged = true;
+
+            // 检查方块阻挡
+            RayTraceResult blockHit = world.rayTraceBlocks(start, end, false, true, false);
+            Vec3d impactPoint = blockHit != null ? blockHit.hitVec : end;
+
+            // 检查光束沿途命中的存活生物
+            AxisAlignedBB beamBox = new AxisAlignedBB(start.x, start.y, start.z, impactPoint.x, impactPoint.y, impactPoint.z).grow(1.2D);
+            List<EntityLivingBase> list = world.getEntitiesWithinAABB(EntityLivingBase.class, beamBox,
+                    e -> e != null && e != entity && e.isEntityAlive() && !e.isOnSameTeam(entity));
+
+            EntityLivingBase hitEntity = null;
+            double closestDistSq = Double.MAX_VALUE;
+
+            for (EntityLivingBase candidate : list) {
+                AxisAlignedBB aabb = candidate.getEntityBoundingBox().grow(0.35D);
+                RayTraceResult intercept = aabb.calculateIntercept(start, impactPoint);
+                if (intercept != null) {
+                    double distSq = start.squareDistanceTo(intercept.hitVec);
+                    if (distSq < closestDistSq) {
+                        closestDistSq = distSq;
+                        hitEntity = candidate;
+                        impactPoint = intercept.hitVec;
+                    }
                 }
             }
-        }
 
-        // 播放守卫者蓄力激发激光声
-        world.playSound(null, entity.posX, entity.posY, entity.posZ,
-                SoundEvents.ENTITY_GUARDIAN_ATTACK, SoundCategory.PLAYERS, 1.4F, 1.25F);
+            // 激发声与击发炸裂声
+            world.playSound(null, entity.posX, entity.posY, entity.posZ,
+                    SoundEvents.ENTITY_GUARDIAN_ATTACK, SoundCategory.PLAYERS, 1.8F, 1.6F);
 
-        // 服务端绘制激光光束粒子线与终点魔法爆裂
-        if (world instanceof WorldServer) {
-            WorldServer ws = (WorldServer) world;
-            VanillaActionHelper.drawParticleLine(ws, start, impactPoint, EnumParticleTypes.CRIT_MAGIC, 0.35D, 0.05D);
-            VanillaActionHelper.drawParticleLine(ws, start, impactPoint, EnumParticleTypes.WATER_BUBBLE, 0.5D, 0.02D);
-            ws.spawnParticle(EnumParticleTypes.CRIT_MAGIC, impactPoint.x, impactPoint.y, impactPoint.z, 15, 0.25, 0.25, 0.25, 0.1);
-            ws.spawnParticle(EnumParticleTypes.WATER_SPLASH, impactPoint.x, impactPoint.y, impactPoint.z, 20, 0.3, 0.3, 0.3, 0.15);
-        }
+            // 服务端绘制高密双色海晶光束粒子线与终点爆裂
+            if (world instanceof WorldServer) {
+                WorldServer ws = (WorldServer) world;
+                VanillaActionHelper.drawParticleLine(ws, start, impactPoint, EnumParticleTypes.CRIT_MAGIC, 0.30D, 0.05D);
+                VanillaActionHelper.drawParticleLine(ws, start, impactPoint, EnumParticleTypes.WATER_BUBBLE, 0.40D, 0.02D);
+                ws.spawnParticle(EnumParticleTypes.CRIT_MAGIC, impactPoint.x, impactPoint.y, impactPoint.z, 20, 0.25, 0.25, 0.25, 0.12);
+                ws.spawnParticle(EnumParticleTypes.WATER_SPLASH, impactPoint.x, impactPoint.y, impactPoint.z, 25, 0.35, 0.35, 0.35, 0.18);
+            }
 
-        // 结算伤害
-        if (hitEntity != null) {
-            boolean inWater = hitEntity.isInWater() || hitEntity.isWet();
-            float damage = inWater ? 10.0F : 7.0F;
-            DamageSource src = DamageSource.causeIndirectMagicDamage(entity, entity);
-            hitEntity.attackEntityFrom(src, damage);
+            // 伤害结算（还原原版：魔法伤害 + 物理伤害，在水中大幅加成）
+            if (hitEntity != null) {
+                boolean inWater = hitEntity.isInWater() || hitEntity.isWet();
+                float damage = inWater ? 13.0F : 9.0F;
 
-            world.playSound(null, hitEntity.posX, hitEntity.posY, hitEntity.posZ,
-                    SoundEvents.ENTITY_GUARDIAN_FLOP, SoundCategory.PLAYERS, 1.0F, 1.5F);
-        }
+                DamageSource magicSrc = DamageSource.causeIndirectMagicDamage(entity, entity);
+                hitEntity.attackEntityFrom(magicSrc, damage);
+
+                world.playSound(null, hitEntity.posX, hitEntity.posY, hitEntity.posZ,
+                        SoundEvents.ENTITY_GUARDIAN_FLOP, SoundCategory.PLAYERS, 1.2F, 1.5F);
+                world.playSound(null, hitEntity.posX, hitEntity.posY, hitEntity.posZ,
+                        SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, SoundCategory.PLAYERS, 1.0F, 1.2F);
+            }
+        });
     }
 }

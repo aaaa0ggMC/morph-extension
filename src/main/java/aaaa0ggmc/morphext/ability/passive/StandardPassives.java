@@ -20,28 +20,67 @@ public final class StandardPassives {
         if (registered) return;
         registered = true;
 
-        // 1. 移动与环境生存
+        // 1. 移动与环境生存原生被动
         register(new FlightPassive());
+        register(new FlightPassive("fly"));
         register(new WaterBreathingPassive());
+        register(new WaterBreathingPassive("water_breath"));
         register(new PreventFallPassive());
+        register(new PreventFallPassive("prevent_fall"));
+        register(new ClimbPassive());
+        register(new ClimbPassive("morphext:climb"));
+        register(new SwimPassive());
+        register(new SwimPassive("morphext:swim"));
+        register(new NightVisionPassive());
+        register(new NightVisionPassive("morphext:night_vision"));
 
-        // 2. 实体特性光环与反伤
+        // 2. 生物生理抗性与环境过敏被动
+        register(new SunAllergyPassive());
+        register(new SunAllergyPassive("morphext:sun_allergy"));
+        register(new WaterAllergyPassive());
+        register(new WaterAllergyPassive("morphext:water_allergy"));
+        register(new UndeadPassive("hungerless"));
+        register(new UndeadPassive("morphext:hungerless"));
+        register(new UndeadPassive("rotten"));
+        register(new UndeadPassive("morphext:rotten"));
+        register(new CookieAllergyPassive());
+        register(new CookieAllergyPassive("cookie_allergy"));
+        register(new CookieAllergyPassive("morphext:cookie_allergy"));
+
+        // 3. 实体特性光环、反伤与生物专属被动
         register(new CreeperRepelPassive());
-        register(new ThornsPassive());
+        register(new ThornsPassive("thorns"));
+        register(new ThornsPassive("morphext:thorns"));
+        register(new WebImmunityPassive("web_immunity"));
+        register(new WebImmunityPassive("morphext:web_immunity"));
+        register(new CaveSpiderPoisonPassive("cave_spider_poison"));
+        register(new CaveSpiderPoisonPassive("morphext:cave_spider_poison"));
+        register(new ShulkerPassive("shulker_defense"));
+        register(new ShulkerPassive("morphext:shulker_defense"));
+        register(new SquidPassive("squid_swim"));
+        register(new SquidPassive("morphext:squid_swim"));
+        register(new IronGolemPassive("iron_golem_nature"));
+        register(new IronGolemPassive("morphext:iron_golem_nature"));
 
-        // 3. 通用属性修饰被动
+        // 4. 通用属性修饰被动
+        register(new AttributeModifierPassive("iron_knockback_res",
+                SharedMonsterAttributes.KNOCKBACK_RESISTANCE, GOLEM_KNOCKBACK_UUID, 1.0D, 0));
         register(new AttributeModifierPassive("morphext:iron_knockback_res",
                 SharedMonsterAttributes.KNOCKBACK_RESISTANCE, GOLEM_KNOCKBACK_UUID, 1.0D, 0));
         register(new AttributeModifierPassive("morphext:feline_speed",
                 SharedMonsterAttributes.MOVEMENT_SPEED, FELINE_SPEED_UUID, 0.15D, 2));
 
-        // 4. 标准声明式伤害免疫库
+        // 5. 标准声明式伤害免疫库
         register(new DamageImmunityPassive("morphext:immunity_fall", false, "fall"));
         register(new DamageImmunityPassive("morphext:immunity_fire", false, "inFire", "onFire", "lava", "hotFloor"));
         register(new DamageImmunityPassive("morphext:immunity_drown", false, "drown"));
         register(new DamageImmunityPassive("morphext:immunity_cactus", false, "cactus"));
+        register(new DamageImmunityPassive("morphext:immunity_inwall", false, "inWall"));
+        register(new DamageImmunityPassive("inWall", false, "inWall"));
+        register(new DamageImmunityPassive("fire_proof", false, "inFire", "onFire", "lava", "hotFloor"));
+        register(new DamageImmunityPassive("morphext:fire_proof", false, "inFire", "onFire", "lava", "hotFloor"));
 
-        // 5. 标准声明式药水免疫库
+        // 6. 标准声明式药水免疫库
         register(new PotionImmunityPassive("morphext:immunity_poison", "poison", "minecraft:poison"));
         register(new PotionImmunityPassive("morphext:immunity_wither", "wither", "minecraft:wither"));
         register(new PotionImmunityPassive("morphext:immunity_blindness", "blindness", "minecraft:blindness"));

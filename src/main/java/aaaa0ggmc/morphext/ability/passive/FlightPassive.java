@@ -11,8 +11,12 @@ import net.minecraft.entity.player.EntityPlayer;
 public class FlightPassive extends AbstractPassiveAbility {
     public static final String ID = "morphext:fly";
 
+    public FlightPassive(String id) {
+        super(id);
+    }
+
     public FlightPassive() {
-        super(ID);
+        this(ID);
     }
 
     @Override

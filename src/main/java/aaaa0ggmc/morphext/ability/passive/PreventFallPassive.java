@@ -17,6 +17,10 @@ public class PreventFallPassive extends AbstractPassiveAbility {
         this.slowFall = slowFall;
     }
 
+    public PreventFallPassive(String id) {
+        this(id, true);
+    }
+
     public PreventFallPassive() {
         this(ID, true);
     }

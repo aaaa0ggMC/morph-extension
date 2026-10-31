@@ -18,8 +18,9 @@ import net.minecraft.world.WorldServer;
 import java.util.List;
 
 /**
- * 铁傀儡主动技能：铁臂挑飞 (Heavy Toss) - 极致动作手感版。
- * 沉重铁臂向前怒吼横扫挑飞，自带前踏位移，空挥展示大范围气刃与碎石，命中重创抛飞敌人。
+ * 铁傀儡主动技能：铁臂挑飞空掷 (Heavy Toss)。
+ * 深度还原原版 EntityIronGolem.attackEntityAsMob 巨力挑飞机制：
+ * 沉重铁臂向前怒吼横扫上挑，自带前踏位移，空挥展示大范围气刃与碎石，命中对敌人造成 10-16 点物理伤害并将其狠狠挑飞至高空。
  */
 public class HeavyTossAction implements IAction, ICooldownAction {
     public static final String ID = "heavy_toss";
@@ -55,14 +56,14 @@ public class HeavyTossAction implements IAction, ICooldownAction {
             double fy = entity.posY + entity.getEyeHeight() * 0.5D;
             double fz = entity.posZ + look.z * 1.8D;
             ws.spawnParticle(EnumParticleTypes.SWEEP_ATTACK, fx, fy, fz, 2, 0.2D, 0.1D, 0.2D, 0.0D);
-            ws.spawnParticle(EnumParticleTypes.CRIT, fx, fy, fz, 12, 0.4D, 0.3D, 0.4D, 0.15D);
+            ws.spawnParticle(EnumParticleTypes.CRIT, fx, fy, fz, 15, 0.4D, 0.3D, 0.4D, 0.15D);
         }
 
         // 4. 前方锥形范围多目标检测
         double reach = 3.6D;
         AxisAlignedBB box = entity.getEntityBoundingBox().grow(reach, 1.6D, reach);
         List<EntityLivingBase> list = world.getEntitiesWithinAABB(EntityLivingBase.class, box,
-                e -> e != entity && e.isEntityAlive() && !e.isOnSameTeam(entity));
+                    e -> e != entity && e.isEntityAlive() && !e.isOnSameTeam(entity));
 
         DamageSource source = entity instanceof EntityPlayer
                 ? DamageSource.causePlayerDamage((EntityPlayer) entity)
@@ -73,9 +74,12 @@ public class HeavyTossAction implements IAction, ICooldownAction {
             Vec3d toTarget = new Vec3d(target.posX - entity.posX, target.posY - entity.posY, target.posZ - entity.posZ).normalize();
             double dot = look.dotProduct(toTarget);
             if (dot > 0.35D) { // 前方约 140 度扇形
-                target.attackEntityFrom(source, 10.0F);
+                // 原版 7-21 物理高额伤害区间
+                float damage = 11.0F + world.rand.nextFloat() * 5.0F;
+                target.attackEntityFrom(source, damage);
+
                 // 标志性垂直重抛 + 前冲推击
-                target.motionY += 0.68D;
+                target.motionY += 0.72D;
                 target.motionX += look.x * 0.45D;
                 target.motionZ += look.z * 0.45D;
                 target.velocityChanged = true;

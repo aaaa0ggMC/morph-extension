@@ -18,7 +18,7 @@ public final class PlayerDataEvents {
     public static void sync(EntityPlayerMP player) {
         try {
             AbilityNetwork.syncPlayer(player, "");
-        } catch (RuntimeException error) {
+        } catch (Throwable error) {
             org.apache.logging.log4j.LogManager.getLogger("morph-extension")
                     .error("Player ability data unavailable; original files retained", error);
             player.sendStatusMessage(new TextComponentTranslation("gui.morphext.data_failed"), true);

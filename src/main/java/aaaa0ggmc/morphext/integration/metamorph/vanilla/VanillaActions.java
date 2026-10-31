@@ -51,6 +51,7 @@ public final class VanillaActions {
         register(VenomStrikeAction.ID, new VenomStrikeAction());
         register(StrafeDodgeAction.ID, new StrafeDodgeAction());
         register(FrostAuraAction.ID, new FrostAuraAction());
+        register(SpiderLeapAction.ID, new SpiderLeapAction());
 
         // 原版牲畜与被动动作
         register(CowMilkAction.ID, new CowMilkAction());
@@ -80,10 +81,14 @@ public final class VanillaActions {
         register(RabbitHopAction.ID, new RabbitHopAction());
         register(PolarMaulAction.ID, new PolarMaulAction());
         register(GhastFireballAction.ID, new GhastFireballAction());
+        register(GhastScreechAction.ID, new GhastScreechAction());
+        register(BatRoostAction.ID, new BatRoostAction());
+        register(ParrotMimicAction.ID, new ParrotMimicAction());
+        register(ParrotDanceAction.ID, new ParrotDanceAction());
         register(ZombieInfectiousStrikeAction.ID, new ZombieInfectiousStrikeAction());
         register(HuskSandStrikeAction.ID, new HuskSandStrikeAction());
 
-        LOGGER.info("[morphext] Registered {} vanilla mob actions into MorphManager", 52);
+        LOGGER.info("[morphext] Registered {} vanilla mob actions into MorphManager", 57);
     }
 
     private static void register(String id, IAction action) {

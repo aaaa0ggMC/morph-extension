@@ -45,10 +45,9 @@ public class DamageImmunityPassive extends AbstractPassiveAbility {
         if (source == null || source.damageType == null) {
             return false;
         }
-        String type = source.damageType.toLowerCase();
-        if (isImmune(type)) {
+        if (isImmune(source)) {
             // 火焰相关伤害同时扑灭身体燃烧状态
-            if (type.contains("fire") || type.contains("lava") || type.contains("flame")) {
+            if (source.isFireDamage() || immuneTypes.contains("infire") || immuneTypes.contains("lava")) {
                 player.extinguish();
             }
             if (playDeflectSound && player.world.isRemote && player.ticksExisted % 10 == 0) {
@@ -60,15 +59,39 @@ public class DamageImmunityPassive extends AbstractPassiveAbility {
         return false;
     }
 
-    private boolean isImmune(String type) {
+    private boolean isImmune(DamageSource source) {
+        String type = source.damageType != null ? source.damageType.toLowerCase().trim() : "";
         if (immuneTypes.contains(type)) {
             return true;
         }
-        // 通用别名模糊容错
-        for (String target : immuneTypes) {
-            if (type.contains(target) || target.contains(type)) {
-                return true;
-            }
+        // 语义化标准防御判定（杜绝粗糙的字符串子串模糊匹配）
+        if (source.isFireDamage() && (immuneTypes.contains("fire") || immuneTypes.contains("infire")
+                || immuneTypes.contains("onfire") || immuneTypes.contains("lava") || immuneTypes.contains("hotfloor"))) {
+            return true;
+        }
+        if (source.isExplosion() && (immuneTypes.contains("explosion") || immuneTypes.contains("explosion.player"))) {
+            return true;
+        }
+        if (source.isMagicDamage() && immuneTypes.contains("magic")) {
+            return true;
+        }
+        if (source.isProjectile() && immuneTypes.contains("projectile")) {
+            return true;
+        }
+        if (source == DamageSource.FALL && immuneTypes.contains("fall")) {
+            return true;
+        }
+        if (source == DamageSource.DROWN && immuneTypes.contains("drown")) {
+            return true;
+        }
+        if (source == DamageSource.CACTUS && immuneTypes.contains("cactus")) {
+            return true;
+        }
+        if (source == DamageSource.WITHER && immuneTypes.contains("wither")) {
+            return true;
+        }
+        if (source == DamageSource.IN_WALL && immuneTypes.contains("inwall")) {
+            return true;
         }
         return false;
     }
