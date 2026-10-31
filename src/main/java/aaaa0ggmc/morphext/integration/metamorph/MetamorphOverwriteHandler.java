@@ -76,6 +76,7 @@ public final class MetamorphOverwriteHandler {
 
         net.minecraft.client.gui.GuiScreen gui = event.getGui();
         if (gui == null) {
+            aaaa0ggmc.morphext.client.render.MorphThumbnailCache.clearCache();
             return;
         }
 

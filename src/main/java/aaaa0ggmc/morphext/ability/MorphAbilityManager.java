@@ -4,6 +4,7 @@ import aaaa0ggmc.morphext.ability.passive.DamageImmunityPassive;
 import aaaa0ggmc.morphext.ability.passive.PotionImmunityPassive;
 import aaaa0ggmc.morphext.integration.metamorph.MorphAbilityDefinition;
 import aaaa0ggmc.morphext.integration.metamorph.MorphJsonConfig;
+import aaaa0ggmc.morphext.profiler.ProfilerBridge;
 import mchorse.metamorph.api.morphs.AbstractMorph;
 import mchorse.metamorph.capabilities.morphing.IMorphing;
 import mchorse.metamorph.capabilities.morphing.Morphing;
@@ -238,28 +239,34 @@ public final class MorphAbilityManager {
         if (event.phase != TickEvent.Phase.END || event.player == null || event.player.isDead) {
             return;
         }
-        EntityPlayer player = event.player;
-        UUID uuid = player.getUniqueID();
 
-        IMorphing morphing = Morphing.get(player);
-        AbstractMorph currentMorph = morphing != null ? morphing.getCurrentMorph() : null;
-        String morphName = currentMorph != null && currentMorph.name != null ? currentMorph.name : "";
+        long start = ProfilerBridge.begin();
+        try {
+            EntityPlayer player = event.player;
+            UUID uuid = player.getUniqueID();
 
-        String recorded = currentMorphs.get(uuid);
-        if (!morphName.equals(recorded != null ? recorded : "")) {
-            handleMorphChange(player, recorded, morphName, currentMorph);
-        }
+            IMorphing morphing = Morphing.get(player);
+            AbstractMorph currentMorph = morphing != null ? morphing.getCurrentMorph() : null;
+            String morphName = currentMorph != null && currentMorph.name != null ? currentMorph.name : "";
 
-        List<IPassiveAbility> passives = activePassives.get(uuid);
-        if (passives != null && !passives.isEmpty()) {
-            MorphContext context = new MorphContext(player, currentMorph);
-            for (IPassiveAbility p : passives) {
-                try {
-                    p.onUpdate(player, context);
-                } catch (Throwable t) {
-                    LOGGER.error("[morphext] Error onUpdate for ability {} on player {}", p.getId(), player.getName(), t);
+            String recorded = currentMorphs.get(uuid);
+            if (!morphName.equals(recorded != null ? recorded : "")) {
+                handleMorphChange(player, recorded, morphName, currentMorph);
+            }
+
+            List<IPassiveAbility> passives = activePassives.get(uuid);
+            if (passives != null && !passives.isEmpty()) {
+                MorphContext context = new MorphContext(player, currentMorph);
+                for (IPassiveAbility p : passives) {
+                    try {
+                        p.onUpdate(player, context);
+                    } catch (Throwable t) {
+                        LOGGER.error("[morphext] Error onUpdate for ability {} on player {}", p.getId(), player.getName(), t);
+                    }
                 }
             }
+        } finally {
+            ProfilerBridge.end("morphext:player_tick", start);
         }
     }
 

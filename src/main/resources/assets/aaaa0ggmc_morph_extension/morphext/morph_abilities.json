@@ -230,5 +230,35 @@
     "actions": ["skeleton_trap_slam"],
     "immunities": ["poison"],
     "damageImmunities": ["drown", "fall"]
+  },
+  "silverfish": {
+    "abilities": ["climb", "faction_arthropod"],
+    "actions": ["silverfish_swarm_call"],
+    "immunities": ["slowness"],
+    "damageImmunities": ["inWall"]
+  },
+  "donkey": {
+    "abilities": ["step_up", "faction_animal"],
+    "actions": ["donkey_rear_kick"]
+  },
+  "mule": {
+    "abilities": ["step_up", "jumping", "faction_animal"],
+    "actions": ["donkey_rear_kick"]
+  },
+  "zombie_villager": {
+    "abilities": ["undead", "rotten", "sun_allergy", "faction_undead", "faction_villager_relative"],
+    "actions": ["zombie_villager_cure_plea", "zombie_infectious_strike"],
+    "immunities": ["poison"]
+  },
+  "giant": {
+    "abilities": ["undead", "rotten", "faction_undead_lord", "faction_giant_lord"],
+    "actions": ["giant_titanic_slam", "giant_colossal_sweep"],
+    "immunities": ["poison"]
+  },
+  "zombie_pigman": {
+    "abilities": ["undead", "rotten", "fire_proof", "faction_undead", "faction_nether_lord", "faction_pigman_lord"],
+    "actions": ["pigman_wrath_shout"],
+    "immunities": ["fire", "poison"],
+    "damageImmunities": ["inFire", "onFire", "lava", "hotFloor"]
   }
 }

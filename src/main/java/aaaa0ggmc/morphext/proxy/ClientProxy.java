@@ -47,6 +47,7 @@ public class ClientProxy extends CommonProxy {
             aaaa0ggmc.morphext.variant.HumanStatureRenderHandler.register();
             aaaa0ggmc.morphext.variant.MorphCreativeInjector.register();
             aaaa0ggmc.morphext.client.RenderSafetyHandler.register();
+            aaaa0ggmc.morphext.client.hand.GenericHandAdapter.register();
         }
         // 注：不再自动注册 vanilla 键位（那会产生 Hotbar/Perspective 之类的噪音）。
         // 需要键位型能力时由 addon 显式 new KeybindAbility(specificKeyBinding) 注册。

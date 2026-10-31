@@ -124,6 +124,24 @@ public final class VanillaActions {
         register(SnowmanFrostBarrierAction.ID, new SnowmanFrostBarrierAction());
         register(SnowmanFrostBarrierAction.ALIAS_ID, new SnowmanFrostBarrierAction());
 
+        // 节肢潜伏与坐骑自愈专精技能动作
+        register("silverfish_swarm_call", new SilverfishSwarmCallAction());
+        register("morphext:silverfish_swarm_call", new SilverfishSwarmCallAction());
+        register("donkey_rear_kick", new DonkeyRearKickAction());
+        register("morphext:donkey_rear_kick", new DonkeyRearKickAction());
+        register("zombie_villager_cure_plea", new ZombieVillagerCurePleaAction());
+        register("morphext:zombie_villager_cure_plea", new ZombieVillagerCurePleaAction());
+
+        // 远古巨人与隐藏狂暴生灵动作
+        register("giant_titanic_slam", new GiantTitanicSlamAction());
+        register("morphext:giant_titanic_slam", new GiantTitanicSlamAction());
+        register("giant_colossal_sweep", new GiantColossalSweepAction());
+        register("morphext:giant_colossal_sweep", new GiantColossalSweepAction());
+        register("pigman_wrath_shout", new PigmanWrathShoutAction());
+        register("morphext:pigman_wrath_shout", new PigmanWrathShoutAction());
+        register("killer_bunny_blood_frenzy", new KillerBunnyBloodFrenzyAction());
+        register("morphext:killer_bunny_blood_frenzy", new KillerBunnyBloodFrenzyAction());
+
         LOGGER.info("[morphext] Registered {} vanilla mob actions into MorphManager", MorphManager.INSTANCE.actions.size());
     }
 

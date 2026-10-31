@@ -18,7 +18,9 @@ import org.lwjgl.input.Mouse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 状态总览（自绘，不依赖 McLib 框架）：
@@ -52,6 +54,12 @@ public class GuiAbilityStatus extends GuiScreen {
     private int detailPanelY;
     private int detailPanelH;
 
+    /* 渲染性能优化缓存：避免每帧重复测宽、切行与超大面板重绘 */
+    private String cachedDetailDesc = null;
+    private int cachedDetailTextW = -1;
+    private List<String> cachedDetailLines = Collections.emptyList();
+    private final Map<String, String> trimmedNameCache = new HashMap<>();
+
     private static final org.apache.logging.log4j.Logger LOGGER =
             org.apache.logging.log4j.LogManager.getLogger("morph-extension");
 
@@ -84,6 +92,10 @@ public class GuiAbilityStatus extends GuiScreen {
             if (!isStateful || !isVisible) {
                 continue;
             }
+            // 阵营能力由统一聚合条目呈现，跳过零散别名
+            if (ability instanceof aaaa0ggmc.morphext.faction.FactionPassive) {
+                continue;
+            }
             if (!isUnlocked) {
                 LOGGER.info("[GuiAbilityStatus] skipped locked ability: id={} isGranted={} isReady={}",
                         ability.getId(), isGranted, AbilityUnlocks.isReady());
@@ -105,16 +117,9 @@ public class GuiAbilityStatus extends GuiScreen {
             }
         }
 
-        // 智能合并多阵营状态：若宿主拥有多个细分阵营被动，在 Status 列表中聚合为一个整洁的 MergedFactionStatus 展现
-        List<aaaa0ggmc.morphext.faction.FactionPassive> factionPassives = new ArrayList<>();
-        for (IStatefulAbility p : this.passives) {
-            if (p instanceof aaaa0ggmc.morphext.faction.FactionPassive) {
-                factionPassives.add((aaaa0ggmc.morphext.faction.FactionPassive) p);
-            }
-        }
-        if (factionPassives.size() > 1) {
-            this.passives.removeAll(factionPassives);
-            this.passives.add(0, new aaaa0ggmc.morphext.faction.MergedFactionStatus(factionPassives));
+        // 智能展示多阵营状态：若宿主当前形态拥有激活阵营，置顶展示一个整洁精简的聚合条目
+        if (!aaaa0ggmc.morphext.faction.FactionManager.getActiveFactions(this.mc.player).isEmpty()) {
+            this.passives.add(0, new aaaa0ggmc.morphext.faction.MergedFactionStatus());
         }
 
         LOGGER.info("[GuiAbilityStatus] collected: active={} passives={} source={}",
@@ -188,8 +193,13 @@ public class GuiAbilityStatus extends GuiScreen {
                     this.drawIcon(ability.getIcon(), cx + 2, cy + off + 2);
                     String rawName = ability.getDisplayName();
                     int maxNameW = cellW - 26;
-                    String name = font.getStringWidth(rawName) > maxNameW ?
-                            font.trimStringToWidth(rawName, Math.max(10, maxNameW - font.getStringWidth("…"))).trim() + "…" : rawName;
+                    String cacheKey = rawName + "@" + maxNameW;
+                    String name = this.trimmedNameCache.get(cacheKey);
+                    if (name == null) {
+                        name = font.getStringWidth(rawName) > maxNameW ?
+                                font.trimStringToWidth(rawName, Math.max(10, maxNameW - font.getStringWidth("…"))).trim() + "…" : rawName;
+                        this.trimmedNameCache.put(cacheKey, name);
+                    }
                     font.drawStringWithShadow(name, cx + 20, cy + off + 6, 0xFFFFFF);
                 }
             }
@@ -249,17 +259,23 @@ public class GuiAbilityStatus extends GuiScreen {
         int textW = pw - 24;
 
         String desc = ability.getDescription();
-        List<String> lines = (desc == null || desc.isEmpty())
-                ? Collections.singletonList("(no description)")
-                : font.listFormattedStringToWidth(desc, textW);
+        if (this.cachedDetailDesc == null || !this.cachedDetailDesc.equals(desc) || this.cachedDetailTextW != textW) {
+            this.cachedDetailDesc = desc;
+            this.cachedDetailTextW = textW;
+            this.cachedDetailLines = (desc == null || desc.isEmpty())
+                    ? Collections.singletonList("(no description)")
+                    : font.listFormattedStringToWidth(desc, textW);
+        }
+        List<String> lines = this.cachedDetailLines;
 
         int headerH = 46;
         int footerH = 16;
         int bodyH = lines.size() * 10;
         int ph = headerH + bodyH + footerH;
         int maxPh = this.height - 20;
-        this.detailPanelH = ph;
-        this.detailPanelY = Math.max(4, (this.height - ph) / 2);
+        int renderPh = Math.min(ph, maxPh);
+        this.detailPanelH = renderPh;
+        this.detailPanelY = Math.max(10, (this.height - renderPh) / 2);
         int py = this.detailPanelY;
 
         /* 面板内容超高时内部滚动 */
@@ -269,9 +285,9 @@ public class GuiAbilityStatus extends GuiScreen {
         }
         int bodyOff = -this.detailScroll;
 
-        Gui.drawRect(px, py, px + pw, py + ph, 0xF0161620);
+        Gui.drawRect(px, py, px + pw, py + renderPh, 0xF0161620);
         Gui.drawRect(px, py, px + pw, py + 1, 0xFF7EC7FF);
-        Gui.drawRect(px, py + ph - 1, px + pw, py + ph, 0xFF555555);
+        Gui.drawRect(px, py + renderPh - 1, px + pw, py + renderPh, 0xFF555555);
 
         /* 头部：图标 + 名称 + 类型/状态 */
         this.drawIcon(ability.getIcon(), px + 10, py + 10);
@@ -287,10 +303,12 @@ public class GuiAbilityStatus extends GuiScreen {
                     + ((IStatefulAbility) ability).getStateLabel(this.mc.player), px + 30, py + 32, 0xAAAAAA);
         }
 
-        /* 正文 */
+        /* 正文（只绘制落在视口范围内的文本行） */
         int ty = py + headerH + bodyOff;
+        int viewTop = py + headerH;
+        int viewBottom = py + renderPh - footerH;
         for (String line : lines) {
-            if (ty + 8 > py && ty < py + ph - footerH) {
+            if (ty + 8 >= viewTop && ty <= viewBottom) {
                 font.drawStringWithShadow(line, textX, ty, 0xFFFFFF);
             }
             ty += 10;
@@ -299,14 +317,14 @@ public class GuiAbilityStatus extends GuiScreen {
         /* 底部提示 */
         font.drawStringWithShadow("right-click / Esc to close",
                 this.width / 2 - font.getStringWidth("right-click / Esc to close") / 2,
-                py + ph - 12, 0x888888);
+                py + renderPh - 12, 0x888888);
 
         /* 面板内滚动条 */
         if (this.detailMaxScroll > 0) {
             int bx = px + pw - 6;
-            Gui.drawRect(bx, py + 2, bx + 3, py + ph - 2, 0x66000000);
-            int tH = Math.max(12, (ph - 4) * (ph - 4) / Math.max(1, ph + this.detailMaxScroll));
-            int tY = py + 2 + (int) ((ph - 4 - tH)
+            Gui.drawRect(bx, py + 2, bx + 3, py + renderPh - 2, 0x66000000);
+            int tH = Math.max(12, (renderPh - 4) * (renderPh - 4) / Math.max(1, ph));
+            int tY = py + 2 + (int) ((renderPh - 4 - tH)
                     * ((float) this.detailScroll / this.detailMaxScroll));
             Gui.drawRect(bx, tY, bx + 3, tY + tH, 0xFFAAAAAA);
         }

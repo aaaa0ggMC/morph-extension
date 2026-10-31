@@ -1,0 +1,12 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "aaaa0ggmc.morphext.mixin.impl",
+  "refmap": "mixins.morphext.refmap.json",
+  "target": "@env(DEFAULT)",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+    "MixinMorphUtils",
+    "MixinGuiMorphSection"
+  ]
+}

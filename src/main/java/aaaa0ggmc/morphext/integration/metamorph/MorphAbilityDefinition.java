@@ -13,6 +13,16 @@ public class MorphAbilityDefinition {
     public List<String> immunities = new ArrayList<>();
     public List<String> damageImmunities = new ArrayList<>();
     public java.util.Map<String, String> factions = new java.util.LinkedHashMap<>();
+    public Boolean hands = null;
+    public String rightHand = null;
+    public String leftHand = null;
+    public Float handScale = null;
+    public Float handOffsetX = null;
+    public Float handOffsetY = null;
+    public Float handOffsetZ = null;
+    public Float handRotationX = null;
+    public Float handRotationY = null;
+    public Float handRotationZ = null;
 
     public MorphAbilityDefinition() {
     }

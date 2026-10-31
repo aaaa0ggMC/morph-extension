@@ -34,9 +34,18 @@ dependencies {
     compile files("libs/mclib-2.4.3-1.12.2.jar")
     // Metamorph —— 能力集成（软依赖，仅在运行时检测到该模组时生效）
     compile files("libs/metamorph-1.4-1.12.2.jar")
+    // MixinBooter —— 用于运行时晚期注入 Metamorph
+    compile files("libs/mixinbooter-12.2.jar")
 }
 
 jar {
+    manifest {
+        attributes(
+            'FMLCorePluginContainsFMLMod': 'true',
+            'ForceLoadAsMod': 'true',
+            'MixinConfigs': 'mixins.morphext.json'
+        )
+    }
     finalizedBy 'reobfJar'
 }
 

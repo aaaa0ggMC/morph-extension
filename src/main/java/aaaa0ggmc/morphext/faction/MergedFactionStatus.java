@@ -2,45 +2,57 @@ package aaaa0ggmc.morphext.faction;
 
 import aaaa0ggmc.morphext.ability.AbstractPassiveAbility;
 import aaaa0ggmc.morphext.ability.IStatefulAbility;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
- * 当生物拥有多个细分阵营时，在 Status 状态界面中进行智能合并展示的聚合条目。
+ * 宿主变身形态细分阵营归属在 Status 状态界面中的聚合展示条目。
+ *
+ * 1. 唯一真实数据源：直接从 FactionManager.getActiveFactions(player) 获取当前变身生效的阵营与 Rank。
+ * 2. 杜绝重复与全量列出：每个阵营仅出现一次，仅展示当前形态实际激活的关系。
+ * 3. 完整双语本地化 (I18n)：随客户端语言即时切换，无硬编码字符串。
  */
 public class MergedFactionStatus extends AbstractPassiveAbility implements IStatefulAbility {
-    private final List<FactionPassive> passives;
 
-    public MergedFactionStatus(List<FactionPassive> passives) {
+    public MergedFactionStatus() {
         super("faction_merged_status", "morphext.faction.merged.name", "morphext.faction.merged.desc",
                 new ItemStack(Items.BANNER, 1, 15));
-        this.passives = passives != null ? passives : new ArrayList<>();
     }
 
-    public List<FactionPassive> getPassives() {
-        return passives;
+    public MergedFactionStatus(List<FactionPassive> ignored) {
+        this();
+    }
+
+    private static String loc(String key, Object... args) {
+        if (FMLCommonHandler.instance().getSide().isClient()) {
+            if (I18n.hasKey(key)) {
+                return I18n.format(key, args);
+            }
+        }
+        if (net.minecraft.util.text.translation.I18n.canTranslate(key)) {
+            return net.minecraft.util.text.translation.I18n.translateToLocalFormatted(key, args);
+        }
+        return key;
     }
 
     @Override
     public String getDisplayName() {
-        if (I18n.canTranslate("morphext.faction.merged.name")) {
-            return I18n.translateToLocal("morphext.faction.merged.name");
-        }
-        return "阵营归属 (Faction Affiliations)";
+        return loc("morphext.faction.merged.name");
     }
 
     @Override
     public String getStateLabel(EntityPlayer player) {
         Map<Faction, FactionRank> factions = FactionManager.getActiveFactions(player);
         if (factions.isEmpty()) {
-            return TextFormatting.GRAY + "[无阵营]";
+            return TextFormatting.GRAY + "[" + loc("morphext.faction.rank.none") + "]";
         }
         StringBuilder sb = new StringBuilder();
         int count = 0;
@@ -49,8 +61,8 @@ public class MergedFactionStatus extends AbstractPassiveAbility implements IStat
             sb.append(TextFormatting.WHITE).append(entry.getKey().getDisplayName())
               .append(" ").append(entry.getValue().getColoredLabel());
             count++;
-            if (count >= 3 && factions.size() > 3) {
-                sb.append(TextFormatting.GRAY).append(" 等").append(factions.size()).append("个");
+            if (count >= 2 && factions.size() > 2) {
+                sb.append(TextFormatting.GRAY).append(" (+").append(factions.size() - 2).append(")");
                 break;
             }
         }
@@ -64,29 +76,38 @@ public class MergedFactionStatus extends AbstractPassiveAbility implements IStat
         for (Map.Entry<Faction, FactionRank> entry : factions.entrySet()) {
             Faction f = entry.getKey();
             FactionRank r = entry.getValue();
-            String perk = r == FactionRank.LORD ? "永不攻击 · 号令集火" : (r == FactionRank.RELATIVE ? "半血宽容不还手" : "中立同行");
-            list.add(TextFormatting.GOLD + "• " + f.getDisplayName() + " " + r.getColoredLabel() + TextFormatting.GRAY + " (" + perk + ")");
+            String perkKey = r == FactionRank.LORD ? "morphext.faction.perk.short.lord"
+                    : (r == FactionRank.RELATIVE ? "morphext.faction.perk.short.relative" : "morphext.faction.perk.short.member");
+            list.add(TextFormatting.GOLD + "• " + f.getDisplayName() + " " + r.getColoredLabel()
+                    + TextFormatting.GRAY + " (" + loc(perkKey) + ")");
         }
         return list;
     }
 
     @Override
     public String getDescription() {
+        EntityPlayer player = net.minecraft.client.Minecraft.getMinecraft().player;
+        Map<Faction, FactionRank> factions = FactionManager.getActiveFactions(player);
+        if (factions.isEmpty()) {
+            return TextFormatting.GRAY + loc("morphext.faction.merged.empty");
+        }
+
         StringBuilder sb = new StringBuilder();
-        sb.append(TextFormatting.YELLOW).append("【多阵营统御面板】\n").append(TextFormatting.GRAY);
-        sb.append("当前形态融合了多个细分阵营生态，具体关系层级如下：\n\n");
-        for (FactionPassive fp : passives) {
-            Faction f = fp.getFaction();
-            FactionRank r = fp.getRank();
-            if (f != null) {
-                sb.append(TextFormatting.WHITE).append("▶ ").append(f.getDisplayName()).append("：").append(r.getColoredLabel()).append("\n");
-                if (r == FactionRank.LORD) {
-                    sb.append(TextFormatting.DARK_GREEN).append("   - 领主特权：同族绝对臣服不攻击；你攻击异族时召集同族集火进攻！\n");
-                } else if (r == FactionRank.RELATIVE) {
-                    sb.append(TextFormatting.DARK_AQUA).append("   - 亲友特权：同族不主动攻击；你误击时半血以上不还手！\n");
-                } else {
-                    sb.append(TextFormatting.GRAY).append("   - 成员特权：同族不主动攻击；受到攻击正常自卫。\n");
-                }
+        sb.append(TextFormatting.YELLOW).append(loc("morphext.faction.merged.header")).append("\n")
+          .append(TextFormatting.GRAY).append(loc("morphext.faction.merged.subtitle")).append("\n\n");
+
+        for (Map.Entry<Faction, FactionRank> entry : factions.entrySet()) {
+            Faction f = entry.getKey();
+            FactionRank r = entry.getValue();
+            sb.append(TextFormatting.WHITE).append("▶ ").append(f.getDisplayName()).append(": ")
+              .append(r.getColoredLabel()).append("\n");
+
+            if (r == FactionRank.LORD) {
+                sb.append(TextFormatting.DARK_GREEN).append("   - ").append(loc("morphext.faction.perk.lord")).append("\n");
+            } else if (r == FactionRank.RELATIVE) {
+                sb.append(TextFormatting.DARK_AQUA).append("   - ").append(loc("morphext.faction.perk.relative")).append("\n");
+            } else {
+                sb.append(TextFormatting.GRAY).append("   - ").append(loc("morphext.faction.perk.member")).append("\n");
             }
         }
         return sb.toString();
@@ -94,6 +115,6 @@ public class MergedFactionStatus extends AbstractPassiveAbility implements IStat
 
     @Override
     public boolean isActive(EntityPlayer player) {
-        return true;
+        return !FactionManager.getActiveFactions(player).isEmpty();
     }
 }

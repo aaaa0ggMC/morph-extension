@@ -1,5 +1,6 @@
 package aaaa0ggmc.morphext.integration.metamorph;
 
+import aaaa0ggmc.morphext.profiler.ProfilerBridge;
 import mchorse.metamorph.api.events.MorphEvent;
 import mchorse.metamorph.api.morphs.AbstractMorph;
 import mchorse.metamorph.capabilities.morphing.IMorphing;
@@ -214,32 +215,42 @@ public final class MorphImmunityHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPotionApplicable(PotionEvent.PotionApplicableEvent event) {
-        AbstractMorph morph = getCurrentMorph(event.getEntityLiving());
-        if (morph == null || morph.name == null) {
-            return;
-        }
+        long start = ProfilerBridge.begin();
+        try {
+            AbstractMorph morph = getCurrentMorph(event.getEntityLiving());
+            if (morph == null || morph.name == null) {
+                return;
+            }
 
-        PotionEffect effect = event.getPotionEffect();
-        if (effect == null || effect.getPotion() == null) {
-            return;
-        }
+            PotionEffect effect = event.getPotionEffect();
+            if (effect == null || effect.getPotion() == null) {
+                return;
+            }
 
-        MorphAbilityDefinition def = MorphJsonConfig.get(morph.name);
-        if (isImmuneToPotion(morph.name, def, effect.getPotion())) {
-            event.setResult(Event.Result.DENY);
+            MorphAbilityDefinition def = MorphJsonConfig.get(morph.name);
+            if (isImmuneToPotion(morph.name, def, effect.getPotion())) {
+                event.setResult(Event.Result.DENY);
+            }
+        } finally {
+            ProfilerBridge.end("morphext:immunity_potion", start);
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onLivingAttack(LivingAttackEvent event) {
-        AbstractMorph morph = getCurrentMorph(event.getEntityLiving());
-        if (morph == null || morph.name == null) {
-            return;
-        }
+        long start = ProfilerBridge.begin();
+        try {
+            AbstractMorph morph = getCurrentMorph(event.getEntityLiving());
+            if (morph == null || morph.name == null) {
+                return;
+            }
 
-        MorphAbilityDefinition def = MorphJsonConfig.get(morph.name);
-        if (isImmuneToDamage(morph.name, def, event.getSource(), event.getEntityLiving())) {
-            event.setCanceled(true);
+            MorphAbilityDefinition def = MorphJsonConfig.get(morph.name);
+            if (isImmuneToDamage(morph.name, def, event.getSource(), event.getEntityLiving())) {
+                event.setCanceled(true);
+            }
+        } finally {
+            ProfilerBridge.end("morphext:immunity_attack", start);
         }
     }
 

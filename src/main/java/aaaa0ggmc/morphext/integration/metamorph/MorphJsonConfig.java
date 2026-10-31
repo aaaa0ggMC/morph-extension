@@ -156,6 +156,36 @@ public final class MorphJsonConfig {
                         existing.damageImmunities.add(dmg);
                     }
                 }
+                if (incoming.hands != null) {
+                    existing.hands = incoming.hands;
+                }
+                if (incoming.rightHand != null) {
+                    existing.rightHand = incoming.rightHand;
+                }
+                if (incoming.leftHand != null) {
+                    existing.leftHand = incoming.leftHand;
+                }
+                if (incoming.handScale != null) {
+                    existing.handScale = incoming.handScale;
+                }
+                if (incoming.handOffsetX != null) {
+                    existing.handOffsetX = incoming.handOffsetX;
+                }
+                if (incoming.handOffsetY != null) {
+                    existing.handOffsetY = incoming.handOffsetY;
+                }
+                if (incoming.handOffsetZ != null) {
+                    existing.handOffsetZ = incoming.handOffsetZ;
+                }
+                if (incoming.handRotationX != null) {
+                    existing.handRotationX = incoming.handRotationX;
+                }
+                if (incoming.handRotationY != null) {
+                    existing.handRotationY = incoming.handRotationY;
+                }
+                if (incoming.handRotationZ != null) {
+                    existing.handRotationZ = incoming.handRotationZ;
+                }
             }
         }
     }
@@ -177,7 +207,13 @@ public final class MorphJsonConfig {
             return def;
         }
         if (morphName.contains(":")) {
+            def = DEFINITIONS.get(morphName.replaceFirst(":", "."));
+            if (def != null) return def;
             return DEFINITIONS.get(morphName.substring(morphName.indexOf(':') + 1));
+        } else if (morphName.contains(".")) {
+            def = DEFINITIONS.get(morphName.replaceFirst("\\.", ":"));
+            if (def != null) return def;
+            return DEFINITIONS.get(morphName.substring(morphName.indexOf('.') + 1));
         } else {
             return DEFINITIONS.get("minecraft:" + morphName);
         }

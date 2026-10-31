@@ -124,7 +124,7 @@ public final class VariantEventListener {
     /**
      * 每 tick 校准变种缩放后的碰撞箱与 EyeHeight。
      */
-    @SubscribeEvent
+    @SubscribeEvent(priority = net.minecraftforge.fml.common.eventhandler.EventPriority.LOWEST)
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) {
             return;

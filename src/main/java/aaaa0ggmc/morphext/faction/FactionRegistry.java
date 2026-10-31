@@ -150,6 +150,24 @@ public final class FactionRegistry {
                 new ItemStack(Items.GUNPOWDER)))
                 .addPredicate(e -> e instanceof EntityCreeper);
 
+        // 猪人族
+        register(new Faction("pigman", "morphext.faction.pigman.name", "morphext.faction.pigman.desc",
+                new ItemStack(Items.GOLDEN_SWORD)))
+                .addPredicate(e -> e instanceof EntityPigZombie);
+
+        // 远古泰坦巨人族
+        register(new Faction("giant", "morphext.faction.giant.name", "morphext.faction.giant.desc",
+                new ItemStack(Blocks.STONEBRICK)))
+                .addPredicate(e -> e instanceof EntityGiantZombie);
+
+        // 地底隐士与洞穴异象 (含 Quark 生物)
+        register(new Faction("underworld", "morphext.faction.underworld.name", "morphext.faction.underworld.desc",
+                new ItemStack(Blocks.COBBLESTONE)))
+                .addPredicate(e -> e != null && (e.getClass().getName().contains("quark")
+                        || e.getClass().getName().contains("Stoneling")
+                        || e.getClass().getName().contains("Dweller")
+                        || e.getClass().getName().contains("Wraith")));
+
         // 预定义深渊扩展阵营外壳（具体谓词由 morphext-patch-abyssalcraft 动态注入）
         register(new Faction("abyssal", "morphext.faction.abyssal.name", "morphext.faction.abyssal.desc",
                 new ItemStack(Blocks.OBSIDIAN)));

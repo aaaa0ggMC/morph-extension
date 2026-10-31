@@ -462,11 +462,21 @@ morphext.passive.morphext.undead_horse_water.desc=不死坐骑特性：在深海
 morphext.metamorph.desc.undead_horse_water=深海疾驰：在深海底部无阻碍疾驰与跳跃，始终保持充足肺活量，完全免疫溺水伤害。
 
 # 细分阵营与关系系统 (Faction & Ranks)
+morphext.faction.rank.none=无
 morphext.faction.rank.member=成员
 morphext.faction.rank.relative=亲友
 morphext.faction.rank.lord=领主
 morphext.faction.merged.name=阵营归属与领主统御
 morphext.faction.merged.desc=汇总宿主当前具备的全部细分阵营生态、关系层级与统御特权。
+morphext.faction.merged.header=【阵营归属与统御面板】
+morphext.faction.merged.subtitle=当前变身形态激活的生态阵营与关系特权：
+morphext.faction.merged.empty=当前变身形态未归属于任何专属细分阵营。
+morphext.faction.perk.short.lord=绝对臣服 · 号令集火
+morphext.faction.perk.short.relative=血亲友善 · 误击宽容
+morphext.faction.perk.short.member=中立同行 · 受袭自卫
+morphext.faction.perk.lord=领主特权：同族绝对臣服不攻击；你攻击异族时召集同族集火进攻！
+morphext.faction.perk.relative=亲友特权：同族不主动攻击；你误击时半血以上不还手！
+morphext.faction.perk.member=成员特权：同族不主动攻击；受到攻击正常自卫。
 
 morphext.faction.undead.name=亡灵
 morphext.faction.undead.desc=包含僵尸、骷髅、尸壳、流髑、凋灵骷髅、僵尸猪人与各界死灵生物。
@@ -512,6 +522,31 @@ morphext.faction.antimatter.name=反物质
 morphext.faction.antimatter.desc=包含反物质全家桶生物族裔。
 morphext.faction.demon.name=恶魔
 morphext.faction.demon.desc=包含深渊恶魔动物与地狱火邪恶生物。
+morphext.faction.pigman.name=猪人
+morphext.faction.pigman.desc=包含僵尸猪人与下界金剑部族，拥有忠贞不渝的同仇敌忾特性。
+morphext.faction.giant.name=巨人
+morphext.faction.giant.desc=包含远古巨僵与泰坦巨像，身躯伟岸，拥有撼地击飞之力。
+morphext.faction.underworld.name=地底隐士
+morphext.faction.underworld.desc=包含岩石灵、潜影骷髅与怨灵等栖息在基岩与矿脉深处的异界生灵。
+
+# 节肢潜伏与坐骑自愈专精
+morphext.metamorph.action.silverfish_swarm_call=蠹虫群体呼唤
+morphext.metamorph.desc.silverfish_swarm_call=释放高频虫鸣震荡波，唤醒周围 12 格内隐藏在蠹虫方块里的蠹虫破石支援！
+morphext.metamorph.action.donkey_rear_kick=铁蹄回旋爆踢
+morphext.metamorph.desc.donkey_rear_kick=扬起铁蹄向身后猛力回旋踢击，对 3.5 格内敌人造成 10 点纯正物理击退重创并附加 3 秒眩晕！
+morphext.metamorph.action.zombie_villager_cure_plea=自愈祈愿
+morphext.metamorph.desc.zombie_villager_cure_plea=手持金苹果时消耗 1 枚金苹果驱散虚弱与诅咒，爆发圣洁金光并获得 30 秒生命恢复 II、抗性提升 II 与力量 I！
+morphext.action.zombie_villager_cure.need_apple=§c需要手持金苹果才能触发自愈祈愿！
+
+# 远古巨人与狂暴生灵专精
+morphext.metamorph.action.giant_titanic_slam=泰坦震地碎击
+morphext.metamorph.desc.giant_titanic_slam=巨足重踏大地震撼方圆 10 格，碎石横飞并将敌人猛烈震飞至高空，造成 20 点破甲重创！
+morphext.metamorph.action.giant_colossal_sweep=巨臂横扫
+morphext.metamorph.desc.giant_colossal_sweep=挥舞擎天巨掌向前横扫半圆，对前方 8 格扇面内目标造成 14 点物理重击与剧烈击退！
+morphext.metamorph.action.pigman_wrath_shout=猪人怒潮长啸
+morphext.metamorph.desc.pigman_wrath_shout=仰天发出震耳欲聋的血怒战吼，鼓舞周围 16 格同族与自身，赋予 15 秒力量 II 与抗性提升 I！
+morphext.metamorph.action.killer_bunny_blood_frenzy=嗜血狂暴飞扑
+morphext.metamorph.desc.killer_bunny_blood_frenzy=极速向前暴起飞跃扑咬，对落点身前敌人造成 16 点致命真实重创！
 
 
 

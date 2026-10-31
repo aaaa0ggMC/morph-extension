@@ -2,6 +2,7 @@ package aaaa0ggmc.morphext.faction;
 
 import aaaa0ggmc.morphext.ability.IPassiveAbility;
 import aaaa0ggmc.morphext.ability.MorphAbilityManager;
+import aaaa0ggmc.morphext.profiler.ProfilerBridge;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -75,15 +76,20 @@ public class FactionManager {
         if (!(target instanceof EntityPlayer)) {
             return;
         }
+
+        long start = ProfilerBridge.begin();
+
         EntityPlayer player = (EntityPlayer) target;
         EntityLivingBase attacker = event.getEntityLiving();
         if (!(attacker instanceof EntityLiving)) {
+            ProfilerBridge.end("morphext:faction_target", start);
             return;
         }
         EntityLiving mob = (EntityLiving) attacker;
 
         Map<Faction, FactionRank> factions = getActiveFactions(player);
         if (factions.isEmpty()) {
+            ProfilerBridge.end("morphext:faction_target", start);
             return;
         }
 
@@ -97,6 +103,7 @@ public class FactionManager {
         }
 
         if (highestRank == null) {
+            ProfilerBridge.end("morphext:faction_target", start);
             return;
         }
 
@@ -104,6 +111,7 @@ public class FactionManager {
         if (highestRank == FactionRank.LORD) {
             mob.setAttackTarget(null);
             mob.setRevengeTarget(null);
+            ProfilerBridge.end("morphext:faction_target", start);
             return;
         }
 
@@ -122,6 +130,7 @@ public class FactionManager {
                 }
                 // 半血以下：正常允许反击
             }
+            ProfilerBridge.end("morphext:faction_target", start);
             return;
         }
 
@@ -131,6 +140,7 @@ public class FactionManager {
                 mob.setAttackTarget(null);
             }
         }
+        ProfilerBridge.end("morphext:faction_target", start);
     }
 
     /**
@@ -141,15 +151,20 @@ public class FactionManager {
         if (!(event.getEntityLiving() instanceof EntityPlayer)) {
             return;
         }
+
+        long start = ProfilerBridge.begin();
+
         EntityPlayer player = (EntityPlayer) event.getEntityLiving();
         Entity trueSource = event.getSource().getTrueSource();
         if (!(trueSource instanceof EntityLivingBase)) {
+            ProfilerBridge.end("morphext:faction_attack", start);
             return;
         }
         EntityLivingBase attacker = (EntityLivingBase) trueSource;
 
         Map<Faction, FactionRank> factions = getActiveFactions(player);
         if (factions.isEmpty()) {
+            ProfilerBridge.end("morphext:faction_attack", start);
             return;
         }
 
@@ -157,14 +172,17 @@ public class FactionManager {
             if (entry.getKey().contains(attacker)) {
                 if (entry.getValue() == FactionRank.LORD) {
                     event.setCanceled(true);
+                    ProfilerBridge.end("morphext:faction_attack", start);
                     return;
                 }
                 if (entry.getValue() == FactionRank.RELATIVE && attacker.getHealth() > attacker.getMaxHealth() * 0.5F) {
                     event.setCanceled(true);
+                    ProfilerBridge.end("morphext:faction_attack", start);
                     return;
                 }
             }
         }
+        ProfilerBridge.end("morphext:faction_attack", start);
     }
 
     /**
@@ -179,10 +197,13 @@ public class FactionManager {
             return;
         }
 
+        long start = ProfilerBridge.begin();
+
         String cooldownKey = player.getUniqueID().toString() + ":" + faction.getId();
         long now = System.currentTimeMillis();
         Long last = RALLY_COOLDOWNS.get(cooldownKey);
         if (last != null && now - last < 1200L) {
+            ProfilerBridge.end("morphext:faction_rally", start);
             return;
         }
         RALLY_COOLDOWNS.put(cooldownKey, now);
@@ -200,5 +221,6 @@ public class FactionManager {
                         ally.posX, ally.posY + ally.getEyeHeight() + 0.35D, ally.posZ, 2, 0.15D, 0.15D, 0.15D, 0.02D);
             }
         }
+        ProfilerBridge.end("morphext:faction_rally", start);
     }
 }

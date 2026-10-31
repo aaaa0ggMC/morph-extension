@@ -79,5 +79,29 @@ public final class HumanStatureRenderHandler {
         }
     }
 
+    /** Keep camera height consistent with the final tick's hitbox before camera setup.
+     * Only the local player's camera is affected; OFF keeps Metamorph's POV policy.
+     */
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onRenderTick(net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent event) {
+        if (event.phase != net.minecraftforge.fml.common.gameevent.TickEvent.Phase.START) return;
+        aaaa0ggmc.morphext.client.render.MorphThumbnailCache.beginFrame();
+        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getMinecraft();
+        EntityPlayer player = mc.player;
+        if (player == null || mc.getRenderViewEntity() != player) return;
+        IMorphing cap = Morphing.get(player);
+        if (cap == null || cap.getCurrentMorph() == null) return;
+        HumanStatureAbility.Mode mode = HumanStatureAbility.getClientMode();
+        if (mode != HumanStatureAbility.Mode.OFF) {
+            player.eyeHeight = player.getDefaultEyeHeight();
+        } else if (!mchorse.metamorph.Metamorph.disablePov.get()) {
+            mchorse.metamorph.api.morphs.AbstractMorph morph = cap.getCurrentMorph();
+            float factor = morph.hitbox.enabled ? morph.hitbox.eye : 0.9F;
+            float height = Math.max(0.2F, player.height);
+            float eye = Math.min(height * factor, height - 0.1F);
+            if (Float.isFinite(eye) && eye > 0) player.eyeHeight = eye;
+        }
+    }
+
     private HumanStatureRenderHandler() { }
 }

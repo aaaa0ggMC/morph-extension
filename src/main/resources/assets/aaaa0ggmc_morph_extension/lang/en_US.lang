@@ -462,11 +462,21 @@ morphext.passive.morphext.undead_horse_water.desc=Undead steed nature: Gallop an
 morphext.metamorph.desc.undead_horse_water=Ocean Trench Gallop: Gallop and leap unimpeded across the deep sea floor, retaining infinite breath and total immunity to drowning damage.
 
 # Faction & Relationship System
+morphext.faction.rank.none=None
 morphext.faction.rank.member=Member
 morphext.faction.rank.relative=Relative
 morphext.faction.rank.lord=Lord
 morphext.faction.merged.name=Faction Affiliations & Ranks
-morphext.faction.merged.desc=Summary of all active faction affiliations, relationship ranks, and lordship perks.
+morphext.faction.merged.desc=Summary of active faction affiliations, relationship ranks, and lordship perks.
+morphext.faction.merged.header=[Faction Affiliations & Hierarchy]
+morphext.faction.merged.subtitle=Current morph ecological factions and relation perks:
+morphext.faction.merged.empty=This creature form does not belong to any specialized faction.
+morphext.faction.perk.short.lord=Absolute Command · Rally Allies
+morphext.faction.perk.short.relative=Kinship · Tolerance
+morphext.faction.perk.short.member=Neutral · Retaliates if Attacked
+morphext.faction.perk.lord=Lordship Command: Complete obedience; calls nearby allies to focus-fire your target!
+morphext.faction.perk.relative=Kinship Protection: Members are peaceful; forgives accidental strikes above 50% HP!
+morphext.faction.perk.member=Neutral Kin: Members will not attack you first; defends normally if attacked.
 
 morphext.faction.undead.name=Undead
 morphext.faction.undead.desc=Includes zombies, skeletons, husks, strays, withers and undead horrors.
@@ -512,6 +522,31 @@ morphext.faction.antimatter.name=Antimatter
 morphext.faction.antimatter.desc=Includes all antimatter organisms.
 morphext.faction.demon.name=Demon
 morphext.faction.demon.desc=Includes demon animals and evil beasts.
+morphext.faction.pigman.name=Pigman
+morphext.faction.pigman.desc=Includes zombie pigmen with sworn loyalty.
+morphext.faction.giant.name=Giant
+morphext.faction.giant.desc=Includes colossal ancient giants with earth-shattering strength.
+morphext.faction.underworld.name=Underworld
+morphext.faction.underworld.desc=Includes stonelings, dwellers and wraiths inhabiting the deep caves.
+
+# Arthropod & Mount Specializations
+morphext.metamorph.action.silverfish_swarm_call=Silverfish Swarm Call
+morphext.metamorph.desc.silverfish_swarm_call=Emit high-frequency acoustic shockwave, awakening hidden silverfish from infested blocks!
+morphext.metamorph.action.donkey_rear_kick=Donkey Rear Kick
+morphext.metamorph.desc.donkey_rear_kick=Kick powerfully backwards with iron hooves, dealing 10 physical damage, knockback and 3s stun!
+morphext.metamorph.action.zombie_villager_cure_plea=Cure Plea
+morphext.metamorph.desc.zombie_villager_cure_plea=Hold a Golden Apple to cure weakness and curse, gaining Regeneration II, Resistance II and Strength I for 30s!
+morphext.action.zombie_villager_cure.need_apple=§cYou must hold a Golden Apple to activate Cure Plea!
+
+# Ancient Giants & Fierce Beasts
+morphext.metamorph.action.giant_titanic_slam=Titanic Earth Slam
+morphext.metamorph.desc.giant_titanic_slam=Slam foot down, shattering earth in 10 blocks, knocking enemies skyward and dealing 20 armor-piercing damage!
+morphext.metamorph.action.giant_colossal_sweep=Colossal Sweep
+morphext.metamorph.desc.giant_colossal_sweep=Sweep colossal arm in an 8-block arc, dealing 14 damage with massive knockback!
+morphext.metamorph.action.pigman_wrath_shout=Pigman Wrath Shout
+morphext.metamorph.desc.pigman_wrath_shout=Roar in fury, granting Strength II and Resistance I to nearby pigmen and self for 15s!
+morphext.metamorph.action.killer_bunny_blood_frenzy=Blood Frenzy Pounce
+morphext.metamorph.desc.killer_bunny_blood_frenzy=Leap violently forward, inflicting 16 true armor-piercing damage!
 
 
 

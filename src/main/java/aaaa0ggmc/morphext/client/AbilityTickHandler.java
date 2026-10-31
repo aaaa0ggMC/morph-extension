@@ -8,6 +8,7 @@ import aaaa0ggmc.morphext.ability.AbilityUnlocks;
 import aaaa0ggmc.morphext.ability.IStatefulAbility;
 import aaaa0ggmc.morphext.integration.metamorph.MetamorphBridge;
 import aaaa0ggmc.morphext.integration.metamorph.MetamorphIntegration;
+import aaaa0ggmc.morphext.profiler.ProfilerBridge;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -29,6 +30,9 @@ public class AbilityTickHandler {
         if (event.phase != TickEvent.Phase.END) {
             return;
         }
+
+        long tickStart = ProfilerBridge.begin();
+
         Minecraft mc = Minecraft.getMinecraft();
         ClientPlayerData.ensureSession();
         if (mc.player == null) {
@@ -40,6 +44,7 @@ public class AbilityTickHandler {
                     MetamorphIntegration.resetClientTracking();
                 }
             }
+            ProfilerBridge.end("morphext:client_tick", tickStart);
             return;
         }
         if (lastPlayer != null && lastPlayer != mc.player) {
@@ -47,9 +52,11 @@ public class AbilityTickHandler {
         }
         lastPlayer = mc.player;
         if (mc.isGamePaused()) {
+            ProfilerBridge.end("morphext:client_tick", tickStart);
             return;
         }
         AbilityCooldowns.tick();
+
         /* 同步外部冷却（Metamorph 动作自带的 MOB_ABILITY_COOLDOWN 等），仅轮询当前玩家已生效的能力 */
         if (mc.player != null) {
             for (IAbility ability : AbilityRegistry.getGrantedAbilities()) {
@@ -57,23 +64,32 @@ public class AbilityTickHandler {
                 AbilityCooldowns.syncExternal(ability.getId(), external);
             }
         }
+
         /* Metamorph morph 轮询（事件可能只在服务端触发，这里兜底） */
         if (MetamorphBridge.available()) {
+            long metaStart = ProfilerBridge.begin();
             try {
                 MetamorphIntegration.tick();
             } catch (Throwable t) {
                 // Prevent crash in tick handler
+            } finally {
+                ProfilerBridge.end("morphext:metamorph_tick", metaStart);
             }
         }
-        for (IAbility ability : AbilityRegistry.all()) {
-            // 锁定的能力不 tick——效果随移除停止（强力卷轴再清掉积累数据）
-            if (ability instanceof IStatefulAbility && AbilityUnlocks.isUnlocked(ability)) {
+
+        /* 状态型能力 Tick：仅对当前生效的已授权能力与永久解锁状态能力轮询 */
+        long statefulStart = ProfilerBridge.begin();
+        for (IAbility ability : AbilityRegistry.getGrantedAbilities()) {
+            if (ability instanceof IStatefulAbility) {
                 try {
                     ((IStatefulAbility) ability).onTick(mc.player);
                 } catch (Throwable t) {
-                    // Prevent single ability bug from killing client loop
+                    // Safe guard
                 }
             }
         }
+        ProfilerBridge.end("morphext:stateful_tick", statefulStart);
+
+        ProfilerBridge.end("morphext:client_tick", tickStart);
     }
 }
