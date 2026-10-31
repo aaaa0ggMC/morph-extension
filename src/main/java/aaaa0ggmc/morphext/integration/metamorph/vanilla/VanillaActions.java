@@ -27,7 +27,11 @@ public final class VanillaActions {
         // 基础动作
         register(EcholocationAction.ID, new EcholocationAction());
         register(ShulkerBulletAction.ID, new ShulkerBulletAction());
+        register("morphext:shulker_bullet", new ShulkerBulletAction());
         register(ShulkerShellAction.ID, new ShulkerShellAction());
+        register("morphext:shulker_shell", new ShulkerShellAction());
+        register(ShulkerTeleportAction.ID, new ShulkerTeleportAction());
+        register(ShulkerTeleportAction.ALIAS_ID, new ShulkerTeleportAction());
         register(PrismarineLaserAction.ID, new PrismarineLaserAction());
         register(ElderCurseAction.ID, new ElderCurseAction());
         register(GroundSlamAction.ID, new GroundSlamAction());
@@ -59,6 +63,9 @@ public final class VanillaActions {
         register(CowMilkAction.ID, new CowMilkAction());
         register(MooshroomHarvestAction.ID, new MooshroomHarvestAction());
         register(SheepGrazeAction.ID, new SheepGrazeAction());
+        register(SheepGrazeAction.ALIAS_ID, new SheepGrazeAction());
+        register(SheepShearAction.ID, new SheepShearAction());
+        register(SheepShearAction.ALIAS_ID, new SheepShearAction());
         register(ChickenLayEggAction.ID, new ChickenLayEggAction());
         register(PigRootingAction.ID, new PigRootingAction());
         register(IronRepairAction.ID, new IronRepairAction());

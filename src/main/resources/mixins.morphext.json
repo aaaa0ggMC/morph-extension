@@ -5,8 +5,12 @@
   "refmap": "mixins.morphext.refmap.json",
   "target": "@env(DEFAULT)",
   "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinShulkerMorph"
+  ],
   "client": [
     "MixinMorphUtils",
-    "MixinGuiMorphSection"
+    "MixinGuiMorphSection",
+    "MixinEntityMorph"
   ]
 }

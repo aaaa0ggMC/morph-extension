@@ -23,6 +23,9 @@ public class MorphAbilityDefinition {
     public Float handRotationX = null;
     public Float handRotationY = null;
     public Float handRotationZ = null;
+    public Boolean rotate180 = null;
+    public Float yawOffset = null;
+    public Float speed = null;
 
     public MorphAbilityDefinition() {
     }

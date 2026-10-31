@@ -186,6 +186,31 @@ public final class MorphJsonConfig {
                 if (incoming.handRotationZ != null) {
                     existing.handRotationZ = incoming.handRotationZ;
                 }
+                if (incoming.factions != null && !incoming.factions.isEmpty()) {
+                    existing.factions.putAll(incoming.factions);
+                }
+                if (incoming.rotate180 != null) {
+                    existing.rotate180 = incoming.rotate180;
+                }
+                if (incoming.yawOffset != null) {
+                    existing.yawOffset = incoming.yawOffset;
+                }
+                if (incoming.speed != null) {
+                    existing.speed = incoming.speed;
+                }
+            }
+
+            // 双轨双向归一化索引映射 (Dual-Track Normalization)
+            if (morph.startsWith("minecraft:")) {
+                String bare = morph.substring("minecraft:".length());
+                if (!DEFINITIONS.containsKey(bare)) {
+                    DEFINITIONS.put(bare, DEFINITIONS.get(morph));
+                }
+            } else if (!morph.contains(":") && !morph.contains(".")) {
+                String mcKey = "minecraft:" + morph;
+                if (!DEFINITIONS.containsKey(mcKey)) {
+                    DEFINITIONS.put(mcKey, DEFINITIONS.get(morph));
+                }
             }
         }
     }
@@ -201,22 +226,44 @@ public final class MorphJsonConfig {
     }
 
     public static MorphAbilityDefinition get(String morphName) {
-        if (morphName == null) return null;
+        if (morphName == null || morphName.isEmpty()) return null;
         MorphAbilityDefinition def = DEFINITIONS.get(morphName);
         if (def != null) {
             return def;
         }
+
+        // 1. 双向前缀探测与剥离
+        if (morphName.startsWith("minecraft:")) {
+            String bare = morphName.substring("minecraft:".length());
+            def = DEFINITIONS.get(bare);
+            if (def != null) return def;
+        } else if (!morphName.contains(":") && !morphName.contains(".")) {
+            String mcKey = "minecraft:" + morphName;
+            def = DEFINITIONS.get(mcKey);
+            if (def != null) return def;
+        }
+
+        // 2. 命名空间与点号跨系统兼容
         if (morphName.contains(":")) {
             def = DEFINITIONS.get(morphName.replaceFirst(":", "."));
             if (def != null) return def;
-            return DEFINITIONS.get(morphName.substring(morphName.indexOf(':') + 1));
+            def = DEFINITIONS.get(morphName.substring(morphName.indexOf(':') + 1));
+            if (def != null) return def;
         } else if (morphName.contains(".")) {
             def = DEFINITIONS.get(morphName.replaceFirst("\\.", ":"));
             if (def != null) return def;
-            return DEFINITIONS.get(morphName.substring(morphName.indexOf('.') + 1));
-        } else {
-            return DEFINITIONS.get("minecraft:" + morphName);
+            def = DEFINITIONS.get(morphName.substring(morphName.indexOf('.') + 1));
+            if (def != null) return def;
         }
+
+        // 3. 不区分大小写兜底检索
+        for (Map.Entry<String, MorphAbilityDefinition> entry : DEFINITIONS.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(morphName)) {
+                return entry.getValue();
+            }
+        }
+
+        return null;
     }
 
     public static Map<String, MorphAbilityDefinition> getAll() {

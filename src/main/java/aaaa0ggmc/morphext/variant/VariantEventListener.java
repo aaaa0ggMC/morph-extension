@@ -89,6 +89,26 @@ public final class VariantEventListener {
             return;
         }
 
+        // 潜影贝防原地定死与 0 移速生物保底修复
+        mchorse.metamorph.api.MorphSettings morphSettings = morph.getSettings();
+        if (morphSettings != null) {
+            aaaa0ggmc.morphext.integration.metamorph.MorphAbilityDefinition def =
+                    aaaa0ggmc.morphext.integration.metamorph.MorphJsonConfig.get(morph.name);
+            if (def != null && def.speed != null) {
+                morphSettings.speed = def.speed;
+                morphSettings.hasSpeed = true;
+            } else if (morphSettings.speed <= 0.001F) {
+                morphSettings.speed = 0.08F;
+                morphSettings.hasSpeed = true;
+            }
+            if (morphSettings.speed != 0.1F) {
+                player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(morphSettings.speed);
+            }
+        }
+        if (morph instanceof mchorse.vanilla_pack.morphs.ShulkerMorph) {
+            ((mchorse.vanilla_pack.morphs.ShulkerMorph) morph).blockPos = null;
+        }
+
         IVariantHandler handler = VariantRegistry.getHandler(morph);
         if (handler == null) {
             return;

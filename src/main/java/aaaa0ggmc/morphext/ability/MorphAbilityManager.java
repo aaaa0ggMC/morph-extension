@@ -202,6 +202,27 @@ public final class MorphAbilityManager {
         currentMorphs.put(uuid, newMorphName);
         MorphContext newContext = new MorphContext(player, newMorph);
 
+        // 修复 0 移速生物原地定死与潜影贝锁定
+        if (newMorph != null) {
+            mchorse.metamorph.api.MorphSettings settings = newMorph.getSettings();
+            if (settings != null) {
+                MorphAbilityDefinition def = MorphJsonConfig.get(newMorphName);
+                if (def != null && def.speed != null) {
+                    settings.speed = def.speed;
+                    settings.hasSpeed = true;
+                } else if (settings.speed <= 0.001F) {
+                    settings.speed = 0.08F;
+                    settings.hasSpeed = true;
+                }
+                if (settings.speed != 0.1F) {
+                    player.getEntityAttribute(net.minecraft.entity.SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(settings.speed);
+                }
+            }
+            if (newMorph instanceof mchorse.vanilla_pack.morphs.ShulkerMorph) {
+                ((mchorse.vanilla_pack.morphs.ShulkerMorph) newMorph).blockPos = null;
+            }
+        }
+
         // 2. 解析新形态的所有能力
         List<IAbility> all = resolveAbilitiesForMorph(newMorphName);
         List<IPassiveAbility> nextPassives = new ArrayList<>();
@@ -252,6 +273,20 @@ public final class MorphAbilityManager {
             String recorded = currentMorphs.get(uuid);
             if (!morphName.equals(recorded != null ? recorded : "")) {
                 handleMorphChange(player, recorded, morphName, currentMorph);
+            }
+
+            if (currentMorph instanceof mchorse.vanilla_pack.morphs.ShulkerMorph) {
+                ((mchorse.vanilla_pack.morphs.ShulkerMorph) currentMorph).blockPos = null;
+            }
+            if (currentMorph != null) {
+                mchorse.metamorph.api.MorphSettings settings = currentMorph.getSettings();
+                if (settings != null && settings.speed <= 0.001F) {
+                    MorphAbilityDefinition def = MorphJsonConfig.get(morphName);
+                    float newSpeed = (def != null && def.speed != null) ? def.speed : 0.08F;
+                    settings.speed = newSpeed;
+                    settings.hasSpeed = true;
+                    player.getEntityAttribute(net.minecraft.entity.SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(newSpeed);
+                }
             }
 
             List<IPassiveAbility> passives = activePassives.get(uuid);
