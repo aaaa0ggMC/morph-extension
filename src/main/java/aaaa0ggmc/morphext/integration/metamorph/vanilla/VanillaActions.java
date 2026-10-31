@@ -22,6 +22,9 @@ public final class VanillaActions {
         }
         registered = true;
 
+        ServerActionScheduler.init();
+
+        // 基础动作
         register(EcholocationAction.ID, new EcholocationAction());
         register(ShulkerBulletAction.ID, new ShulkerBulletAction());
         register(ShulkerShellAction.ID, new ShulkerShellAction());
@@ -49,6 +52,7 @@ public final class VanillaActions {
         register(StrafeDodgeAction.ID, new StrafeDodgeAction());
         register(FrostAuraAction.ID, new FrostAuraAction());
 
+        // 原版牲畜与被动动作
         register(CowMilkAction.ID, new CowMilkAction());
         register(MooshroomHarvestAction.ID, new MooshroomHarvestAction());
         register(SheepGrazeAction.ID, new SheepGrazeAction());
@@ -56,7 +60,30 @@ public final class VanillaActions {
         register(PigRootingAction.ID, new PigRootingAction());
         register(IronRepairAction.ID, new IronRepairAction());
 
-        LOGGER.info("[morphext] Registered {} vanilla mob actions into MorphManager", 31);
+        // 新增敌对与高级生物技能动作
+        register(CreeperFuseAction.ID, new CreeperFuseAction());
+        register(CreeperHissAction.ID, new CreeperHissAction());
+        register(WitherStrikeAction.ID, new WitherStrikeAction());
+        register(WitherSkullThrowAction.ID, new WitherSkullThrowAction());
+        register(WitchThrowPotionAction.ID, new WitchThrowPotionAction());
+        register(WitchDrinkPotionAction.ID, new WitchDrinkPotionAction());
+        register(EvokerFangsAction.ID, new EvokerFangsAction());
+        register(EvokerVexSummonAction.ID, new EvokerVexSummonAction());
+        register(VexPhaseAction.ID, new VexPhaseAction());
+        register(VindicatorAxeChargeAction.ID, new VindicatorAxeChargeAction());
+        register(IllusionBlindnessAction.ID, new IllusionBlindnessAction());
+        register(EndermanTeleportAction.ID, new EndermanTeleportAction());
+        register(EndermanScreechAction.ID, new EndermanScreechAction());
+        register(SlimeBounceAction.ID, new SlimeBounceAction());
+        register(MagmaSlamAction.ID, new MagmaSlamAction());
+        register(LlamaSpitAction.ID, new LlamaSpitAction());
+        register(RabbitHopAction.ID, new RabbitHopAction());
+        register(PolarMaulAction.ID, new PolarMaulAction());
+        register(GhastFireballAction.ID, new GhastFireballAction());
+        register(ZombieInfectiousStrikeAction.ID, new ZombieInfectiousStrikeAction());
+        register(HuskSandStrikeAction.ID, new HuskSandStrikeAction());
+
+        LOGGER.info("[morphext] Registered {} vanilla mob actions into MorphManager", 52);
     }
 
     private static void register(String id, IAction action) {

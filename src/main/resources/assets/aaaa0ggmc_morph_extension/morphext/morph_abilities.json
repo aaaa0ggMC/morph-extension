@@ -93,5 +93,84 @@
     "actions": ["pigman_rage"],
     "immunities": ["poison"],
     "damageImmunities": ["inFire", "onFire", "lava"]
+  },
+  "creeper": {
+    "actions": ["creeper_fuse", "creeper_hiss"],
+    "damageImmunities": ["explosion"]
+  },
+  "wither_skeleton": {
+    "abilities": ["fire_proof", "rotten"],
+    "actions": ["wither_strike", "wither_skull_throw"],
+    "immunities": ["wither", "poison"],
+    "damageImmunities": ["inFire", "onFire", "lava", "wither"]
+  },
+  "witch": {
+    "actions": ["witch_throw_potion", "witch_drink_potion"],
+    "immunities": ["poison"],
+    "damageImmunities": ["magic"]
+  },
+  "evocation_illager": {
+    "actions": ["evoker_fangs", "evoker_vex_summon"]
+  },
+  "evoker": {
+    "actions": ["evoker_fangs", "evoker_vex_summon"]
+  },
+  "vex": {
+    "abilities": ["fly", "prevent_fall"],
+    "actions": ["vex_phase"],
+    "damageImmunities": ["inWall", "fall"]
+  },
+  "vindication_illager": {
+    "actions": ["vindicator_axe_charge"]
+  },
+  "vindicator": {
+    "actions": ["vindicator_axe_charge"]
+  },
+  "illusion_illager": {
+    "actions": ["illusion_blindness"]
+  },
+  "illusioner": {
+    "actions": ["illusion_blindness"]
+  },
+  "enderman": {
+    "abilities": ["water_allergy"],
+    "actions": ["enderman_teleport", "enderman_screech"]
+  },
+  "slime": {
+    "abilities": ["jumping", "prevent_fall"],
+    "actions": ["slime_bounce_slam"],
+    "damageImmunities": ["fall"]
+  },
+  "magma_cube": {
+    "abilities": ["jumping", "fire_proof", "prevent_fall"],
+    "actions": ["magma_slam"],
+    "damageImmunities": ["inFire", "onFire", "lava", "fall"]
+  },
+  "llama": {
+    "actions": ["llama_spit"]
+  },
+  "rabbit": {
+    "abilities": ["jumping", "prevent_fall"],
+    "actions": ["rabbit_hop"],
+    "damageImmunities": ["fall"]
+  },
+  "polar_bear": {
+    "abilities": ["swim"],
+    "actions": ["polar_maul"]
+  },
+  "ghast": {
+    "abilities": ["fly", "fire_proof"],
+    "actions": ["ghast_fireball"],
+    "damageImmunities": ["inFire", "onFire", "lava", "fall"]
+  },
+  "zombie": {
+    "abilities": ["sun_allergy", "rotten", "hungerless"],
+    "actions": ["zombie_infectious_strike"],
+    "immunities": ["poison"]
+  },
+  "husk": {
+    "abilities": ["rotten", "hungerless"],
+    "actions": ["husk_sand_strike"],
+    "immunities": ["poison"]
   }
 }
