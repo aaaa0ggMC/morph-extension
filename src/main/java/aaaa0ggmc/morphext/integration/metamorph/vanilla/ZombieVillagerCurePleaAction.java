@@ -1,5 +1,6 @@
 package aaaa0ggmc.morphext.integration.metamorph.vanilla;
 
+import aaaa0ggmc.morphext.integration.metamorph.ICooldownAction;
 import mchorse.metamorph.api.abilities.IAction;
 import mchorse.metamorph.api.morphs.AbstractMorph;
 import net.minecraft.entity.EntityLivingBase;
@@ -21,7 +22,14 @@ import net.minecraft.world.WorldServer;
  * 还原原版虚弱状态喂食金苹果净化转化为正常村民的机制。
  * 手持金苹果时消耗 1 枚金苹果，驱散虚弱与诅咒，爆发圣洁金光并获得 30 秒生命恢复 II、抗性提升 II 与力量 I！
  */
-public class ZombieVillagerCurePleaAction implements IAction {
+public class ZombieVillagerCurePleaAction implements IAction, ICooldownAction {
+    public static final String ID = "zombie_villager_cure_plea";
+    public static final int COOLDOWN = 200; // 10 秒（30 秒恢复 II/抗性 II/力量 I，不能无限刷）
+
+    @Override
+    public int getCooldownTicks(EntityLivingBase entity) {
+        return COOLDOWN;
+    }
 
     @Override
     public void execute(EntityLivingBase entity, AbstractMorph morph) {

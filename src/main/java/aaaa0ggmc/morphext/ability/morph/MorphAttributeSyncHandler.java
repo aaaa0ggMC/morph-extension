@@ -75,6 +75,13 @@ public final class MorphAttributeSyncHandler {
                     }
                 } catch (Throwable ignored) {}
 
+                // 护甲提取盲区修复：部分实体（如深渊 Boss Chagaroth）覆写 getTotalArmorValue()
+                // 直接钉死护甲而不动 ARMOR 属性（属性值为 0），只读属性会让变身 0 甲。
+                // 取两者较大值作为原生护甲；JSON 显式 armor 覆盖优先（下方 def.armor）。
+                try {
+                    armor = Math.max(armor, (double) mob.getTotalArmorValue());
+                } catch (Throwable ignored) {}
+
                 try {
                     IAttributeInstance toughInst = mob.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS);
                     if (toughInst != null) {

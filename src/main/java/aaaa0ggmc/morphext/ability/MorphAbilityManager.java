@@ -217,6 +217,15 @@ public final class MorphAbilityManager {
                 if (settings.speed != 0.1F) {
                     player.getEntityAttribute(net.minecraft.entity.SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(settings.speed);
                 }
+
+                // removeAbilities：从 metamorph 运行时能力列表摘除被声明移除的原生能力
+                // （如 morphs.json 给 husk 错配的 sun_allergy），使跨文件错配不再生效。
+                // 本方法在逻辑两侧的玩家 tick 各自执行，服务端侧即权威修复。
+                if (def != null && def.removeAbilities != null && !def.removeAbilities.isEmpty()
+                        && settings.abilities != null && !settings.abilities.isEmpty()) {
+                    settings.abilities.removeIf(ab -> ab != null
+                            && def.removesAbility(MorphAbilityDefinition.nameOfAbility(ab)));
+                }
             }
             if (newMorph instanceof mchorse.vanilla_pack.morphs.ShulkerMorph) {
                 ((mchorse.vanilla_pack.morphs.ShulkerMorph) newMorph).blockPos = null;

@@ -149,6 +149,53 @@ public final class VanillaActions {
         register("killer_bunny_blood_frenzy", new KillerBunnyBloodFrenzyAction());
         register("morphext:killer_bunny_blood_frenzy", new KillerBunnyBloodFrenzyAction());
 
+        // W1 新增：村民易物 / 尸潮增援 / 恼鬼冲刺 / 强尼狂暴 / 尸壳沙暴
+        register(VillagerBarterAction.ID, new VillagerBarterAction());
+        register(VillagerBarterAction.ALIAS_ID, new VillagerBarterAction());
+        register(ZombieReinforceAction.ID, new ZombieReinforceAction());
+        register(ZombieReinforceAction.ALIAS_ID, new ZombieReinforceAction());
+        register(VexChargeAction.ID, new VexChargeAction());
+        register(VexChargeAction.ALIAS_ID, new VexChargeAction());
+        register(VindicatorJohnnyRampageAction.ID, new VindicatorJohnnyRampageAction());
+        register(VindicatorJohnnyRampageAction.ALIAS_ID, new VindicatorJohnnyRampageAction());
+        register(HuskSandStormAction.ID, new HuskSandStormAction());
+        register(HuskSandStormAction.ALIAS_ID, new HuskSandStormAction());
+
+        // E1 新增：生物身份动作（倔强嘶鸣 / 扬蹄疾驰 / 漂浮力场 / 公羊冲撞 /
+        //          吐网缠缚 / 警戒鸣叫 / 缠怨 / 破门而入）
+        register(StubbornBrayAction.ID, new StubbornBrayAction());
+        register(StubbornBrayAction.ALIAS_ID, new StubbornBrayAction());
+        register(EquineGallopAction.ID, new EquineGallopAction());
+        register(EquineGallopAction.ALIAS_ID, new EquineGallopAction());
+        register(ShulkerLevitationFieldAction.ID, new ShulkerLevitationFieldAction());
+        register(ShulkerLevitationFieldAction.ALIAS_ID, new ShulkerLevitationFieldAction());
+        register(RamChargeAction.ID, new RamChargeAction());
+        register(RamChargeAction.ALIAS_ID, new RamChargeAction());
+        register(SpiderWebSlingAction.ID, new SpiderWebSlingAction());
+        register(SpiderWebSlingAction.ALIAS_ID, new SpiderWebSlingAction());
+        register(ParrotAlarmCallAction.ID, new ParrotAlarmCallAction());
+        register(ParrotAlarmCallAction.ALIAS_ID, new ParrotAlarmCallAction());
+        register(VexHauntAction.ID, new VexHauntAction());
+        register(VexHauntAction.ALIAS_ID, new VexHauntAction());
+        register(ZombieDoorBreakAction.ID, new ZombieDoorBreakAction());
+        register(ZombieDoorBreakAction.ALIAS_ID, new ZombieDoorBreakAction());
+
+        // E1 新增：metamorph 原版闲置动作冷却代理 —— 同 id 覆盖注册
+        // （与 shulker_bullet / mob_act / ai_target 的既有覆盖惯例一致），
+        // 执行逻辑 1:1 委托原版实现，仅补上 ICooldownAction 权威冷却（6-25s）。
+        register("fireball", new CooldownActionProxy(new mchorse.vanilla_pack.actions.Fireball(), 200));
+        register("small_fireball", new CooldownActionProxy(new mchorse.vanilla_pack.actions.SmallFireball(), 120));
+        register("teleport", new CooldownActionProxy(new mchorse.vanilla_pack.actions.Teleport(), 160));
+        register("potions", new CooldownActionProxy(new mchorse.vanilla_pack.actions.Potions(), 200));
+        register("spit", new CooldownActionProxy(new mchorse.vanilla_pack.actions.Spit(), 120));
+        register("explode", new CooldownActionProxy(new mchorse.vanilla_pack.actions.Explode(), 300));
+        register("fire_breath", new CooldownActionProxy(new mchorse.vanilla_pack.actions.FireBreath(), 300));
+        // 增补轮补漏：W1 引用的 4 个 metamorph 原语义动作同样补权威冷却（jump 强跳/拟态类防刷）
+        register("jump", new CooldownActionProxy(new mchorse.vanilla_pack.actions.Jump(), 80));
+        register("snowball", new CooldownActionProxy(new mchorse.vanilla_pack.actions.Snowball(), 40));
+        register("endermite", new CooldownActionProxy(new mchorse.vanilla_pack.actions.Endermite(), 100));
+        register("silverfish", new CooldownActionProxy(new mchorse.vanilla_pack.actions.Sliverfish(), 100));
+
         // 生物自主 AI 切换动作
         register(aaaa0ggmc.morphext.integration.metamorph.MobAiToggleAction.ID, new aaaa0ggmc.morphext.integration.metamorph.MobAiToggleAction());
         register(aaaa0ggmc.morphext.integration.metamorph.MobAiToggleAction.ALIAS_ID, new aaaa0ggmc.morphext.integration.metamorph.MobAiToggleAction());

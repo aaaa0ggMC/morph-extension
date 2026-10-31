@@ -60,6 +60,14 @@ public final class MetamorphAbilityDescriptions {
             if (net.minecraft.client.resources.I18n.hasKey(langKey)) {
                 return net.minecraft.client.resources.I18n.format(langKey);
             }
+            // id 带命名空间前缀（如 morphext:villager_barter）时，lang 键惯例为 ':'→'.' 规范化形式
+            // （与 morphext.passive.morphext.* 键一致），此处做规范化回退。
+            if (langKey.indexOf(':') >= 0) {
+                String normalized = langKey.replace(':', '.');
+                if (net.minecraft.client.resources.I18n.hasKey(normalized)) {
+                    return net.minecraft.client.resources.I18n.format(normalized);
+                }
+            }
         } catch (Throwable ignored) {
         }
         return null;

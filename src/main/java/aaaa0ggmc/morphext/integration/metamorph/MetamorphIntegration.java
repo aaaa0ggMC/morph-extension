@@ -98,6 +98,9 @@ public final class MetamorphIntegration {
                     settings.abilities == null ? 0 : settings.abilities.size(),
                     settings.attack != null, settings.action != null);
 
+            /* 数据驱动定义（含 removeAbilities 跨文件冲突修复） */
+            MorphAbilityDefinition def = MorphJsonConfig.get(morph.name);
+
             /* 被动能力 */
             if (settings.abilities != null) {
                 for (mchorse.metamorph.api.abilities.IAbility ability : settings.abilities) {
@@ -105,6 +108,11 @@ public final class MetamorphIntegration {
                         continue;
                     }
                     String name = abilityName(ability);
+                    // removeAbilities：过滤掉 morph_abilities.json 声明移除的 metamorph 原生授予能力
+                    if (def != null && def.removesAbility(name)) {
+                        LOGGER.info("[metamorph] syncGranted: removed metamorph ability {} from morph {}", name, morph.name);
+                        continue;
+                    }
                     String id = GRANTED_PREFIX + morph.name + ":" + name;
                     granted.add(new MorphGrantedAbility(morph.name, name, ability, null, icon));
                 }
@@ -147,7 +155,6 @@ public final class MetamorphIntegration {
             }
 
             /* 外部数据驱动能力注入（由 morph_abilities.json 或其他模组注入） */
-            MorphAbilityDefinition def = MorphJsonConfig.get(morph.name);
             if (def != null) {
                 if (def.abilities != null) {
                     for (String abName : def.abilities) {

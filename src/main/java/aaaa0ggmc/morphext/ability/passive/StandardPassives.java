@@ -13,6 +13,12 @@ public final class StandardPassives {
 
     private static final UUID GOLEM_KNOCKBACK_UUID = UUID.fromString("1f2e3d4c-5b6a-7f8e-9d0c-1b2a3c4d5e6f");
     private static final UUID FELINE_SPEED_UUID = UUID.fromString("2a3b4c5d-6e7f-8a9b-0c1d-2e3f4a5b6c7d");
+    private static final UUID THICK_HIDE_UUID = UUID.fromString("3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e01");
+    private static final UUID ARCHER_TRAINING_UUID = UUID.fromString("3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e02");
+    private static final UUID AXE_MASTERY_UUID = UUID.fromString("3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e03");
+    private static final UUID IRON_PHYSIQUE_UUID = UUID.fromString("3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e04");
+    private static final UUID PRISMARINE_SHELL_UUID = UUID.fromString("3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e05");
+    private static final UUID TITANIC_STATURE_UUID = UUID.fromString("3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e06");
 
     private StandardPassives() {}
 
@@ -128,6 +134,127 @@ public final class StandardPassives {
         register(new PotionImmunityPassive("morphext:immunity_blindness", "blindness", "minecraft:blindness"));
         register(new PotionImmunityPassive("morphext:immunity_slowness", "slowness", "minecraft:slowness"));
         register(new PotionImmunityPassive("morphext:immunity_mining_fatigue", "mining_fatigue", "minecraft:mining_fatigue"));
+
+        // 7. metamorph 原版能力桥接（补 jumping/step_up/glide 的 UAPA 解析缺口，
+        //    只委托不覆盖 metamorph 行为，morphs.json 同名授予时不重复执行）
+        register(new aaaa0ggmc.morphext.integration.metamorph.MetamorphAbilityAdapter("jumping",
+                new mchorse.vanilla_pack.abilities.Jumping(),
+                "morphext.passive.jumping.name", "morphext.passive.jumping.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.SLIME_BALL)));
+        register(new aaaa0ggmc.morphext.integration.metamorph.MetamorphAbilityAdapter("morphext:jumping",
+                new mchorse.vanilla_pack.abilities.Jumping(),
+                "morphext.passive.jumping.name", "morphext.passive.jumping.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.SLIME_BALL)));
+        register(new aaaa0ggmc.morphext.integration.metamorph.MetamorphAbilityAdapter("step_up",
+                new mchorse.vanilla_pack.abilities.StepUp(),
+                "morphext.passive.step_up.name", "morphext.passive.step_up.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.LEATHER_BOOTS)));
+        register(new aaaa0ggmc.morphext.integration.metamorph.MetamorphAbilityAdapter("morphext:step_up",
+                new mchorse.vanilla_pack.abilities.StepUp(),
+                "morphext.passive.step_up.name", "morphext.passive.step_up.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.LEATHER_BOOTS)));
+        register(new aaaa0ggmc.morphext.integration.metamorph.MetamorphAbilityAdapter("glide",
+                new mchorse.vanilla_pack.abilities.Glide(),
+                "morphext.passive.glide.name", "morphext.passive.glide.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.FEATHER)));
+        register(new aaaa0ggmc.morphext.integration.metamorph.MetamorphAbilityAdapter("morphext:glide",
+                new mchorse.vanilla_pack.abilities.Glide(),
+                "morphext.passive.glide.name", "morphext.passive.glide.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.FEATHER)));
+
+        // 8. 生物专属新被动（W1：马属强跃 / 水生陆地应激 / 蜘蛛日光中立）
+        register(new HorseJumpPassive());
+        register(new HorseJumpPassive("horse_jump"));
+        register(new LandStressPassive());
+        register(new LandStressPassive("land_stress"));
+        register(new SpiderSunPassive());
+        register(new SpiderSunPassive("morphext:spider_sun_passive"));
+
+        // 9. 生物专属新被动（E1：声呐视界 / 毒液反噬 / 厚皮 / 黏胶之躯 / 冰霜之触 /
+        //    墨汁护体 / 熔岩灼体 / 狼群狂怒 / 怯懦疾走 / 暴怒加速 / 光环系三件套 /
+        //    凋灵之触 / 奥术屏障 / 钢铁之躯 / 棱甲 / 泰坦之躯 / 射手训练 / 斧刃专精 / 岩石拟态）
+        register(new PotionImmunityPassive("morphext:sonar_sense", "morphext.passive.morphext.sonar_sense.name",
+                "morphext.passive.morphext.sonar_sense.desc", new net.minecraft.item.ItemStack(net.minecraft.init.Items.FEATHER),
+                "blindness", "minecraft:blindness"));
+        register(new PotionImmunityPassive("sonar_sense", "morphext.passive.sonar_sense.name",
+                "morphext.passive.sonar_sense.desc", new net.minecraft.item.ItemStack(net.minecraft.init.Items.FEATHER),
+                "blindness", "minecraft:blindness"));
+        register(new MeleeRetaliatePassive("morphext:venom_hide", MeleeRetaliatePassive.Effect.POISON, 0, 80));
+        register(new MeleeRetaliatePassive("venom_hide", MeleeRetaliatePassive.Effect.POISON, 0, 80));
+        register(new MeleeRetaliatePassive("morphext:sticky_gel", MeleeRetaliatePassive.Effect.SLOWNESS, 1, 60));
+        register(new MeleeRetaliatePassive("sticky_gel", MeleeRetaliatePassive.Effect.SLOWNESS, 1, 60));
+        register(new MeleeRetaliatePassive("morphext:chill_touch", MeleeRetaliatePassive.Effect.SLOWNESS, 0, 100));
+        register(new MeleeRetaliatePassive("chill_touch", MeleeRetaliatePassive.Effect.SLOWNESS, 0, 100));
+        register(new MeleeRetaliatePassive("morphext:ink_veil", MeleeRetaliatePassive.Effect.BLINDNESS, 0, 60));
+        register(new MeleeRetaliatePassive("ink_veil", MeleeRetaliatePassive.Effect.BLINDNESS, 0, 60));
+        register(new MeleeRetaliatePassive("morphext:magma_burn", MeleeRetaliatePassive.Effect.BURN, 0, 60));
+        register(new MeleeRetaliatePassive("magma_burn", MeleeRetaliatePassive.Effect.BURN, 0, 60));
+        register(new LowHealthEffectPassive("morphext:pack_fury", net.minecraft.init.MobEffects.STRENGTH, 0, 0.5F));
+        register(new LowHealthEffectPassive("pack_fury", net.minecraft.init.MobEffects.STRENGTH, 0, 0.5F));
+        register(new LowHealthEffectPassive("morphext:coward_flight", net.minecraft.init.MobEffects.SPEED, 0, 0.5F));
+        register(new LowHealthEffectPassive("coward_flight", net.minecraft.init.MobEffects.SPEED, 0, 0.5F));
+        register(new OnHurtEffectPassive("morphext:rage_speed", net.minecraft.init.MobEffects.SPEED, 0, 100));
+        register(new OnHurtEffectPassive("rage_speed", net.minecraft.init.MobEffects.SPEED, 0, 100));
+        register(new OnAttackEffectPassive("morphext:withering_touch", net.minecraft.init.MobEffects.WITHER, 0, 80));
+        register(new OnAttackEffectPassive("withering_touch", net.minecraft.init.MobEffects.WITHER, 0, 80));
+        register(new PotionAuraPassive("morphext:ancient_curse_aura", net.minecraft.init.MobEffects.MINING_FATIGUE, 0, 8.0D, 40, 80));
+        register(new PotionAuraPassive("ancient_curse_aura", net.minecraft.init.MobEffects.MINING_FATIGUE, 0, 8.0D, 40, 80));
+        register(new PotionAuraPassive("morphext:withering_presence", net.minecraft.init.MobEffects.WITHER, 0, 6.0D, 60, 60));
+        register(new PotionAuraPassive("withering_presence", net.minecraft.init.MobEffects.WITHER, 0, 6.0D, 60, 60));
+        register(new PotionAuraPassive("morphext:hungering_aura", net.minecraft.init.MobEffects.HUNGER, 0, 6.0D, 60, 80));
+        register(new PotionAuraPassive("hungering_aura", net.minecraft.init.MobEffects.HUNGER, 0, 6.0D, 60, 80));
+        register(new MagicWardPassive("morphext:arcane_ward"));
+        register(new MagicWardPassive("arcane_ward"));
+        register(new StoneCamouflagePassive("morphext:stone_camouflage"));
+        register(new StoneCamouflagePassive("stone_camouflage"));
+        register(new AttributeModifierPassive("morphext:thick_hide",
+                "morphext.passive.morphext.thick_hide.name", "morphext.passive.morphext.thick_hide.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.LEATHER),
+                SharedMonsterAttributes.ARMOR, THICK_HIDE_UUID, "morphext.thick_hide", 2.0D, 0));
+        register(new AttributeModifierPassive("thick_hide",
+                "morphext.passive.thick_hide.name", "morphext.passive.thick_hide.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.LEATHER),
+                SharedMonsterAttributes.ARMOR, THICK_HIDE_UUID, "morphext.thick_hide", 2.0D, 0));
+        register(new AttributeModifierPassive("morphext:archer_training",
+                "morphext.passive.morphext.archer_training.name", "morphext.passive.morphext.archer_training.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.BOW),
+                SharedMonsterAttributes.ATTACK_SPEED, ARCHER_TRAINING_UUID, "morphext.archer_training", 0.15D, 2));
+        register(new AttributeModifierPassive("archer_training",
+                "morphext.passive.archer_training.name", "morphext.passive.archer_training.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.BOW),
+                SharedMonsterAttributes.ATTACK_SPEED, ARCHER_TRAINING_UUID, "morphext.archer_training", 0.15D, 2));
+        register(new AttributeModifierPassive("morphext:axe_mastery",
+                "morphext.passive.morphext.axe_mastery.name", "morphext.passive.morphext.axe_mastery.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.IRON_AXE),
+                SharedMonsterAttributes.ATTACK_DAMAGE, AXE_MASTERY_UUID, "morphext.axe_mastery", 2.0D, 0));
+        register(new AttributeModifierPassive("axe_mastery",
+                "morphext.passive.axe_mastery.name", "morphext.passive.axe_mastery.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.IRON_AXE),
+                SharedMonsterAttributes.ATTACK_DAMAGE, AXE_MASTERY_UUID, "morphext.axe_mastery", 2.0D, 0));
+        register(new AttributeModifierPassive("morphext:iron_physique",
+                "morphext.passive.morphext.iron_physique.name", "morphext.passive.morphext.iron_physique.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.IRON_INGOT),
+                SharedMonsterAttributes.MAX_HEALTH, IRON_PHYSIQUE_UUID, "morphext.iron_physique", 10.0D, 0));
+        register(new AttributeModifierPassive("iron_physique",
+                "morphext.passive.iron_physique.name", "morphext.passive.iron_physique.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.IRON_INGOT),
+                SharedMonsterAttributes.MAX_HEALTH, IRON_PHYSIQUE_UUID, "morphext.iron_physique", 10.0D, 0));
+        register(new AttributeModifierPassive("morphext:prismarine_shell",
+                "morphext.passive.morphext.prismarine_shell.name", "morphext.passive.morphext.prismarine_shell.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.PRISMARINE_SHARD),
+                SharedMonsterAttributes.ARMOR, PRISMARINE_SHELL_UUID, "morphext.prismarine_shell", 2.0D, 0));
+        register(new AttributeModifierPassive("prismarine_shell",
+                "morphext.passive.prismarine_shell.name", "morphext.passive.prismarine_shell.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.init.Items.PRISMARINE_SHARD),
+                SharedMonsterAttributes.ARMOR, PRISMARINE_SHELL_UUID, "morphext.prismarine_shell", 2.0D, 0));
+        register(new AttributeModifierPassive("morphext:titanic_stature",
+                "morphext.passive.morphext.titanic_stature.name", "morphext.passive.morphext.titanic_stature.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.item.Item.getItemFromBlock(net.minecraft.init.Blocks.OBSIDIAN)),
+                SharedMonsterAttributes.KNOCKBACK_RESISTANCE, TITANIC_STATURE_UUID, "morphext.titanic_stature", 0.5D, 0));
+        register(new AttributeModifierPassive("titanic_stature",
+                "morphext.passive.titanic_stature.name", "morphext.passive.titanic_stature.desc",
+                new net.minecraft.item.ItemStack(net.minecraft.item.Item.getItemFromBlock(net.minecraft.init.Blocks.OBSIDIAN)),
+                SharedMonsterAttributes.KNOCKBACK_RESISTANCE, TITANIC_STATURE_UUID, "morphext.titanic_stature", 0.5D, 0));
     }
 
     private static void register(aaaa0ggmc.morphext.ability.IAbility ability) {

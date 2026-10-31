@@ -2,9 +2,9 @@
   "bat": {
     "abilities": [
       "fly",
-      "night_vision",
       "prevent_fall",
-      "faction_animal"
+      "faction_animal",
+      "morphext:sonar_sense"
     ],
     "actions": [
       "echolocation",
@@ -25,7 +25,8 @@
     ],
     "actions": [
       "blaze_fireball",
-      "blaze_fire_ring"
+      "blaze_fire_ring",
+      "small_fireball"
     ],
     "damageImmunities": [
       "inFire",
@@ -33,14 +34,17 @@
       "lava",
       "hotFloor",
       "fall"
-    ]
+    ],
+    "attackDamage": 6.0
   },
   "cave_spider": {
     "abilities": [
       "climb",
       "web_immunity",
       "cave_spider_poison",
-      "faction_arthropod"
+      "faction_arthropod",
+      "spider_sun_passive",
+      "morphext:venom_hide"
     ],
     "actions": [
       "spider_leap",
@@ -49,24 +53,33 @@
     ],
     "immunities": [
       "poison"
-    ]
+    ],
+    "speed": 0.108
   },
   "chicken": {
     "abilities": [
       "prevent_fall",
-      "faction_animal"
+      "faction_animal",
+      "glide"
     ],
     "actions": [
-      "chicken_lay_egg"
-    ]
+      "chicken_lay_egg",
+      "jump"
+    ],
+    "damageImmunities": [
+      "fall"
+    ],
+    "speed": 0.101
   },
   "cow": {
     "abilities": [
-      "faction_animal"
+      "faction_animal",
+      "morphext:thick_hide"
     ],
     "actions": [
       "cow_milk"
-    ]
+    ],
+    "speed": 0.095
   },
   "creeper": {
     "abilities": [
@@ -74,17 +87,21 @@
     ],
     "actions": [
       "creeper_fuse",
-      "creeper_hiss"
+      "creeper_hiss",
+      "explode"
     ]
   },
   "donkey": {
     "abilities": [
-      "step_up",
-      "faction_animal"
+      "faction_animal",
+      "morphext:horse_jump"
     ],
     "actions": [
-      "donkey_rear_kick"
-    ]
+      "donkey_rear_kick",
+      "jump",
+      "stubborn_bray"
+    ],
+    "speed": 0.092
   },
   "elder_guardian": {
     "abilities": [
@@ -94,7 +111,8 @@
       "jumping",
       "thorns",
       "faction_aquatic_lord",
-      "faction_guardian_lord"
+      "faction_guardian_lord",
+      "morphext:ancient_curse_aura"
     ],
     "actions": [
       "elder_curse",
@@ -103,13 +121,13 @@
       "spike_burst"
     ],
     "immunities": [
-      "mining_fatigue",
-      "weakness",
-      "slowness"
+      "mining_fatigue"
     ],
     "damageImmunities": [
       "drown"
-    ]
+    ],
+    "attackDamage": 8.0,
+    "speed": 0.108
   },
   "ender_dragon": {
     "abilities": [
@@ -122,11 +140,8 @@
     "actions": [
       "dragon_breath",
       "dragon_wing_flap",
-      "dragon_dive"
-    ],
-    "immunities": [
-      "slowness",
-      "weakness"
+      "dragon_dive",
+      "fire_breath"
     ],
     "damageImmunities": [
       "fall",
@@ -147,8 +162,13 @@
     ],
     "actions": [
       "enderman_teleport",
-      "enderman_screech"
-    ]
+      "enderman_screech",
+      "teleport"
+    ],
+    "removeAbilities": [
+      "water_allergy"
+    ],
+    "speed": 0.108
   },
   "endermite": {
     "abilities": [
@@ -159,31 +179,38 @@
     ],
     "actions": [
       "endermite_burrow",
-      "endermite_bite"
+      "endermite_bite",
+      "endermite",
+      "teleport"
     ],
     "damageImmunities": [
       "fall"
-    ]
+    ],
+    "speed": 0.101
   },
   "evocation_illager": {
     "abilities": [
-      "faction_illager_lord"
+      "faction_illager_lord",
+      "morphext:arcane_ward"
     ],
     "actions": [
       "evoker_fangs",
       "evoker_vex_summon",
       "evoker_wololo"
-    ]
+    ],
+    "speed": 0.133
   },
   "evoker": {
     "abilities": [
-      "faction_illager_lord"
+      "faction_illager_lord",
+      "morphext:arcane_ward"
     ],
     "actions": [
       "evoker_fangs",
       "evoker_vex_summon",
       "evoker_wololo"
-    ]
+    ],
+    "speed": 0.133
   },
   "ghast": {
     "abilities": [
@@ -195,7 +222,8 @@
     ],
     "actions": [
       "ghast_fireball",
-      "ghast_screech"
+      "ghast_screech",
+      "fireball"
     ],
     "damageImmunities": [
       "inFire",
@@ -210,15 +238,19 @@
       "undead",
       "rotten",
       "faction_undead_lord",
-      "faction_giant_lord"
+      "faction_giant_lord",
+      "morphext:titanic_stature"
     ],
     "actions": [
       "giant_titanic_slam",
       "giant_colossal_sweep"
     ],
     "immunities": [
-      "poison"
-    ]
+      "poison",
+      "regeneration"
+    ],
+    "attackDamage": 20.0,
+    "speed": 0.133
   },
   "guardian": {
     "abilities": [
@@ -228,7 +260,8 @@
       "jumping",
       "thorns",
       "faction_aquatic",
-      "faction_guardian"
+      "faction_guardian",
+      "morphext:prismarine_shell"
     ],
     "actions": [
       "prismarine_laser",
@@ -239,79 +272,87 @@
     ],
     "damageImmunities": [
       "drown"
-    ]
+    ],
+    "attackDamage": 6.0,
+    "speed": 0.133
   },
   "horse": {
     "abilities": [
-      "jumping",
-      "prevent_fall",
-      "faction_animal"
+      "faction_animal",
+      "morphext:horse_jump"
     ],
     "actions": [
-      "donkey_rear_kick"
-    ]
+      "donkey_rear_kick",
+      "jump",
+      "equine_gallop"
+    ],
+    "speed": 0.098
   },
   "husk": {
     "abilities": [
       "rotten",
       "hungerless",
-      "faction_undead"
+      "faction_undead",
+      "morphext:hungering_aura"
     ],
     "actions": [
-      "husk_sand_strike"
+      "husk_sand_strike",
+      "husk_sand_storm"
+    ],
+    "removeAbilities": [
+      "sun_allergy"
     ],
     "immunities": [
-      "poison"
-    ]
+      "poison",
+      "regeneration"
+    ],
+    "attackDamage": 3.0,
+    "armor": 2.0
   },
   "illusion_illager": {
     "abilities": [
-      "faction_illager"
+      "faction_illager",
+      "morphext:arcane_ward"
     ],
     "actions": [
       "illusion_blindness",
       "illusion_mirror",
       "illusion_arrow_volley"
-    ]
+    ],
+    "speed": 0.133
   },
   "illusioner": {
     "abilities": [
-      "faction_illager"
+      "faction_illager",
+      "morphext:arcane_ward"
     ],
     "actions": [
       "illusion_blindness",
       "illusion_mirror",
       "illusion_arrow_volley"
-    ]
+    ],
+    "speed": 0.133
   },
   "iron_golem": {
     "abilities": [
-      "prevent_fall",
-      "step_up",
-      "iron_knockback_res",
       "iron_golem_nature",
       "faction_villager_relative",
-      "faction_golem_relative"
+      "faction_golem_relative",
+      "morphext:iron_physique"
     ],
     "actions": [
       "heavy_toss",
-      "ground_slam",
-      "iron_fortitude",
-      "iron_repair",
       "golem_flower_gift",
-      "golem_taunt_roar"
-    ],
-    "immunities": [
-      "slowness",
-      "poison"
+      "golem_taunt_roar",
+      "iron_repair"
     ],
     "damageImmunities": [
       "fall",
-      "cactus",
       "drown"
     ],
     "attackDamage": 14.0,
-    "knockbackResistance": 1.0
+    "knockbackResistance": 1.0,
+    "speed": 0.101
   },
   "llama": {
     "abilities": [
@@ -319,8 +360,10 @@
       "faction_animal"
     ],
     "actions": [
-      "llama_spit_barrage"
-    ]
+      "llama_spit_barrage",
+      "spit"
+    ],
+    "speed": 0.092
   },
   "magma_cube": {
     "abilities": [
@@ -328,24 +371,30 @@
       "fire_proof",
       "prevent_fall",
       "faction_slime",
-      "faction_nether"
+      "faction_nether",
+      "morphext:magma_burn"
     ],
     "actions": [
-      "magma_slam"
+      "magma_slam",
+      "jump"
     ],
     "damageImmunities": [
       "inFire",
       "onFire",
       "lava",
+      "hotFloor",
       "fall"
-    ]
+    ],
+    "attackDamage": 4.0,
+    "armor": 6.0,
+    "speed": 0.095
   },
   "minecraft:bat": {
     "abilities": [
       "fly",
-      "night_vision",
       "prevent_fall",
-      "faction_animal"
+      "faction_animal",
+      "morphext:sonar_sense"
     ],
     "actions": [
       "echolocation",
@@ -366,7 +415,8 @@
     ],
     "actions": [
       "blaze_fireball",
-      "blaze_fire_ring"
+      "blaze_fire_ring",
+      "small_fireball"
     ],
     "damageImmunities": [
       "inFire",
@@ -374,14 +424,17 @@
       "lava",
       "hotFloor",
       "fall"
-    ]
+    ],
+    "attackDamage": 6.0
   },
   "minecraft:cave_spider": {
     "abilities": [
       "climb",
       "web_immunity",
       "cave_spider_poison",
-      "faction_arthropod"
+      "faction_arthropod",
+      "spider_sun_passive",
+      "morphext:venom_hide"
     ],
     "actions": [
       "spider_leap",
@@ -390,24 +443,33 @@
     ],
     "immunities": [
       "poison"
-    ]
+    ],
+    "speed": 0.108
   },
   "minecraft:chicken": {
     "abilities": [
       "prevent_fall",
-      "faction_animal"
+      "faction_animal",
+      "glide"
     ],
     "actions": [
-      "chicken_lay_egg"
-    ]
+      "chicken_lay_egg",
+      "jump"
+    ],
+    "damageImmunities": [
+      "fall"
+    ],
+    "speed": 0.101
   },
   "minecraft:cow": {
     "abilities": [
-      "faction_animal"
+      "faction_animal",
+      "morphext:thick_hide"
     ],
     "actions": [
       "cow_milk"
-    ]
+    ],
+    "speed": 0.095
   },
   "minecraft:creeper": {
     "abilities": [
@@ -415,17 +477,21 @@
     ],
     "actions": [
       "creeper_fuse",
-      "creeper_hiss"
+      "creeper_hiss",
+      "explode"
     ]
   },
   "minecraft:donkey": {
     "abilities": [
-      "step_up",
-      "faction_animal"
+      "faction_animal",
+      "morphext:horse_jump"
     ],
     "actions": [
-      "donkey_rear_kick"
-    ]
+      "donkey_rear_kick",
+      "jump",
+      "stubborn_bray"
+    ],
+    "speed": 0.092
   },
   "minecraft:elder_guardian": {
     "abilities": [
@@ -435,7 +501,8 @@
       "jumping",
       "thorns",
       "faction_aquatic_lord",
-      "faction_guardian_lord"
+      "faction_guardian_lord",
+      "morphext:ancient_curse_aura"
     ],
     "actions": [
       "elder_curse",
@@ -444,13 +511,13 @@
       "spike_burst"
     ],
     "immunities": [
-      "mining_fatigue",
-      "weakness",
-      "slowness"
+      "mining_fatigue"
     ],
     "damageImmunities": [
       "drown"
-    ]
+    ],
+    "attackDamage": 8.0,
+    "speed": 0.108
   },
   "minecraft:ender_dragon": {
     "abilities": [
@@ -463,11 +530,8 @@
     "actions": [
       "dragon_breath",
       "dragon_wing_flap",
-      "dragon_dive"
-    ],
-    "immunities": [
-      "slowness",
-      "weakness"
+      "dragon_dive",
+      "fire_breath"
     ],
     "damageImmunities": [
       "fall",
@@ -488,8 +552,13 @@
     ],
     "actions": [
       "enderman_teleport",
-      "enderman_screech"
-    ]
+      "enderman_screech",
+      "teleport"
+    ],
+    "removeAbilities": [
+      "water_allergy"
+    ],
+    "speed": 0.108
   },
   "minecraft:endermite": {
     "abilities": [
@@ -500,31 +569,38 @@
     ],
     "actions": [
       "endermite_burrow",
-      "endermite_bite"
+      "endermite_bite",
+      "endermite",
+      "teleport"
     ],
     "damageImmunities": [
       "fall"
-    ]
+    ],
+    "speed": 0.101
   },
   "minecraft:evocation_illager": {
     "abilities": [
-      "faction_illager_lord"
+      "faction_illager_lord",
+      "morphext:arcane_ward"
     ],
     "actions": [
       "evoker_fangs",
       "evoker_vex_summon",
       "evoker_wololo"
-    ]
+    ],
+    "speed": 0.133
   },
   "minecraft:evoker": {
     "abilities": [
-      "faction_illager_lord"
+      "faction_illager_lord",
+      "morphext:arcane_ward"
     ],
     "actions": [
       "evoker_fangs",
       "evoker_vex_summon",
       "evoker_wololo"
-    ]
+    ],
+    "speed": 0.133
   },
   "minecraft:ghast": {
     "abilities": [
@@ -536,7 +612,8 @@
     ],
     "actions": [
       "ghast_fireball",
-      "ghast_screech"
+      "ghast_screech",
+      "fireball"
     ],
     "damageImmunities": [
       "inFire",
@@ -551,15 +628,19 @@
       "undead",
       "rotten",
       "faction_undead_lord",
-      "faction_giant_lord"
+      "faction_giant_lord",
+      "morphext:titanic_stature"
     ],
     "actions": [
       "giant_titanic_slam",
       "giant_colossal_sweep"
     ],
     "immunities": [
-      "poison"
-    ]
+      "poison",
+      "regeneration"
+    ],
+    "attackDamage": 20.0,
+    "speed": 0.133
   },
   "minecraft:guardian": {
     "abilities": [
@@ -569,7 +650,8 @@
       "jumping",
       "thorns",
       "faction_aquatic",
-      "faction_guardian"
+      "faction_guardian",
+      "morphext:prismarine_shell"
     ],
     "actions": [
       "prismarine_laser",
@@ -580,79 +662,87 @@
     ],
     "damageImmunities": [
       "drown"
-    ]
+    ],
+    "attackDamage": 6.0,
+    "speed": 0.133
   },
   "minecraft:horse": {
     "abilities": [
-      "jumping",
-      "prevent_fall",
-      "faction_animal"
+      "faction_animal",
+      "morphext:horse_jump"
     ],
     "actions": [
-      "donkey_rear_kick"
-    ]
+      "donkey_rear_kick",
+      "jump",
+      "equine_gallop"
+    ],
+    "speed": 0.098
   },
   "minecraft:husk": {
     "abilities": [
       "rotten",
       "hungerless",
-      "faction_undead"
+      "faction_undead",
+      "morphext:hungering_aura"
     ],
     "actions": [
-      "husk_sand_strike"
+      "husk_sand_strike",
+      "husk_sand_storm"
+    ],
+    "removeAbilities": [
+      "sun_allergy"
     ],
     "immunities": [
-      "poison"
-    ]
+      "poison",
+      "regeneration"
+    ],
+    "attackDamage": 3.0,
+    "armor": 2.0
   },
   "minecraft:illusion_illager": {
     "abilities": [
-      "faction_illager"
+      "faction_illager",
+      "morphext:arcane_ward"
     ],
     "actions": [
       "illusion_blindness",
       "illusion_mirror",
       "illusion_arrow_volley"
-    ]
+    ],
+    "speed": 0.133
   },
   "minecraft:illusioner": {
     "abilities": [
-      "faction_illager"
+      "faction_illager",
+      "morphext:arcane_ward"
     ],
     "actions": [
       "illusion_blindness",
       "illusion_mirror",
       "illusion_arrow_volley"
-    ]
+    ],
+    "speed": 0.133
   },
   "minecraft:iron_golem": {
     "abilities": [
-      "prevent_fall",
-      "step_up",
-      "iron_knockback_res",
       "iron_golem_nature",
       "faction_villager_relative",
-      "faction_golem_relative"
+      "faction_golem_relative",
+      "morphext:iron_physique"
     ],
     "actions": [
       "heavy_toss",
-      "ground_slam",
-      "iron_fortitude",
-      "iron_repair",
       "golem_flower_gift",
-      "golem_taunt_roar"
-    ],
-    "immunities": [
-      "slowness",
-      "poison"
+      "golem_taunt_roar",
+      "iron_repair"
     ],
     "damageImmunities": [
       "fall",
-      "cactus",
       "drown"
     ],
     "attackDamage": 14.0,
-    "knockbackResistance": 1.0
+    "knockbackResistance": 1.0,
+    "speed": 0.101
   },
   "minecraft:llama": {
     "abilities": [
@@ -660,8 +750,10 @@
       "faction_animal"
     ],
     "actions": [
-      "llama_spit_barrage"
-    ]
+      "llama_spit_barrage",
+      "spit"
+    ],
+    "speed": 0.092
   },
   "minecraft:magma_cube": {
     "abilities": [
@@ -669,49 +761,61 @@
       "fire_proof",
       "prevent_fall",
       "faction_slime",
-      "faction_nether"
+      "faction_nether",
+      "morphext:magma_burn"
     ],
     "actions": [
-      "magma_slam"
+      "magma_slam",
+      "jump"
     ],
     "damageImmunities": [
       "inFire",
       "onFire",
       "lava",
+      "hotFloor",
       "fall"
-    ]
+    ],
+    "attackDamage": 4.0,
+    "armor": 6.0,
+    "speed": 0.095
   },
   "minecraft:mooshroom": {
     "abilities": [
-      "faction_animal"
+      "faction_animal",
+      "morphext:thick_hide"
     ],
     "actions": [
       "mooshroom_harvest"
-    ]
+    ],
+    "speed": 0.095
   },
   "minecraft:mule": {
     "abilities": [
-      "step_up",
-      "jumping",
-      "faction_animal"
+      "faction_animal",
+      "morphext:horse_jump"
     ],
     "actions": [
-      "donkey_rear_kick"
-    ]
+      "donkey_rear_kick",
+      "jump",
+      "stubborn_bray"
+    ],
+    "speed": 0.092
   },
   "minecraft:ocelot": {
     "abilities": [
-      "creeper_panic",
-      "prevent_fall",
+      "morphext:creeper_repel",
       "faction_animal",
-      "faction_beast"
+      "faction_beast",
+      "morphext:feline_speed"
     ],
     "actions": [
       "feline_pounce"
     ],
     "damageImmunities": [
       "fall"
-    ]
+    ],
+    "attackDamage": 3.0,
+    "speed": 0.108
   },
   "minecraft:parrot": {
     "abilities": [
@@ -722,52 +826,59 @@
     ],
     "actions": [
       "parrot_mimic",
-      "parrot_dance"
+      "parrot_dance",
+      "parrot_alarm_call"
     ],
     "damageImmunities": [
       "fall"
-    ]
+    ],
+    "attackDamage": 3.0,
+    "speed": 0.095
   },
   "minecraft:pig": {
     "abilities": [
-      "faction_animal"
+      "faction_animal",
+      "morphext:thick_hide"
     ],
     "actions": [
       "pig_rooting"
-    ]
+    ],
+    "speed": 0.101
   },
   "minecraft:polar_bear": {
     "abilities": [
       "polar_bear_cub_protection",
       "swim",
       "faction_animal",
-      "faction_beast"
+      "faction_beast",
+      "snow_walk"
     ],
     "actions": [
       "polar_bear_maul"
-    ]
+    ],
+    "attackDamage": 6.0,
+    "speed": 0.101
   },
   "minecraft:rabbit": {
     "abilities": [
-      "jumping",
-      "prevent_fall",
       "faction_animal"
     ],
     "actions": [
-      "rabbit_hop"
+      "rabbit_hop",
+      "strafe_dodge",
+      "killer_bunny_blood_frenzy"
     ],
-    "damageImmunities": [
-      "fall"
-    ]
+    "attackDamage": 3.0,
+    "speed": 0.108
   },
   "minecraft:sheep": {
     "abilities": [
-      "prevent_fall",
       "faction_animal"
     ],
     "actions": [
       "sheep_graze",
-      "sheep_shear"
+      "sheep_shear",
+      "ram_charge"
     ],
     "silentActions": [
       "sheep_graze",
@@ -777,7 +888,8 @@
       "sheep_graze": false,
       "sheep_shear": false
     },
-    "animateSameMorph": false
+    "animateSameMorph": false,
+    "speed": 0.099
   },
   "minecraft:shulker": {
     "abilities": [
@@ -787,7 +899,8 @@
     "actions": [
       "shulker_bullet",
       "shulker_shell",
-      "shulker_teleport"
+      "shulker_teleport",
+      "shulker_levitation_field"
     ],
     "silentActions": [
       "shulker_shell",
@@ -802,32 +915,37 @@
       "levitation"
     ],
     "damageImmunities": [
+      "inFire",
+      "onFire",
+      "lava",
+      "hotFloor",
       "fall"
     ],
-    "armor": 20.0,
     "knockbackResistance": 1.0,
     "speed": 0.08
   },
   "minecraft:silverfish": {
     "abilities": [
       "climb",
-      "faction_arthropod"
+      "faction_arthropod",
+      "morphext:stone_camouflage"
     ],
     "actions": [
-      "silverfish_swarm_call"
-    ],
-    "immunities": [
-      "slowness"
+      "silverfish_swarm_call",
+      "silverfish"
     ],
     "damageImmunities": [
       "inWall"
-    ]
+    ],
+    "attackDamage": 1.0,
+    "speed": 0.101
   },
   "minecraft:skeleton": {
     "abilities": [
       "sun_allergy",
       "rotten",
-      "faction_undead"
+      "faction_undead",
+      "morphext:archer_training"
     ],
     "actions": [
       "skeleton_rapid_shot",
@@ -835,7 +953,8 @@
       "strafe_dodge"
     ],
     "immunities": [
-      "poison"
+      "poison",
+      "regeneration"
     ]
   },
   "minecraft:skeleton_horse": {
@@ -844,102 +963,100 @@
       "hungerless",
       "rotten",
       "faction_undead",
-      "faction_animal"
+      "faction_animal",
+      "morphext:horse_jump"
     ],
     "actions": [
-      "skeleton_trap_slam"
+      "skeleton_trap_slam",
+      "jump",
+      "equine_gallop"
     ],
     "immunities": [
-      "poison"
+      "poison",
+      "regeneration"
     ],
-    "damageImmunities": [
-      "drown",
-      "fall"
-    ]
+    "speed": 0.095
   },
   "minecraft:slime": {
     "abilities": [
       "jumping",
       "prevent_fall",
-      "faction_slime"
+      "faction_slime",
+      "morphext:sticky_gel"
     ],
     "actions": [
-      "slime_bounce_slam"
+      "slime_bounce_slam",
+      "jump"
     ],
     "damageImmunities": [
       "fall"
-    ]
+    ],
+    "attackDamage": 2.0,
+    "speed": 0.12
   },
   "minecraft:snow_golem": {
     "abilities": [
       "snowman_snow_trail",
       "water_allergy",
       "faction_villager",
-      "faction_golem"
+      "faction_golem",
+      "morphext:chill_touch"
     ],
     "actions": [
+      "snowball",
       "snowman_blizzard",
-      "frost_aura",
-      "snowstorm_volley",
       "snowman_frost_barrier"
-    ],
-    "immunities": [
-      "slowness"
     ],
     "damageImmunities": [
       "fall"
-    ]
+    ],
+    "speed": 0.095
   },
   "minecraft:snowman": {
     "abilities": [
       "snowman_snow_trail",
       "water_allergy",
       "faction_villager",
-      "faction_golem"
+      "faction_golem",
+      "morphext:chill_touch"
     ],
     "actions": [
+      "snowball",
       "snowman_blizzard",
-      "frost_aura",
-      "snowstorm_volley",
       "snowman_frost_barrier"
-    ],
-    "immunities": [
-      "slowness"
     ],
     "damageImmunities": [
       "fall"
-    ]
+    ],
+    "speed": 0.095
   },
   "minecraft:spider": {
     "abilities": [
       "climb",
       "web_immunity",
-      "faction_arthropod"
+      "faction_arthropod",
+      "spider_sun_passive"
     ],
     "actions": [
       "spider_leap",
-      "web_trap"
+      "web_trap",
+      "spider_web_sling"
     ],
     "immunities": [
       "poison"
-    ]
+    ],
+    "speed": 0.108
   },
   "minecraft:squid": {
     "abilities": [
-      "water_breath",
-      "swim",
       "squid_swim",
-      "night_vision",
-      "faction_aquatic"
+      "swim",
+      "faction_aquatic",
+      "morphext:land_stress",
+      "morphext:ink_veil"
     ],
     "actions": [
       "ink_jet"
-    ],
-    "immunities": [
-      "blindness"
-    ],
-    "damageImmunities": [
-      "drown"
     ]
   },
   "minecraft:stray": {
@@ -951,12 +1068,12 @@
     ],
     "actions": [
       "stray_frost_arrow",
-      "frost_shot",
-      "strafe_dodge"
+      "strafe_dodge",
+      "frost_aura"
     ],
     "immunities": [
       "poison",
-      "slowness"
+      "regeneration"
     ]
   },
   "minecraft:vex": {
@@ -966,66 +1083,76 @@
       "faction_illager"
     ],
     "actions": [
-      "vex_phase"
+      "vex_phase",
+      "vex_charge",
+      "vex_haunt"
     ],
     "damageImmunities": [
+      "inFire",
+      "onFire",
+      "lava",
+      "hotFloor",
       "inWall",
       "fall"
-    ]
+    ],
+    "attackDamage": 4.0
   },
   "minecraft:villager": {
     "abilities": [
-      "faction_villager"
+      "faction_villager",
+      "morphext:coward_flight"
     ],
     "actions": [
       "villager_harvest",
-      "villager_panic_alarm"
-    ]
+      "villager_panic_alarm",
+      "morphext:villager_barter"
+    ],
+    "speed": 0.133
   },
   "minecraft:villager_golem": {
     "abilities": [
-      "prevent_fall",
-      "step_up",
-      "iron_knockback_res",
       "iron_golem_nature",
       "faction_villager_relative",
-      "faction_golem_relative"
+      "faction_golem_relative",
+      "morphext:iron_physique"
     ],
     "actions": [
       "heavy_toss",
-      "ground_slam",
-      "iron_fortitude",
-      "iron_repair",
       "golem_flower_gift",
-      "golem_taunt_roar"
-    ],
-    "immunities": [
-      "slowness",
-      "poison"
+      "golem_taunt_roar",
+      "iron_repair"
     ],
     "damageImmunities": [
       "fall",
-      "cactus",
       "drown"
     ],
     "attackDamage": 14.0,
-    "knockbackResistance": 1.0
+    "knockbackResistance": 1.0,
+    "speed": 0.101
   },
   "minecraft:vindication_illager": {
     "abilities": [
-      "faction_illager"
+      "faction_illager",
+      "morphext:axe_mastery"
     ],
     "actions": [
-      "vindicator_axe_charge"
-    ]
+      "vindicator_axe_charge",
+      "vindicator_johnny_rampage"
+    ],
+    "attackDamage": 5.0,
+    "speed": 0.114
   },
   "minecraft:vindicator": {
     "abilities": [
-      "faction_illager"
+      "faction_illager",
+      "morphext:axe_mastery"
     ],
     "actions": [
-      "vindicator_axe_charge"
-    ]
+      "vindicator_axe_charge",
+      "vindicator_johnny_rampage"
+    ],
+    "attackDamage": 5.0,
+    "speed": 0.114
   },
   "minecraft:witch": {
     "abilities": [
@@ -1035,10 +1162,8 @@
     ],
     "actions": [
       "witch_throw_potion",
-      "witch_drink_potion"
-    ],
-    "immunities": [
-      "poison"
+      "witch_drink_potion",
+      "potions"
     ]
   },
   "minecraft:wither": {
@@ -1052,7 +1177,8 @@
       "hungerless",
       "faction_undead_lord",
       "faction_nether_lord",
-      "faction_wither_lord"
+      "faction_wither_lord",
+      "morphext:withering_presence"
     ],
     "actions": [
       "wither_skull",
@@ -1061,7 +1187,8 @@
     ],
     "immunities": [
       "wither",
-      "poison"
+      "poison",
+      "regeneration"
     ],
     "damageImmunities": [
       "wither",
@@ -1080,7 +1207,8 @@
       "rotten",
       "faction_undead",
       "faction_nether",
-      "faction_wither"
+      "faction_wither",
+      "morphext:withering_touch"
     ],
     "actions": [
       "wither_strike",
@@ -1088,24 +1216,30 @@
     ],
     "immunities": [
       "wither",
-      "poison"
+      "poison",
+      "regeneration"
     ],
     "damageImmunities": [
       "inFire",
       "onFire",
       "lava",
+      "hotFloor",
       "wither"
-    ]
+    ],
+    "attackDamage": 4.0
   },
   "minecraft:wolf": {
     "abilities": [
       "faction_animal",
-      "faction_beast"
+      "faction_beast",
+      "morphext:pack_fury"
     ],
     "actions": [
       "wolf_howl",
       "wolf_bite"
-    ]
+    ],
+    "attackDamage": 2.0,
+    "speed": 0.108
   },
   "minecraft:zombie": {
     "abilities": [
@@ -1115,11 +1249,16 @@
       "faction_undead"
     ],
     "actions": [
-      "zombie_infectious_strike"
+      "zombie_infectious_strike",
+      "zombie_reinforce",
+      "zombie_door_break"
     ],
     "immunities": [
-      "poison"
-    ]
+      "poison",
+      "regeneration"
+    ],
+    "attackDamage": 3.0,
+    "armor": 2.0
   },
   "minecraft:zombie_horse": {
     "abilities": [
@@ -1127,18 +1266,19 @@
       "hungerless",
       "rotten",
       "faction_undead",
-      "faction_animal"
+      "faction_animal",
+      "morphext:horse_jump"
     ],
     "actions": [
-      "skeleton_trap_slam"
+      "donkey_rear_kick",
+      "jump",
+      "equine_gallop"
     ],
     "immunities": [
-      "poison"
+      "poison",
+      "regeneration"
     ],
-    "damageImmunities": [
-      "drown",
-      "fall"
-    ]
+    "speed": 0.095
   },
   "minecraft:zombie_pigman": {
     "abilities": [
@@ -1147,69 +1287,85 @@
       "fire_proof",
       "faction_undead",
       "faction_nether_lord",
-      "faction_pigman_lord"
+      "faction_pigman_lord",
+      "morphext:rage_speed"
     ],
     "actions": [
-      "pigman_wrath_shout"
+      "pigman_wrath_shout",
+      "pigman_rage"
     ],
     "immunities": [
-      "fire",
-      "poison"
+      "poison",
+      "regeneration"
     ],
     "damageImmunities": [
       "inFire",
       "onFire",
       "lava",
       "hotFloor"
-    ]
+    ],
+    "attackDamage": 5.0,
+    "armor": 2.0
   },
   "minecraft:zombie_villager": {
     "abilities": [
       "undead",
       "rotten",
+      "hungerless",
       "sun_allergy",
       "faction_undead",
       "faction_villager_relative"
     ],
     "actions": [
+      "zombie_infectious_strike",
       "zombie_villager_cure_plea",
-      "zombie_infectious_strike"
+      "zombie_reinforce"
     ],
     "immunities": [
-      "poison"
-    ]
+      "poison",
+      "regeneration"
+    ],
+    "attackDamage": 3.0,
+    "armor": 2.0,
+    "speed": 0.099
   },
   "mooshroom": {
     "abilities": [
-      "faction_animal"
+      "faction_animal",
+      "morphext:thick_hide"
     ],
     "actions": [
       "mooshroom_harvest"
-    ]
+    ],
+    "speed": 0.095
   },
   "mule": {
     "abilities": [
-      "step_up",
-      "jumping",
-      "faction_animal"
+      "faction_animal",
+      "morphext:horse_jump"
     ],
     "actions": [
-      "donkey_rear_kick"
-    ]
+      "donkey_rear_kick",
+      "jump",
+      "stubborn_bray"
+    ],
+    "speed": 0.092
   },
   "ocelot": {
     "abilities": [
-      "creeper_panic",
-      "prevent_fall",
+      "morphext:creeper_repel",
       "faction_animal",
-      "faction_beast"
+      "faction_beast",
+      "morphext:feline_speed"
     ],
     "actions": [
       "feline_pounce"
     ],
     "damageImmunities": [
       "fall"
-    ]
+    ],
+    "attackDamage": 3.0,
+    "speed": 0.108
   },
   "parrot": {
     "abilities": [
@@ -1220,52 +1376,59 @@
     ],
     "actions": [
       "parrot_mimic",
-      "parrot_dance"
+      "parrot_dance",
+      "parrot_alarm_call"
     ],
     "damageImmunities": [
       "fall"
-    ]
+    ],
+    "attackDamage": 3.0,
+    "speed": 0.095
   },
   "pig": {
     "abilities": [
-      "faction_animal"
+      "faction_animal",
+      "morphext:thick_hide"
     ],
     "actions": [
       "pig_rooting"
-    ]
+    ],
+    "speed": 0.101
   },
   "polar_bear": {
     "abilities": [
       "polar_bear_cub_protection",
       "swim",
       "faction_animal",
-      "faction_beast"
+      "faction_beast",
+      "snow_walk"
     ],
     "actions": [
       "polar_bear_maul"
-    ]
+    ],
+    "attackDamage": 6.0,
+    "speed": 0.101
   },
   "rabbit": {
     "abilities": [
-      "jumping",
-      "prevent_fall",
       "faction_animal"
     ],
     "actions": [
-      "rabbit_hop"
+      "rabbit_hop",
+      "strafe_dodge",
+      "killer_bunny_blood_frenzy"
     ],
-    "damageImmunities": [
-      "fall"
-    ]
+    "attackDamage": 3.0,
+    "speed": 0.108
   },
   "sheep": {
     "abilities": [
-      "prevent_fall",
       "faction_animal"
     ],
     "actions": [
       "sheep_graze",
-      "sheep_shear"
+      "sheep_shear",
+      "ram_charge"
     ],
     "silentActions": [
       "sheep_graze",
@@ -1275,7 +1438,8 @@
       "sheep_graze": false,
       "sheep_shear": false
     },
-    "animateSameMorph": false
+    "animateSameMorph": false,
+    "speed": 0.099
   },
   "shulker": {
     "abilities": [
@@ -1285,7 +1449,8 @@
     "actions": [
       "shulker_bullet",
       "shulker_shell",
-      "shulker_teleport"
+      "shulker_teleport",
+      "shulker_levitation_field"
     ],
     "silentActions": [
       "shulker_shell",
@@ -1300,32 +1465,37 @@
       "levitation"
     ],
     "damageImmunities": [
+      "inFire",
+      "onFire",
+      "lava",
+      "hotFloor",
       "fall"
     ],
-    "armor": 20.0,
     "knockbackResistance": 1.0,
     "speed": 0.08
   },
   "silverfish": {
     "abilities": [
       "climb",
-      "faction_arthropod"
+      "faction_arthropod",
+      "morphext:stone_camouflage"
     ],
     "actions": [
-      "silverfish_swarm_call"
-    ],
-    "immunities": [
-      "slowness"
+      "silverfish_swarm_call",
+      "silverfish"
     ],
     "damageImmunities": [
       "inWall"
-    ]
+    ],
+    "attackDamage": 1.0,
+    "speed": 0.101
   },
   "skeleton": {
     "abilities": [
       "sun_allergy",
       "rotten",
-      "faction_undead"
+      "faction_undead",
+      "morphext:archer_training"
     ],
     "actions": [
       "skeleton_rapid_shot",
@@ -1333,7 +1503,8 @@
       "strafe_dodge"
     ],
     "immunities": [
-      "poison"
+      "poison",
+      "regeneration"
     ]
   },
   "skeleton_horse": {
@@ -1342,102 +1513,100 @@
       "hungerless",
       "rotten",
       "faction_undead",
-      "faction_animal"
+      "faction_animal",
+      "morphext:horse_jump"
     ],
     "actions": [
-      "skeleton_trap_slam"
+      "skeleton_trap_slam",
+      "jump",
+      "equine_gallop"
     ],
     "immunities": [
-      "poison"
+      "poison",
+      "regeneration"
     ],
-    "damageImmunities": [
-      "drown",
-      "fall"
-    ]
+    "speed": 0.095
   },
   "slime": {
     "abilities": [
       "jumping",
       "prevent_fall",
-      "faction_slime"
+      "faction_slime",
+      "morphext:sticky_gel"
     ],
     "actions": [
-      "slime_bounce_slam"
+      "slime_bounce_slam",
+      "jump"
     ],
     "damageImmunities": [
       "fall"
-    ]
+    ],
+    "attackDamage": 2.0,
+    "speed": 0.12
   },
   "snow_golem": {
     "abilities": [
       "snowman_snow_trail",
       "water_allergy",
       "faction_villager",
-      "faction_golem"
+      "faction_golem",
+      "morphext:chill_touch"
     ],
     "actions": [
+      "snowball",
       "snowman_blizzard",
-      "frost_aura",
-      "snowstorm_volley",
       "snowman_frost_barrier"
-    ],
-    "immunities": [
-      "slowness"
     ],
     "damageImmunities": [
       "fall"
-    ]
+    ],
+    "speed": 0.095
   },
   "snowman": {
     "abilities": [
       "snowman_snow_trail",
       "water_allergy",
       "faction_villager",
-      "faction_golem"
+      "faction_golem",
+      "morphext:chill_touch"
     ],
     "actions": [
+      "snowball",
       "snowman_blizzard",
-      "frost_aura",
-      "snowstorm_volley",
       "snowman_frost_barrier"
-    ],
-    "immunities": [
-      "slowness"
     ],
     "damageImmunities": [
       "fall"
-    ]
+    ],
+    "speed": 0.095
   },
   "spider": {
     "abilities": [
       "climb",
       "web_immunity",
-      "faction_arthropod"
+      "faction_arthropod",
+      "spider_sun_passive"
     ],
     "actions": [
       "spider_leap",
-      "web_trap"
+      "web_trap",
+      "spider_web_sling"
     ],
     "immunities": [
       "poison"
-    ]
+    ],
+    "speed": 0.108
   },
   "squid": {
     "abilities": [
-      "water_breath",
-      "swim",
       "squid_swim",
-      "night_vision",
-      "faction_aquatic"
+      "swim",
+      "faction_aquatic",
+      "morphext:land_stress",
+      "morphext:ink_veil"
     ],
     "actions": [
       "ink_jet"
-    ],
-    "immunities": [
-      "blindness"
-    ],
-    "damageImmunities": [
-      "drown"
     ]
   },
   "stray": {
@@ -1449,12 +1618,12 @@
     ],
     "actions": [
       "stray_frost_arrow",
-      "frost_shot",
-      "strafe_dodge"
+      "strafe_dodge",
+      "frost_aura"
     ],
     "immunities": [
       "poison",
-      "slowness"
+      "regeneration"
     ]
   },
   "vex": {
@@ -1464,66 +1633,76 @@
       "faction_illager"
     ],
     "actions": [
-      "vex_phase"
+      "vex_phase",
+      "vex_charge",
+      "vex_haunt"
     ],
     "damageImmunities": [
+      "inFire",
+      "onFire",
+      "lava",
+      "hotFloor",
       "inWall",
       "fall"
-    ]
+    ],
+    "attackDamage": 4.0
   },
   "villager": {
     "abilities": [
-      "faction_villager"
+      "faction_villager",
+      "morphext:coward_flight"
     ],
     "actions": [
       "villager_harvest",
-      "villager_panic_alarm"
-    ]
+      "villager_panic_alarm",
+      "morphext:villager_barter"
+    ],
+    "speed": 0.133
   },
   "villager_golem": {
     "abilities": [
-      "prevent_fall",
-      "step_up",
-      "iron_knockback_res",
       "iron_golem_nature",
       "faction_villager_relative",
-      "faction_golem_relative"
+      "faction_golem_relative",
+      "morphext:iron_physique"
     ],
     "actions": [
       "heavy_toss",
-      "ground_slam",
-      "iron_fortitude",
-      "iron_repair",
       "golem_flower_gift",
-      "golem_taunt_roar"
-    ],
-    "immunities": [
-      "slowness",
-      "poison"
+      "golem_taunt_roar",
+      "iron_repair"
     ],
     "damageImmunities": [
       "fall",
-      "cactus",
       "drown"
     ],
     "attackDamage": 14.0,
-    "knockbackResistance": 1.0
+    "knockbackResistance": 1.0,
+    "speed": 0.101
   },
   "vindication_illager": {
     "abilities": [
-      "faction_illager"
+      "faction_illager",
+      "morphext:axe_mastery"
     ],
     "actions": [
-      "vindicator_axe_charge"
-    ]
+      "vindicator_axe_charge",
+      "vindicator_johnny_rampage"
+    ],
+    "attackDamage": 5.0,
+    "speed": 0.114
   },
   "vindicator": {
     "abilities": [
-      "faction_illager"
+      "faction_illager",
+      "morphext:axe_mastery"
     ],
     "actions": [
-      "vindicator_axe_charge"
-    ]
+      "vindicator_axe_charge",
+      "vindicator_johnny_rampage"
+    ],
+    "attackDamage": 5.0,
+    "speed": 0.114
   },
   "witch": {
     "abilities": [
@@ -1533,10 +1712,8 @@
     ],
     "actions": [
       "witch_throw_potion",
-      "witch_drink_potion"
-    ],
-    "immunities": [
-      "poison"
+      "witch_drink_potion",
+      "potions"
     ]
   },
   "wither": {
@@ -1550,7 +1727,8 @@
       "hungerless",
       "faction_undead_lord",
       "faction_nether_lord",
-      "faction_wither_lord"
+      "faction_wither_lord",
+      "morphext:withering_presence"
     ],
     "actions": [
       "wither_skull",
@@ -1559,7 +1737,8 @@
     ],
     "immunities": [
       "wither",
-      "poison"
+      "poison",
+      "regeneration"
     ],
     "damageImmunities": [
       "wither",
@@ -1578,7 +1757,8 @@
       "rotten",
       "faction_undead",
       "faction_nether",
-      "faction_wither"
+      "faction_wither",
+      "morphext:withering_touch"
     ],
     "actions": [
       "wither_strike",
@@ -1586,24 +1766,30 @@
     ],
     "immunities": [
       "wither",
-      "poison"
+      "poison",
+      "regeneration"
     ],
     "damageImmunities": [
       "inFire",
       "onFire",
       "lava",
+      "hotFloor",
       "wither"
-    ]
+    ],
+    "attackDamage": 4.0
   },
   "wolf": {
     "abilities": [
       "faction_animal",
-      "faction_beast"
+      "faction_beast",
+      "morphext:pack_fury"
     ],
     "actions": [
       "wolf_howl",
       "wolf_bite"
-    ]
+    ],
+    "attackDamage": 2.0,
+    "speed": 0.108
   },
   "zombie": {
     "abilities": [
@@ -1613,11 +1799,16 @@
       "faction_undead"
     ],
     "actions": [
-      "zombie_infectious_strike"
+      "zombie_infectious_strike",
+      "zombie_reinforce",
+      "zombie_door_break"
     ],
     "immunities": [
-      "poison"
-    ]
+      "poison",
+      "regeneration"
+    ],
+    "attackDamage": 3.0,
+    "armor": 2.0
   },
   "zombie_horse": {
     "abilities": [
@@ -1625,18 +1816,19 @@
       "hungerless",
       "rotten",
       "faction_undead",
-      "faction_animal"
+      "faction_animal",
+      "morphext:horse_jump"
     ],
     "actions": [
-      "skeleton_trap_slam"
+      "donkey_rear_kick",
+      "jump",
+      "equine_gallop"
     ],
     "immunities": [
-      "poison"
+      "poison",
+      "regeneration"
     ],
-    "damageImmunities": [
-      "drown",
-      "fall"
-    ]
+    "speed": 0.095
   },
   "zombie_pigman": {
     "abilities": [
@@ -1645,36 +1837,46 @@
       "fire_proof",
       "faction_undead",
       "faction_nether_lord",
-      "faction_pigman_lord"
+      "faction_pigman_lord",
+      "morphext:rage_speed"
     ],
     "actions": [
-      "pigman_wrath_shout"
+      "pigman_wrath_shout",
+      "pigman_rage"
     ],
     "immunities": [
-      "fire",
-      "poison"
+      "poison",
+      "regeneration"
     ],
     "damageImmunities": [
       "inFire",
       "onFire",
       "lava",
       "hotFloor"
-    ]
+    ],
+    "attackDamage": 5.0,
+    "armor": 2.0
   },
   "zombie_villager": {
     "abilities": [
       "undead",
       "rotten",
+      "hungerless",
       "sun_allergy",
       "faction_undead",
       "faction_villager_relative"
     ],
     "actions": [
+      "zombie_infectious_strike",
       "zombie_villager_cure_plea",
-      "zombie_infectious_strike"
+      "zombie_reinforce"
     ],
     "immunities": [
-      "poison"
-    ]
+      "poison",
+      "regeneration"
+    ],
+    "attackDamage": 3.0,
+    "armor": 2.0,
+    "speed": 0.099
   }
 }

@@ -1,5 +1,6 @@
 package aaaa0ggmc.morphext.integration.metamorph.vanilla;
 
+import aaaa0ggmc.morphext.integration.metamorph.ICooldownAction;
 import mchorse.metamorph.api.abilities.IAction;
 import mchorse.metamorph.api.morphs.AbstractMorph;
 import net.minecraft.entity.EntityLivingBase;
@@ -21,7 +22,14 @@ import java.util.List;
  * 驴/骡暴怒后蹬蹄击 (Donkey Rear Kick Action):
  * 扬起铁蹄回旋爆踢，对身后及身侧 3.5 格范围敌人造成 10 点物理重击并爆发强力击退与 3 秒迟缓眩晕。
  */
-public class DonkeyRearKickAction implements IAction {
+public class DonkeyRearKickAction implements IAction, ICooldownAction {
+    public static final String ID = "donkey_rear_kick";
+    public static final int COOLDOWN = 240; // 12 秒（10 伤 AoE + 强击退 + 缓慢 III，必须有冷却）
+
+    @Override
+    public int getCooldownTicks(EntityLivingBase entity) {
+        return COOLDOWN;
+    }
 
     @Override
     public void execute(EntityLivingBase entity, AbstractMorph morph) {

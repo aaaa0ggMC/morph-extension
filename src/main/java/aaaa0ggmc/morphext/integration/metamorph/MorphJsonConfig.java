@@ -136,6 +136,13 @@ public final class MorphJsonConfig {
                         existing.abilities.add(ab);
                     }
                 }
+                if (incoming.removeAbilities != null) {
+                    for (String rm : incoming.removeAbilities) {
+                        if (rm != null && !existing.removeAbilities.contains(rm)) {
+                            existing.removeAbilities.add(rm);
+                        }
+                    }
+                }
                 if (incoming.action != null && !incoming.action.isEmpty()) {
                     existing.action = incoming.action;
                 }
