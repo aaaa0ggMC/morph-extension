@@ -29,6 +29,11 @@ public class CooldownActionProxy implements IAction, ICooldownAction {
         return cooldownTicks;
     }
 
+    /** 供 GatedActionProxy 别名归一：返回被代理的原版动作实现。 */
+    public IAction getDelegate() {
+        return delegate;
+    }
+
     @Override
     public void execute(EntityLivingBase entity, AbstractMorph morph) {
         if (delegate != null) {

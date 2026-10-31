@@ -20,11 +20,17 @@ import net.minecraft.world.WorldServer;
 /**
  * 僵尸村民治愈祈愿 (Zombie Villager Cure Plea Action):
  * 还原原版虚弱状态喂食金苹果净化转化为正常村民的机制。
- * 手持金苹果时消耗 1 枚金苹果，驱散虚弱与诅咒，爆发圣洁金光并获得 30 秒生命恢复 II、抗性提升 II 与力量 I！
+ * 手持金苹果时消耗 1 枚金苹果，驱散虚弱与诅咒，爆发圣洁金光，立即治疗 4 颗心
+ * 并获得 15 秒抗性提升 II 与力量 I！
+ * <p>
+ * 注：亡灵形态自身免疫 regeneration（DENY），恢复改为瞬发生命治疗（heal），
+ * 动作描述与实际效果保持一致；buff 时长（300t）小于冷却（400t），不可无缝常驻。
  */
 public class ZombieVillagerCurePleaAction implements IAction, ICooldownAction {
     public static final String ID = "zombie_villager_cure_plea";
-    public static final int COOLDOWN = 200; // 10 秒（30 秒恢复 II/抗性 II/力量 I，不能无限刷）
+    public static final int COOLDOWN = 400; // 20 秒（buff 15 秒 < 冷却 20 秒，不能无缝续）
+    public static final int BUFF_TICKS = 300; // 15 秒抗性 II + 力量 I
+    public static final float HEAL_AMOUNT = 8.0F; // 立即治疗 4 颗心
 
     @Override
     public int getCooldownTicks(EntityLivingBase entity) {
@@ -65,9 +71,11 @@ public class ZombieVillagerCurePleaAction implements IAction, ICooldownAction {
             if (!world.isRemote) {
                 player.removePotionEffect(MobEffects.WEAKNESS);
                 player.removePotionEffect(MobEffects.HUNGER);
-                player.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 600, 1));
-                player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 600, 1));
-                player.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 600, 0));
+                // 恢复改为瞬发生命治疗：亡灵形态对 REGENERATION 药水免疫（DENY），heal() 不经药水管线，
+                // 与动作描述“立即治疗”一致（CORE-03 死机制修复）。
+                player.heal(HEAL_AMOUNT);
+                player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, BUFF_TICKS, 1));
+                player.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, BUFF_TICKS, 0));
 
                 if (world instanceof WorldServer) {
                     ((WorldServer) world).spawnParticle(EnumParticleTypes.TOTEM,

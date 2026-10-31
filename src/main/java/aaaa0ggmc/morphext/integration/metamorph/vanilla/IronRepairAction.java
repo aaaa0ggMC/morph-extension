@@ -29,17 +29,12 @@ public class IronRepairAction implements IAction, ICooldownAction {
     public static final int COOLDOWN_REPAIR = 100; // 5 秒
     public static final int COOLDOWN_PROMPT = 20; // 1 秒防连点提示
 
-    private final Map<UUID, Integer> dynamicCooldowns = new ConcurrentHashMap<>();
+    private final DynamicActionCooldowns dynamicCooldowns = new DynamicActionCooldowns();
 
     @Override
     public int getCooldownTicks(EntityLivingBase entity) {
-        if (entity != null) {
-            Integer cd = this.dynamicCooldowns.remove(entity.getUniqueID());
-            if (cd != null) {
-                return cd;
-            }
-        }
-        return 0;
+        // 非破坏查询（CORE-17）：任何额外查询不再消费 execute 写入的冷却值
+        return this.dynamicCooldowns.get(entity);
     }
 
     @Override
@@ -92,12 +87,12 @@ public class IronRepairAction implements IAction, ICooldownAction {
                         15, 0.5D, 0.6D, 0.5D, 0.15D);
             }
 
-            this.dynamicCooldowns.put(player.getUniqueID(), COOLDOWN_REPAIR);
+            this.dynamicCooldowns.set(player, COOLDOWN_REPAIR);
         } else {
             // 未手持铁锭提示
             player.sendStatusMessage(new TextComponentTranslation("morphext.action.iron_repair.prompt"), true);
 
-            this.dynamicCooldowns.put(player.getUniqueID(), COOLDOWN_PROMPT);
+            this.dynamicCooldowns.set(player, COOLDOWN_PROMPT);
         }
     }
 }

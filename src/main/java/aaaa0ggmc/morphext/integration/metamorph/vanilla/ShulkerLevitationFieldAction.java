@@ -48,8 +48,15 @@ public class ShulkerLevitationFieldAction implements IAction, ICooldownAction {
         List<EntityLivingBase> targets = world.getEntitiesWithinAABB(EntityLivingBase.class, box,
                 e -> e != null && e != entity && e.isEntityAlive() && !e.isOnSameTeam(entity));
         for (EntityLivingBase target : targets) {
-            target.addPotionEffect(new PotionEffect(MobEffects.LEVITATION, 60, 1, false, true));
-            target.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 60, 0, false, true));
+            // 预检目标免疫：漂浮/缓慢被 DENY 的目标（如潜影贝镜像局）直接跳过（CORE-05）
+            PotionEffect levitation = new PotionEffect(MobEffects.LEVITATION, 60, 1, false, true);
+            PotionEffect slowness = new PotionEffect(MobEffects.SLOWNESS, 60, 0, false, true);
+            if (target.isPotionApplicable(levitation)) {
+                target.addPotionEffect(levitation);
+            }
+            if (target.isPotionApplicable(slowness)) {
+                target.addPotionEffect(slowness);
+            }
         }
 
         if (world instanceof WorldServer) {

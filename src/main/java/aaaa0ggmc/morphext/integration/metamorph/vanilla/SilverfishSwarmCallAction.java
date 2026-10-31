@@ -1,5 +1,6 @@
 package aaaa0ggmc.morphext.integration.metamorph.vanilla;
 
+import aaaa0ggmc.morphext.integration.metamorph.ICooldownAction;
 import mchorse.metamorph.api.abilities.IAction;
 import mchorse.metamorph.api.morphs.AbstractMorph;
 import net.minecraft.block.BlockSilverfish;
@@ -19,8 +20,18 @@ import net.minecraft.world.WorldServer;
  * 蠹虫群体呼唤音波 (Silverfish Swarm Call Action):
  * 释放高频虫鸣震荡波，唤醒周围 12 格内隐藏在怪物蛋方块（蠹虫石）里的蠹虫破石破土支援！
  * 若无蠹虫方块，则释放音波使身周 8 格敌人陷入迟缓与击退。
+ * 每次施放有召唤上限（方块唤醒至多 6 只、兜底至多 2 只），并带固有冷却防无限刷群。
  */
-public class SilverfishSwarmCallAction implements IAction {
+public class SilverfishSwarmCallAction implements IAction, ICooldownAction {
+    public static final String ID = "silverfish_swarm_call";
+    public static final int COOLDOWN = 300; // 15 秒（召唤系动作，冷却红线 ≥200t）
+    public static final int MAX_AWAKENED = 6; // 每次施放的方块唤醒上限
+    public static final int FALLBACK_SUMMONS = 2; // 无方块可唤醒时的兜底召唤数
+
+    @Override
+    public int getCooldownTicks(EntityLivingBase entity) {
+        return COOLDOWN;
+    }
 
     @Override
     public void execute(EntityLivingBase entity, AbstractMorph morph) {
@@ -48,17 +59,17 @@ public class SilverfishSwarmCallAction implements IAction {
                         world.spawnEntity(silverfish);
                         silverfish.spawnExplosionParticle();
                         awakened++;
-                        if (awakened >= 6) break;
+                        if (awakened >= MAX_AWAKENED) break;
                     }
                 }
-                if (awakened >= 6) break;
+                if (awakened >= MAX_AWAKENED) break;
             }
-            if (awakened >= 6) break;
+            if (awakened >= MAX_AWAKENED) break;
         }
 
         // 若无方块被唤醒，生成 2 只临时共生蠹虫助战
         if (awakened == 0) {
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < FALLBACK_SUMMONS; i++) {
                 EntitySilverfish silverfish = new EntitySilverfish(world);
                 silverfish.setLocationAndAngles(
                         entity.posX + (world.rand.nextDouble() - 0.5D) * 1.5D,

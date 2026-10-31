@@ -1,5 +1,6 @@
 package aaaa0ggmc.morphext.integration.metamorph.vanilla;
 
+import aaaa0ggmc.morphext.integration.metamorph.ICooldownAction;
 import mchorse.metamorph.api.abilities.IAction;
 import mchorse.metamorph.api.morphs.AbstractMorph;
 import net.minecraft.entity.EntityLivingBase;
@@ -19,7 +20,14 @@ import java.util.List;
  * 杀手兔血腥飞扑狂袭 (Killer Bunny Blood Frenzy Action):
  * 极速向前暴起前扑 5 格，对落点身前敌人造成 16 点致命真实重创并附带惊吓音效！
  */
-public class KillerBunnyBloodFrenzyAction implements IAction {
+public class KillerBunnyBloodFrenzyAction implements IAction, ICooldownAction {
+    public static final String ID = "killer_bunny_blood_frenzy";
+    public static final int COOLDOWN = 300; // 15 秒（16 免甲伤 + 5 格突进，冷却红线 ≥200t）
+
+    @Override
+    public int getCooldownTicks(EntityLivingBase entity) {
+        return COOLDOWN;
+    }
 
     @Override
     public void execute(EntityLivingBase entity, AbstractMorph morph) {

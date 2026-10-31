@@ -1,5 +1,6 @@
 package aaaa0ggmc.morphext.integration.metamorph.vanilla;
 
+import aaaa0ggmc.morphext.integration.metamorph.ICooldownAction;
 import mchorse.metamorph.api.abilities.IAction;
 import mchorse.metamorph.api.morphs.AbstractMorph;
 import net.minecraft.entity.EntityLivingBase;
@@ -20,7 +21,14 @@ import java.util.List;
  * 远古巨人巨臂横扫 (Giant Colossal Sweep Action):
  * 挥舞擎天巨掌向前横扫半圆，对前方 8 格扇面内全部目标造成 14 点物理重击与剧烈击退。
  */
-public class GiantColossalSweepAction implements IAction {
+public class GiantColossalSweepAction implements IAction, ICooldownAction {
+    public static final String ID = "giant_colossal_sweep";
+    public static final int COOLDOWN = 300; // 15 秒（14 伤 8 格扇面 + 重击退，冷却红线 ≥200t）
+
+    @Override
+    public int getCooldownTicks(EntityLivingBase entity) {
+        return COOLDOWN;
+    }
 
     @Override
     public void execute(EntityLivingBase entity, AbstractMorph morph) {

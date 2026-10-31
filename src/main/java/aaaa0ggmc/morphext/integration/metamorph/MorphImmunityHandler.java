@@ -120,6 +120,11 @@ public final class MorphImmunityHandler {
         // 1. 变身自伤彻底防护 (Self-Hit Immunity)
         // 当发射者/伤害制造者是受害玩家自身时，阻断所有投射物、爆炸与本体系伤害
         if (victim instanceof EntityPlayer) {
+            // 有意的自杀结算（creeper_fuse 自爆致死）为一次性放行窗口：
+            // 通用自伤豁免/宽泛 damageImmunities 不得把自爆变成无代价永生（CORE-06）
+            if (aaaa0ggmc.morphext.integration.metamorph.vanilla.CreeperFuseAction.isDetonationSettlement(victim)) {
+                return false;
+            }
             if (source.getTrueSource() == victim || source.getImmediateSource() == victim) {
                 if (source.isProjectile() || source.isExplosion()) {
                     return true;

@@ -1,5 +1,6 @@
 package aaaa0ggmc.morphext.integration.metamorph.vanilla;
 
+import aaaa0ggmc.morphext.integration.metamorph.ICooldownAction;
 import mchorse.metamorph.api.abilities.IAction;
 import mchorse.metamorph.api.morphs.AbstractMorph;
 import net.minecraft.entity.EntityLivingBase;
@@ -18,7 +19,14 @@ import java.util.List;
  * 远古巨人泰坦震地碎击 (Giant Titanic Slam Action):
  * 巨型足部重踏地面，震撼方圆 10 格，碎石横飞并将周围敌人猛烈震飞至高空，造成 20 点破甲物理重创！
  */
-public class GiantTitanicSlamAction implements IAction {
+public class GiantTitanicSlamAction implements IAction, ICooldownAction {
+    public static final String ID = "giant_titanic_slam";
+    public static final int COOLDOWN = 400; // 20 秒（20 伤 10 格 AoE + 击飞，冷却红线 ≥200t）
+
+    @Override
+    public int getCooldownTicks(EntityLivingBase entity) {
+        return COOLDOWN;
+    }
 
     @Override
     public void execute(EntityLivingBase entity, AbstractMorph morph) {

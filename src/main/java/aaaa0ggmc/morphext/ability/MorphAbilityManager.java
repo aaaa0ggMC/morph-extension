@@ -196,10 +196,14 @@ public final class MorphAbilityManager {
 
         if (newMorphName == null || newMorphName.isEmpty() || newMorph == null) {
             currentMorphs.remove(uuid);
+            // demorph 兜底恢复移速 base（MorphEvent.Post 未触达的路径，如客户端实例/登出）
+            aaaa0ggmc.morphext.variant.VariantEventListener.restorePreMorphSpeed(player);
             return;
         }
 
         currentMorphs.put(uuid, newMorphName);
+        // 记录进入变身前的移速 base（MorphEvent.Post 未触达的路径兜底；已记录时不覆盖）
+        aaaa0ggmc.morphext.variant.VariantEventListener.notePreMorphSpeed(player);
         MorphContext newContext = new MorphContext(player, newMorph);
 
         // 修复 0 移速生物原地定死与潜影贝锁定
@@ -289,12 +293,41 @@ public final class MorphAbilityManager {
             }
             if (currentMorph != null) {
                 mchorse.metamorph.api.MorphSettings settings = currentMorph.getSettings();
-                if (settings != null && settings.speed <= 0.001F) {
+                if (settings != null) {
                     MorphAbilityDefinition def = MorphJsonConfig.get(morphName);
-                    float newSpeed = (def != null && def.speed != null) ? def.speed : 0.08F;
-                    settings.speed = newSpeed;
-                    settings.hasSpeed = true;
+                    float newSpeed;
+                    if (def != null && def.speed != null) {
+                        // 每 tick 权威对齐 JSON 声明速度：needSettingsUpdate 重建（实体派生 0.4x 速度）、
+                        // mixin 注入未命中或跨逻辑端单次写入导致的 speed 漂移都在此收敛为唯一值。
+                        newSpeed = def.speed;
+                    } else if (settings.speed <= 0.001F) {
+                        newSpeed = 0.08F;
+                    } else {
+                        newSpeed = settings.speed;
+                    }
+                    if (settings.speed != newSpeed) {
+                        settings.speed = newSpeed;
+                        settings.hasSpeed = true;
+                    }
                     player.getEntityAttribute(net.minecraft.entity.SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(newSpeed);
+
+                    // 血量权威收敛（与速度收敛同模式）：attributes.maxHealth（绝对总血量覆盖）> 变体动态血量 > settings.health。
+                    // 同时写 settings.health 与 MAX_HEALTH base，使 metamorph Morphing.update 每 tick 写入同一值，
+                    // 变体动态血量（幼年 60%、变体固定血量）不再被每 tick 踏回。
+                    int targetHealth = Math.round(aaaa0ggmc.morphext.variant.VariantEventListener
+                            .resolveTargetMaxHealth(player, currentMorph, def));
+                    if (settings.health != targetHealth) {
+                        settings.health = targetHealth;
+                    }
+                    net.minecraft.entity.ai.attributes.IAttributeInstance hp =
+                            player.getEntityAttribute(net.minecraft.entity.SharedMonsterAttributes.MAX_HEALTH);
+                    if (hp != null && Math.round(hp.getBaseValue()) != targetHealth) {
+                        hp.setBaseValue(targetHealth);
+                    }
+                    if (!player.world.isRemote && player.getHealth() > player.getMaxHealth()) {
+                        // 血条溢出钳制：血量上限变化后当前血量不得超过上限（防治疗时硬拍回落）
+                        player.setHealth(player.getMaxHealth());
+                    }
                 }
             }
 
@@ -429,6 +462,7 @@ public final class MorphAbilityManager {
     @SubscribeEvent
     public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.player != null) {
+            aaaa0ggmc.morphext.integration.metamorph.vanilla.GatedActionProxy.clear(event.player.getUniqueID());
             handleMorphChange(event.player, currentMorphs.get(event.player.getUniqueID()), null, null);
         }
     }

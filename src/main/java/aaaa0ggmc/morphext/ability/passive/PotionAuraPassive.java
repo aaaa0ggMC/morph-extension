@@ -52,7 +52,11 @@ public class PotionAuraPassive extends AbstractPassiveAbility {
         List<EntityLivingBase> nearby = player.world.getEntitiesWithinAABB(EntityLivingBase.class, box,
                 e -> e != null && e != player && e.isEntityAlive() && !e.isOnSameTeam(player));
         for (EntityLivingBase target : nearby) {
-            target.addPotionEffect(new PotionEffect(potion, durationTicks, amplifier, false, true));
+            // 预检目标免疫：被 DENY 的目标直接跳过（镜像局光环对冲互废时不再空转加-撕）
+            PotionEffect effect = new PotionEffect(potion, durationTicks, amplifier, false, true);
+            if (target.isPotionApplicable(effect)) {
+                target.addPotionEffect(effect);
+            }
         }
     }
 }

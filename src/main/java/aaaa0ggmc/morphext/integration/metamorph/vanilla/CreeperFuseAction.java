@@ -43,6 +43,14 @@ public class CreeperFuseAction implements IAction, ICooldownAction {
 
     private static final Set<UUID> PRIMED_PLAYERS = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
+    /** 正在结算的自爆死亡伤害（一次性放行标记）：豁免管线不得拦截有意的自杀结算（CORE-06）。 */
+    private static final Set<UUID> DETONATION_SETTLEMENT = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+    /** 自爆结算伤害是否处于放行窗口（MorphImmunityHandler 自伤豁免查询）。 */
+    public static boolean isDetonationSettlement(EntityLivingBase entity) {
+        return entity != null && DETONATION_SETTLEMENT.contains(entity.getUniqueID());
+    }
+
     public static boolean isPrimed(EntityPlayer player) {
         return player != null && PRIMED_PLAYERS.contains(player.getUniqueID());
     }
@@ -164,8 +172,15 @@ public class CreeperFuseAction implements IAction, ICooldownAction {
             if (entity instanceof EntityPlayer) {
                 EntityPlayer player = (EntityPlayer) entity;
                 if (!player.isCreative()) {
+                    // 结算伤害走一次性放行标记：自伤豁免（投射物/爆炸自伤取消）不得拦截有意的自杀结算，
+                    // 否则第一段必空、只能靠 OUT_OF_WORLD 兜底致死，死亡归因变成“掉出世界”（CORE-06）。
                     DamageSource deathSource = DamageSource.causeExplosionDamage(explosion);
-                    player.attackEntityFrom(deathSource, Float.MAX_VALUE);
+                    DETONATION_SETTLEMENT.add(uuid);
+                    try {
+                        player.attackEntityFrom(deathSource, Float.MAX_VALUE);
+                    } finally {
+                        DETONATION_SETTLEMENT.remove(uuid);
+                    }
                     if (player.isEntityAlive()) {
                         player.attackEntityFrom(DamageSource.OUT_OF_WORLD, Float.MAX_VALUE);
                     }

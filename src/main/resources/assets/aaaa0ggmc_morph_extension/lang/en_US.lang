@@ -235,6 +235,10 @@ morphext.passive.immunity_damage.name=Damage Immunity
 morphext.passive.immunity_damage.desc=Complete immunity to specific damage types.
 morphext.passive.immunity_potion.name=Potion Immunity
 morphext.passive.immunity_potion.desc=Complete immunity to specific harmful potions and plagues.
+morphext.passive.fire_proof.name=Fire Immunity
+morphext.passive.fire_proof.desc=Complete immunity to fire, lava and burning damage.
+morphext.passive.morphext.fire_proof.name=Fire Immunity
+morphext.passive.morphext.fire_proof.desc=Complete immunity to fire, lava and burning damage.
 
 # Unified Vanilla Mob Actions (UAPA)
 morphext.msg.creeper_defused=§e[Creeper] Fuse successfully extinguished and defused!
@@ -558,7 +562,7 @@ morphext.metamorph.desc.silverfish_swarm_call=Emit high-frequency acoustic shock
 morphext.metamorph.action.donkey_rear_kick=Donkey Rear Kick
 morphext.metamorph.desc.donkey_rear_kick=Kick powerfully backwards with iron hooves, dealing 10 physical damage, knockback and 3s stun!
 morphext.metamorph.action.zombie_villager_cure_plea=Cure Plea
-morphext.metamorph.desc.zombie_villager_cure_plea=Hold a Golden Apple to cure weakness and curse, gaining Regeneration II, Resistance II and Strength I for 30s!
+morphext.metamorph.desc.zombie_villager_cure_plea=Hold a Golden Apple to consume it, dispel weakness and curse, instantly heal 4 hearts and gain Resistance II and Strength I for 15s!
 morphext.action.zombie_villager_cure.need_apple=§cYou must hold a Golden Apple to activate Cure Plea!
 
 # Ancient Giants & Fierce Beasts

@@ -29,17 +29,12 @@ public class CowMilkAction implements IAction, ICooldownAction {
     public static final int COOLDOWN_MILK = 100; // 5 秒
     public static final int COOLDOWN_RUMINATE = 300; // 15 秒
 
-    private final Map<UUID, Integer> dynamicCooldowns = new ConcurrentHashMap<>();
+    private final DynamicActionCooldowns dynamicCooldowns = new DynamicActionCooldowns();
 
     @Override
     public int getCooldownTicks(EntityLivingBase entity) {
-        if (entity != null) {
-            Integer cd = this.dynamicCooldowns.remove(entity.getUniqueID());
-            if (cd != null) {
-                return cd;
-            }
-        }
-        return 0;
+        // 非破坏查询（CORE-17）：任何额外查询不再消费 execute 写入的冷却值
+        return this.dynamicCooldowns.get(entity);
     }
 
     @Override
@@ -90,7 +85,7 @@ public class CowMilkAction implements IAction, ICooldownAction {
                         15, 0.3D, 0.3D, 0.3D, 0.05D);
             }
 
-            this.dynamicCooldowns.put(player.getUniqueID(), COOLDOWN_MILK);
+            this.dynamicCooldowns.set(player, COOLDOWN_MILK);
         } else {
             // 未手持空桶：触发反刍
             world.playSound(null, player.posX, player.posY, player.posZ,
@@ -119,7 +114,7 @@ public class CowMilkAction implements IAction, ICooldownAction {
 
             player.sendStatusMessage(new TextComponentTranslation("morphext.action.cow_milk.prompt"), true);
 
-            this.dynamicCooldowns.put(player.getUniqueID(), COOLDOWN_RUMINATE);
+            this.dynamicCooldowns.set(player, COOLDOWN_RUMINATE);
         }
     }
 }

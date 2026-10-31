@@ -47,17 +47,13 @@ public class SheepShearAction implements IAction, ICooldownAction, IMorphAnimati
     public static final int COOLDOWN_NATURAL = 600;  // 30 秒（自然脱落）
     public static final int COOLDOWN_PROMPT = 20;    // 1 秒防连点
 
-    private final Map<UUID, Integer> dynamicCooldowns = new ConcurrentHashMap<>();
+    private final DynamicActionCooldowns dynamicCooldowns = new DynamicActionCooldowns();
 
     @Override
     public int getCooldownTicks(EntityLivingBase entity) {
-        if (entity != null) {
-            Integer cd = this.dynamicCooldowns.remove(entity.getUniqueID());
-            if (cd != null) {
-                return cd;
-            }
-        }
-        return COOLDOWN_NATURAL;
+        // 非破坏查询（CORE-17）：任何额外查询不再消费 execute 写入的冷却值
+        int dynamic = this.dynamicCooldowns.get(entity);
+        return dynamic > 0 ? dynamic : COOLDOWN_NATURAL;
     }
 
     @Override
@@ -95,7 +91,7 @@ public class SheepShearAction implements IAction, ICooldownAction, IMorphAnimati
             world.playSound(null, player.posX, player.posY, player.posZ,
                     SoundEvents.ENTITY_SHEEP_AMBIENT, SoundCategory.PLAYERS, 1.0F, 1.0F);
             player.sendStatusMessage(new TextComponentTranslation("morphext.action.sheep_shear.no_wool"), true);
-            this.dynamicCooldowns.put(player.getUniqueID(), COOLDOWN_PROMPT);
+            this.dynamicCooldowns.set(player, COOLDOWN_PROMPT);
             return;
         }
 
@@ -166,6 +162,6 @@ public class SheepShearAction implements IAction, ICooldownAction, IMorphAnimati
         }
 
         player.swingArm(EnumHand.MAIN_HAND);
-        this.dynamicCooldowns.put(player.getUniqueID(), cd);
+        this.dynamicCooldowns.set(player, cd);
     }
 }

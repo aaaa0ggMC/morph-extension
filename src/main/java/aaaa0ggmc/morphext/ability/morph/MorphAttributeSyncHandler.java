@@ -190,6 +190,13 @@ public final class MorphAttributeSyncHandler {
         try {
             IAttributeInstance inst = getPlayerAttributeByName(player, attrName);
             if (inst != null) {
+                if (inst.getAttribute() == SharedMonsterAttributes.MAX_HEALTH) {
+                    // maxHealth 语义为“绝对总血量覆盖”（不再是 Operation 0 增量）：
+                    // 直接写 base 与 metamorph Morphing.update 的每 tick 写入同值收敛，
+                    // 由 MorphAbilityManager 每 tick 权威收敛维持（含变体动态血量优先级）。
+                    inst.setBaseValue(Math.round(value));
+                    return;
+                }
                 UUID uuid = DYNAMIC_ATTR_UUIDS.computeIfAbsent(attrName, k -> UUID.nameUUIDFromBytes(k.getBytes()));
                 inst.removeModifier(uuid);
                 inst.applyModifier(new AttributeModifier(uuid, "Morph Custom Attr " + attrName, value, 0));
@@ -197,6 +204,23 @@ public final class MorphAttributeSyncHandler {
         } catch (Throwable t) {
             LOGGER.warn("[morphext-attr] Failed to apply custom attribute {}: {}", attrName, t.getMessage());
         }
+    }
+
+    /**
+     * 读取 JSON 声明的绝对最大生命覆盖值（{@code attributes.maxHealth} / {@code attributes.generic.maxHealth}）。
+     *
+     * <p>语义（自血量权威收敛起定死）：该值是<b>绝对总血量</b>，不是增量；
+     * 未声明时返回 null，由变体动态血量或 {@code settings.health} 依次兜底。</p>
+     */
+    public static Double getMaxHealthOverride(MorphAbilityDefinition def) {
+        if (def == null || def.attributes == null || def.attributes.isEmpty()) {
+            return null;
+        }
+        Double value = def.attributes.get("maxHealth");
+        if (value == null) {
+            value = def.attributes.get("generic.maxHealth");
+        }
+        return (value != null && value > 0.0D) ? value : null;
     }
 
     private static IAttributeInstance getPlayerAttributeByName(EntityPlayer player, String attrName) {

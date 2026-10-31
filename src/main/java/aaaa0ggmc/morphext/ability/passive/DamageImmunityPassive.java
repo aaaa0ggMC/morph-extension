@@ -33,7 +33,9 @@ public class DamageImmunityPassive extends AbstractPassiveAbility {
     }
 
     public DamageImmunityPassive(String id, boolean playDeflectSound, String... types) {
-        this(id, "morphext.passive." + id + ".name", "morphext.passive." + id + ".desc", ItemStack.EMPTY, playDeflectSound, types);
+        // lang 键统一用点号形态（morphext.passive.morphext.xxx.name），冒号 id 归一化
+        this(id, "morphext.passive." + id.replace(':', '.') + ".name",
+                "morphext.passive." + id.replace(':', '.') + ".desc", ItemStack.EMPTY, playDeflectSound, types);
     }
 
     public Set<String> getImmuneTypes() {

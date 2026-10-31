@@ -235,6 +235,10 @@ morphext.passive.immunity_damage.name=元素伤害免疫
 morphext.passive.immunity_damage.desc=针对特定环境或元素的完全伤害豁免。
 morphext.passive.immunity_potion.name=药水瘟疫免疫
 morphext.passive.immunity_potion.desc=免疫特定有害药水与致命深渊瘟疫。
+morphext.passive.fire_proof.name=火焰免疫
+morphext.passive.fire_proof.desc=免疫火焰、岩浆与燃烧伤害。
+morphext.passive.morphext.fire_proof.name=火焰免疫
+morphext.passive.morphext.fire_proof.desc=免疫火焰、岩浆与燃烧伤害。
 
 # 新增敌对与进阶生物专属动作 (UAPA)
 morphext.msg.creeper_defused=§e[苦力怕] 已及时掐灭引信，取消自爆！
@@ -558,7 +562,7 @@ morphext.metamorph.desc.silverfish_swarm_call=释放高频虫鸣震荡波，唤�
 morphext.metamorph.action.donkey_rear_kick=铁蹄回旋爆踢
 morphext.metamorph.desc.donkey_rear_kick=扬起铁蹄向身后猛力回旋踢击，对 3.5 格内敌人造成 10 点纯正物理击退重创并附加 3 秒眩晕！
 morphext.metamorph.action.zombie_villager_cure_plea=自愈祈愿
-morphext.metamorph.desc.zombie_villager_cure_plea=手持金苹果时消耗 1 枚金苹果驱散虚弱与诅咒，爆发圣洁金光并获得 30 秒生命恢复 II、抗性提升 II 与力量 I！
+morphext.metamorph.desc.zombie_villager_cure_plea=手持金苹果时消耗 1 枚金苹果驱散虚弱与诅咒，爆发圣洁金光，立即治疗 4 颗心并获得 15 秒抗性提升 II 与力量 I！
 morphext.action.zombie_villager_cure.need_apple=§c需要手持金苹果才能触发自愈祈愿！
 
 # 远古巨人与狂暴生灵专精

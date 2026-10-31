@@ -32,7 +32,9 @@ public class AttributeModifierPassive extends AbstractPassiveAbility {
     }
 
     public AttributeModifierPassive(String id, IAttribute attribute, UUID modifierId, double amount, int operation) {
-        this(id, "morphext.passive." + id + ".name", "morphext.passive." + id + ".desc", ItemStack.EMPTY,
+        // lang 键统一用点号形态（morphext.passive.morphext.xxx.name），冒号 id 归一化
+        this(id, "morphext.passive." + id.replace(':', '.') + ".name",
+                "morphext.passive." + id.replace(':', '.') + ".desc", ItemStack.EMPTY,
                 attribute, modifierId, id, amount, operation);
     }
 

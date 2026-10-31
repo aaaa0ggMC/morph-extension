@@ -30,17 +30,12 @@ public class PigRootingAction implements IAction, ICooldownAction {
     public static final int COOLDOWN_ROOT = 600; // 30 秒
     public static final int COOLDOWN_PROMPT = 20; // 1 秒防连点提示
 
-    private final Map<UUID, Integer> dynamicCooldowns = new ConcurrentHashMap<>();
+    private final DynamicActionCooldowns dynamicCooldowns = new DynamicActionCooldowns();
 
     @Override
     public int getCooldownTicks(EntityLivingBase entity) {
-        if (entity != null) {
-            Integer cd = this.dynamicCooldowns.remove(entity.getUniqueID());
-            if (cd != null) {
-                return cd;
-            }
-        }
-        return 0;
+        // 非破坏查询（CORE-17）：任何额外查询不再消费 execute 写入的冷却值
+        return this.dynamicCooldowns.get(entity);
     }
 
     private static boolean isRootable(Block block) {
@@ -96,7 +91,7 @@ public class PigRootingAction implements IAction, ICooldownAction {
             }
             entity.entityDropItem(loot, 0.1F);
 
-            this.dynamicCooldowns.put(entity.getUniqueID(), COOLDOWN_ROOT);
+            this.dynamicCooldowns.set(entity, COOLDOWN_ROOT);
         } else {
             // 未在适宜地面上拱地
             world.playSound(null, entity.posX, entity.posY, entity.posZ,
@@ -106,7 +101,7 @@ public class PigRootingAction implements IAction, ICooldownAction {
                 ((EntityPlayer) entity).sendStatusMessage(new TextComponentTranslation("morphext.action.pig_rooting.prompt"), true);
             }
 
-            this.dynamicCooldowns.put(entity.getUniqueID(), COOLDOWN_PROMPT);
+            this.dynamicCooldowns.set(entity, COOLDOWN_PROMPT);
         }
     }
 }

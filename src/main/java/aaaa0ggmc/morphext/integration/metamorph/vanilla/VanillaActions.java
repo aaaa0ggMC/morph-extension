@@ -204,6 +204,8 @@ public final class VanillaActions {
     }
 
     private static void register(String id, IAction action) {
-        MorphManager.INSTANCE.actions.put(id, action);
+        // 统一包服务端冷却守门代理：metamorph 原生 action key 直调通道也按 ICooldownAction 冷却放行，
+        // morphext 统一执行通道（ServerAbilityService 已强制冷却）不受影响。见 GatedActionProxy。
+        MorphManager.INSTANCE.actions.put(id, GatedActionProxy.wrap(action));
     }
 }

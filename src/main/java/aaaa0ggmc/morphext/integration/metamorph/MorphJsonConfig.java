@@ -205,6 +205,36 @@ public final class MorphJsonConfig {
                 if (incoming.speed != null) {
                     existing.speed = incoming.speed;
                 }
+                // 合并语义补齐（CORE-15）：以下字段此前不参与合并（先到者胜、后者静默丢弃），
+                // 双键漂移或跨文件覆盖时会吞字段；补齐为“后到非 null 者胜 / 列表并集”，与 speed/hands 同语义。
+                if (incoming.attackDamage != null) {
+                    existing.attackDamage = incoming.attackDamage;
+                }
+                if (incoming.armor != null) {
+                    existing.armor = incoming.armor;
+                }
+                if (incoming.armorToughness != null) {
+                    existing.armorToughness = incoming.armorToughness;
+                }
+                if (incoming.knockbackResistance != null) {
+                    existing.knockbackResistance = incoming.knockbackResistance;
+                }
+                if (incoming.attributes != null && !incoming.attributes.isEmpty()) {
+                    existing.attributes.putAll(incoming.attributes);
+                }
+                if (incoming.actionAnimation != null && !incoming.actionAnimation.isEmpty()) {
+                    existing.actionAnimation.putAll(incoming.actionAnimation);
+                }
+                if (incoming.silentActions != null) {
+                    for (String silent : incoming.silentActions) {
+                        if (silent != null && !existing.silentActions.contains(silent)) {
+                            existing.silentActions.add(silent);
+                        }
+                    }
+                }
+                if (incoming.animateSameMorph != null) {
+                    existing.animateSameMorph = incoming.animateSameMorph;
+                }
             }
 
             // 双轨双向归一化索引映射 (Dual-Track Normalization)

@@ -36,9 +36,17 @@ public class OnAttackEffectPassive extends AbstractPassiveAbility {
 
     @Override
     public void onAttack(EntityPlayer player, EntityLivingBase target, DamageSource source, float amount, MorphContext context) {
-        if (player == null || player.world == null || player.world.isRemote || target == null || amount <= 0 || potion == null) {
+        if (player == null || player.world == null || player.world.isRemote || target == null || amount <= 0 || potion == null
+                || MeleeRetaliatePassive.isReflectDamage(source)) {
             return;
         }
-        target.addPotionEffect(new PotionEffect(potion, durationTicks, amplifier, false, true));
+        PotionEffect effect = new PotionEffect(potion, durationTicks, amplifier, false, true);
+        if (target.isPotionApplicable(effect)) {
+            target.addPotionEffect(effect);
+        } else {
+            // 镜像局（免疫对手）降级为小额直接伤害，避免命中附效整套互废（CORE-05）；
+            // 反噬降级伤害带类型标记，不再触发后续附效/反噬（防链式递归）。
+            target.attackEntityFrom(MeleeRetaliatePassive.reflectSource(player), 2.0F);
+        }
     }
 }

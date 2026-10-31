@@ -93,7 +93,9 @@ public final class HumanStatureRenderHandler {
         if (cap == null || cap.getCurrentMorph() == null) return;
         HumanStatureAbility.Mode mode = HumanStatureAbility.getClientMode();
         if (mode != HumanStatureAbility.Mode.OFF) {
-            player.eyeHeight = player.getDefaultEyeHeight();
+            // 渲染帧节奏同步钉住碰撞箱与视线高度（与 PlayerTickEvent.END 的每 tick 写入同值），
+            // 防止 Metamorph 每 tick 写入的形态实体尺寸在帧间泄漏进相机/碰撞。
+            aaaa0ggmc.morphext.variant.VariantEventListener.pinStatureBox(player);
         } else if (!mchorse.metamorph.Metamorph.disablePov.get()) {
             mchorse.metamorph.api.morphs.AbstractMorph morph = cap.getCurrentMorph();
             float factor = morph.hitbox.enabled ? morph.hitbox.eye : 0.9F;

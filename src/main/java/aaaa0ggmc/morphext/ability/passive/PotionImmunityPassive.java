@@ -29,7 +29,9 @@ public class PotionImmunityPassive extends AbstractPassiveAbility {
     }
 
     public PotionImmunityPassive(String id, String... potionNames) {
-        this(id, "morphext.passive." + id + ".name", "morphext.passive." + id + ".desc", ItemStack.EMPTY, potionNames);
+        // lang 键统一用点号形态（morphext.passive.morphext.xxx.name），冒号 id 归一化
+        this(id, "morphext.passive." + id.replace(':', '.') + ".name",
+                "morphext.passive." + id.replace(':', '.') + ".desc", ItemStack.EMPTY, potionNames);
     }
 
     public Set<String> getImmunePotionNames() {

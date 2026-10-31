@@ -89,10 +89,14 @@ public final class VariantEventListener {
 
         AbstractMorph morph = event.morph;
         if (morph == null) {
-            // 解除变身：恢复默认尺寸
+            // 解除变身：恢复默认尺寸与进入变身前的移速 base（否则 morph 的 settings.speed 会永久残留）
             player.eyeHeight = player.getDefaultEyeHeight();
+            restorePreMorphSpeed(player);
             return;
         }
+
+        // 记录进入变身前的 MOVEMENT_SPEED base（仅首次记录，morph 间切换不覆盖），demorph 时恢复
+        notePreMorphSpeed(player);
 
         // 全面同步生物的攻击力、护甲、韧性、击退抗性等战斗属性 (可通过 morph_abilities.json 自定义)
         aaaa0ggmc.morphext.ability.morph.MorphAttributeSyncHandler.applyAttributes(player, morph);
@@ -121,16 +125,16 @@ public final class VariantEventListener {
         NBTTagCompound data = (morph instanceof EntityMorph) ? ((EntityMorph) morph).getEntityData() : null;
         String variantKey = MorphVariantHelper.getVariantKey(morph);
 
-        if (handler != null) {
-            // 1. 动态生命值调整
-            if (!player.world.isRemote && morph.getSettings() != null) {
-                float defHealth = morph.getSettings().health;
-                float dynamicHealth = handler.getMaxHealth(variantKey, data, defHealth);
-                if (dynamicHealth > 0.0F && dynamicHealth != defHealth) {
-                    applyDynamicHealth(player, dynamicHealth);
-                }
-            }
+        // 1. 血量权威解析（绝对覆盖 > 变体动态 > settings.health）：一次性应用并保持血量比例换算；
+        //    此后由 MorphAbilityManager 每 tick 权威收敛，metamorph Morphing.update 的每 tick 写入与之同值。
+        if (!player.world.isRemote && morph.getSettings() != null) {
+            aaaa0ggmc.morphext.integration.metamorph.MorphAbilityDefinition def =
+                    aaaa0ggmc.morphext.integration.metamorph.MorphJsonConfig.get(morph.name);
+            float targetHealth = resolveTargetMaxHealth(player, morph, def);
+            applyDynamicHealth(player, morph, targetHealth);
+        }
 
+        if (handler != null) {
             // 2. 属性修改器注入（如移速加成）
             Map<IAttribute, AttributeModifier> modifiers = handler.getAttributeModifiers(variantKey, data);
             if (modifiers != null && !modifiers.isEmpty()) {
@@ -186,16 +190,10 @@ public final class VariantEventListener {
 
         // 身形规整 (Human Stature) 对所有变身生效，无论该生物是否有变种处理器
         HumanStatureAbility.Mode statureMode = getStatureMode(player);
-        if (statureMode == HumanStatureAbility.Mode.HUMAN_MODEL) {
-            setBox(player, 0.6F, 1.8F, player.getDefaultEyeHeight());
-            return;
-        }
-        if (statureMode == HumanStatureAbility.Mode.SMART_SCALE) {
-            float baseH = current.getHeight(player);
-            float baseW = current.getWidth(player);
-            float ratio = baseH > 0.1F ? (baseW / baseH) : 0.33F;
-            float smartW = Math.max(0.6F, Math.min(1.0F, 1.8F * ratio));
-            setBox(player, smartW, 1.8F, 1.62F);
+        if (statureMode == HumanStatureAbility.Mode.HUMAN_MODEL
+                || statureMode == HumanStatureAbility.Mode.SMART_SCALE) {
+            // 唯一写入方：与渲染帧节奏的 pinStatureBox 同值（LOWEST 收尾覆盖 Metamorph 的形态尺寸写入）
+            pinStatureBox(player);
             return;
         }
 
@@ -223,17 +221,9 @@ public final class VariantEventListener {
 
     private static void updatePlayerScale(EntityPlayer player, AbstractMorph morph, float scale) {
         HumanStatureAbility.Mode statureMode = getStatureMode(player);
-        if (statureMode == HumanStatureAbility.Mode.HUMAN_MODEL) {
-            setBox(player, 0.6F, 1.8F, player.getDefaultEyeHeight());
-            return;
-        }
-
-        if (statureMode == HumanStatureAbility.Mode.SMART_SCALE) {
-            float baseH = morph.getHeight(player);
-            float baseW = morph.getWidth(player);
-            float ratio = baseH > 0.1F ? (baseW / baseH) : 0.33F;
-            float smartW = Math.max(0.6F, Math.min(1.0F, 1.8F * ratio));
-            setBox(player, smartW, 1.8F, 1.62F);
+        if (statureMode != HumanStatureAbility.Mode.OFF) {
+            // 单一写入方：HUMAN_MODEL / SMART_SCALE 统一走 pinStatureBox（含姿态感知尺寸）
+            pinStatureBox(player);
             return;
         }
 
@@ -250,7 +240,45 @@ public final class VariantEventListener {
         setBox(player, newWidth, newHeight, Math.max(0.2F, morph.getEyeHeight(player) * scale));
     }
 
-    private static void setBox(EntityPlayer player, float w, float h, float eyeHeight) {
+    /**
+     * 每 tick（PlayerTickEvent.END，LOWEST 收尾）与每渲染帧（RenderTickEvent）双节奏钉住
+     * HUMAN_MODEL / SMART_SCALE 模式下的碰撞箱与视线高度，作为该模式下唯一写入方；
+     * Metamorph AbstractMorph.update 每 tick 写入的形态实体尺寸被本方法条件覆盖。
+     * <p>
+     * 姿态感知（对齐原版 EntityPlayer.updateSize）：潜行 1.65 高、鞘翅 0.6×0.6、睡眠 0.2×0.2，
+     * 不再恒写 0.6×1.8 覆盖潜行/鞘翅尺寸（CORE-02 残余收口）。
+     */
+    public static void pinStatureBox(EntityPlayer player) {
+        if (player == null) {
+            return;
+        }
+        HumanStatureAbility.Mode mode = getStatureMode(player);
+        float width = 0.6F;
+        float height = 1.8F;
+        if (mode == HumanStatureAbility.Mode.HUMAN_MODEL
+                || mode == HumanStatureAbility.Mode.SMART_SCALE) {
+            if (mode == HumanStatureAbility.Mode.SMART_SCALE) {
+                IMorphing morphing = Morphing.get(player);
+                AbstractMorph current = morphing == null ? null : morphing.getCurrentMorph();
+                float baseH = current == null ? 1.8F : current.getHeight(player);
+                float baseW = current == null ? 0.6F : current.getWidth(player);
+                float ratio = baseH > 0.1F ? (baseW / baseH) : 0.33F;
+                width = Math.max(0.6F, Math.min(1.0F, 1.8F * ratio));
+            }
+            if (player.isElytraFlying()) {
+                width = 0.6F;
+                height = 0.6F;
+            } else if (player.isPlayerSleeping()) {
+                width = 0.2F;
+                height = 0.2F;
+            } else if (player.isSneaking()) {
+                height = 1.65F;
+            }
+            setBox(player, width, height, player.getDefaultEyeHeight());
+        }
+    }
+
+    static void setBox(EntityPlayer player, float w, float h, float eyeHeight) {
         if (Math.abs(player.width - w) > 0.01F || Math.abs(player.height - h) > 0.01F) {
             player.width = w;
             player.height = h;
@@ -279,13 +307,69 @@ public final class VariantEventListener {
         return HumanStatureAbility.Mode.OFF;
     }
 
-    private static void applyDynamicHealth(EntityPlayer player, float dynamicMaxHealth) {
+    /**
+     * 血量权威解析：最终最大生命 = def.attributes.maxHealth（绝对覆盖）→ 变体动态血量 → settings.health。
+     * 供变身一次性应用（onMorphPost）与 MorphAbilityManager 每 tick 权威收敛共用，保证两条路径同值。
+     */
+    public static float resolveTargetMaxHealth(EntityPlayer player, AbstractMorph morph,
+                                               aaaa0ggmc.morphext.integration.metamorph.MorphAbilityDefinition def) {
+        Double override = aaaa0ggmc.morphext.ability.morph.MorphAttributeSyncHandler.getMaxHealthOverride(def);
+        if (override != null) {
+            return (float) Math.round(override);
+        }
+        Float dynamic = resolveVariantMaxHealth(player, morph);
+        if (dynamic != null) {
+            return dynamic;
+        }
+        return morph.getSettings() != null ? morph.getSettings().health : 20.0F;
+    }
+
+    /**
+     * 变体动态血量解析（如幼年 60%、变体固定血量）；无变体或换算结果与原始一致时返回 null。
+     * 换算基准必须是形态原始血量——已收敛的 settings.health 不能重复代入（60% 变体会逐级塌缩），
+     * 故 EntityMorph 优先取捕获实体的最大生命作为原始基准。
+     */
+    public static Float resolveVariantMaxHealth(EntityPlayer player, AbstractMorph morph) {
+        if (player == null || morph == null) {
+            return null;
+        }
+        IVariantHandler handler = VariantRegistry.getHandler(morph);
+        if (handler == null) {
+            return null;
+        }
+        NBTTagCompound data = (morph instanceof EntityMorph) ? ((EntityMorph) morph).getEntityData() : null;
+        String variantKey = MorphVariantHelper.getVariantKey(morph);
+        float pristine = pristineMaxHealth(player, morph);
+        float dynamic = handler.getMaxHealth(variantKey, data, pristine);
+        return (dynamic > 0.0F && dynamic != pristine) ? dynamic : null;
+    }
+
+    /** 形态原始血量（变体换算基准）：EntityMorph 取捕获实体最大生命，其余回退 settings.health。 */
+    private static float pristineMaxHealth(EntityPlayer player, AbstractMorph morph) {
+        if (morph instanceof EntityMorph) {
+            EntityLivingBase dummy = ((EntityMorph) morph).getEntity(player.world);
+            if (dummy != null && dummy.getMaxHealth() > 0.5F) {
+                return dummy.getMaxHealth();
+            }
+        }
+        return morph.getSettings() != null ? morph.getSettings().health : 20.0F;
+    }
+
+    /**
+     * 应用目标最大生命：同时写 settings.health 与 MAX_HEALTH base（metamorph 每 tick 写入同一值），
+     * 当前血量按既有比例语义换算并钳制在新上限内（防血条溢出）。
+     */
+    private static void applyDynamicHealth(EntityPlayer player, AbstractMorph morph, float targetMaxHealth) {
         float oldMax = player.getMaxHealth();
         float current = player.getHealth();
         float ratio = oldMax > 0.0F ? (current / oldMax) : 1.0F;
 
-        player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(dynamicMaxHealth);
-        player.setHealth(Math.max(1.0F, dynamicMaxHealth * ratio));
+        mchorse.metamorph.api.MorphSettings settings = morph.getSettings();
+        if (settings != null) {
+            settings.health = Math.round(targetMaxHealth);
+        }
+        player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(targetMaxHealth);
+        player.setHealth(Math.max(1.0F, Math.min(targetMaxHealth, targetMaxHealth * ratio)));
     }
 
     private static void clearModifiers(EntityPlayer player) {
@@ -293,6 +377,43 @@ public final class VariantEventListener {
         IAttributeInstance speedInst = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
         if (speedInst != null) {
             speedInst.removeModifier(AgeableVariantHandler.BABY_SPEED_MODIFIER_UUID);
+        }
+    }
+
+    /** 进入变身前的 MOVEMENT_SPEED base 备份（仅记录第一次，demorph 时恢复）。 */
+    private static final Map<java.util.UUID, Float> PRE_MORPH_SPEED = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /** 记录进入变身前的移速 base；已记录（morph 间切换）时不覆盖，保住真正的变身前值。 */
+    public static void notePreMorphSpeed(EntityPlayer player) {
+        if (player == null) {
+            return;
+        }
+        IAttributeInstance inst = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+        if (inst != null) {
+            PRE_MORPH_SPEED.putIfAbsent(player.getUniqueID(), (float) inst.getBaseValue());
+        }
+    }
+
+    /**
+     * demorph 恢复移速 base（CORE-12）：变身期间 morph settings.speed 直写 base，
+     * 不复位会让 shulker(0.08)/villager(0.133) 等永久残留。无备份时回退原版玩家 0.1。
+     */
+    public static void restorePreMorphSpeed(EntityPlayer player) {
+        if (player == null) {
+            return;
+        }
+        Float pre = PRE_MORPH_SPEED.remove(player.getUniqueID());
+        IAttributeInstance inst = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+        if (inst != null) {
+            inst.setBaseValue(pre != null ? pre : 0.1D);
+        }
+    }
+
+    /** 登出清理，避免静态备份表按 UUID 泄漏。 */
+    @SubscribeEvent
+    public void onPlayerLogout(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.player != null) {
+            PRE_MORPH_SPEED.remove(event.player.getUniqueID());
         }
     }
 }

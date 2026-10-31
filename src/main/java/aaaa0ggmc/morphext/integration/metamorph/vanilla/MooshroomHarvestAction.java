@@ -32,17 +32,12 @@ public class MooshroomHarvestAction implements IAction, ICooldownAction {
     public static final int COOLDOWN_SHEAR = 1200; // 60 秒
     public static final int COOLDOWN_PROMPT = 20; // 1 秒防连点提示
 
-    private final Map<UUID, Integer> dynamicCooldowns = new ConcurrentHashMap<>();
+    private final DynamicActionCooldowns dynamicCooldowns = new DynamicActionCooldowns();
 
     @Override
     public int getCooldownTicks(EntityLivingBase entity) {
-        if (entity != null) {
-            Integer cd = this.dynamicCooldowns.remove(entity.getUniqueID());
-            if (cd != null) {
-                return cd;
-            }
-        }
-        return 0;
+        // 非破坏查询（CORE-17）：任何额外查询不再消费 execute 写入的冷却值
+        return this.dynamicCooldowns.get(entity);
     }
 
     @Override
@@ -115,7 +110,7 @@ public class MooshroomHarvestAction implements IAction, ICooldownAction {
                         3, 0.3D, 0.3D, 0.3D, 0.1D);
             }
 
-            this.dynamicCooldowns.put(player.getUniqueID(), COOLDOWN_STEW);
+            this.dynamicCooldowns.set(player, COOLDOWN_STEW);
         } else if (actionType == 2) {
             // 手持空桶挤奶
             if (!player.isCreative()) {
@@ -141,7 +136,7 @@ public class MooshroomHarvestAction implements IAction, ICooldownAction {
                         15, 0.3D, 0.3D, 0.3D, 0.05D);
             }
 
-            this.dynamicCooldowns.put(player.getUniqueID(), COOLDOWN_MILK);
+            this.dynamicCooldowns.set(player, COOLDOWN_MILK);
         } else if (actionType == 3) {
             // 手持剪刀剪蘑菇
             if (!player.isCreative()) {
@@ -159,7 +154,7 @@ public class MooshroomHarvestAction implements IAction, ICooldownAction {
                         25, 0.4D, 0.4D, 0.4D, 0.1D, Block.getStateId(Blocks.RED_MUSHROOM.getDefaultState()));
             }
 
-            this.dynamicCooldowns.put(player.getUniqueID(), COOLDOWN_SHEAR);
+            this.dynamicCooldowns.set(player, COOLDOWN_SHEAR);
         } else {
             // 皆非：播放叫声并在 Action Bar 提示
             world.playSound(null, player.posX, player.posY, player.posZ,
@@ -167,7 +162,7 @@ public class MooshroomHarvestAction implements IAction, ICooldownAction {
 
             player.sendStatusMessage(new TextComponentTranslation("morphext.action.mooshroom_harvest.prompt"), true);
 
-            this.dynamicCooldowns.put(player.getUniqueID(), COOLDOWN_PROMPT);
+            this.dynamicCooldowns.set(player, COOLDOWN_PROMPT);
         }
     }
 }

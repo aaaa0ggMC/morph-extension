@@ -1,5 +1,6 @@
 package aaaa0ggmc.morphext.integration.metamorph.vanilla;
 
+import aaaa0ggmc.morphext.integration.metamorph.ICooldownAction;
 import mchorse.metamorph.api.abilities.IAction;
 import mchorse.metamorph.api.morphs.AbstractMorph;
 import net.minecraft.entity.EntityLivingBase;
@@ -19,7 +20,14 @@ import java.util.List;
  * 僵尸猪人怒潮长啸 (Pigman Wrath Shout Action):
  * 仰天发出震耳欲聋的血怒战吼，鼓舞周围 16 格内同族与自身，赋予 15 秒力量 II 与抗性提升 I！
  */
-public class PigmanWrathShoutAction implements IAction {
+public class PigmanWrathShoutAction implements IAction, ICooldownAction {
+    public static final String ID = "pigman_wrath_shout";
+    public static final int COOLDOWN = 400; // 20 秒（buff 15 秒 < 冷却 20 秒，力量 II/抗性 I 不可无缝常驻）
+
+    @Override
+    public int getCooldownTicks(EntityLivingBase entity) {
+        return COOLDOWN;
+    }
 
     @Override
     public void execute(EntityLivingBase entity, AbstractMorph morph) {
