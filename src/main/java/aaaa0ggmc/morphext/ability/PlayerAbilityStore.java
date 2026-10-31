@@ -7,6 +7,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +24,7 @@ import java.util.function.Consumer;
 /** 服务端主线程拥有的玩家 JSON 存储。缓存按服务器实例隔离，磁盘按存档和 UUID 隔离。 */
 public final class PlayerAbilityStore {
     public static final int MAX_JSON_BYTES = 262144;
+    private static final Logger LOGGER = LogManager.getLogger("morph-extension");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Map<MinecraftServer, Map<UUID, PlayerAbilityData>> CACHE = new WeakHashMap<>();
     private static Path legacyDirectory;
@@ -61,6 +64,11 @@ public final class PlayerAbilityStore {
                 } else {
                     data = createInitial(player);
                     save(file, data);
+                    if (data.toJson().has("legacyImported")
+                            && data.toJson().get("legacyImported").getAsBoolean()) {
+                        // 一次性迁移：导入成功后让旧全局文件退役，防止后续新存档重复继承
+                        retireLegacy();
+                    }
                 }
             } catch (IOException | RuntimeException error) {
                 throw new IllegalStateException("Cannot load player ability data; file left unchanged", error);
@@ -130,6 +138,25 @@ public final class PlayerAbilityStore {
         }
         json.addProperty("legacyImported", imported);
         return new PlayerAbilityData(player.getUniqueID(), json);
+    }
+
+    /** 一次性迁移收尾：把已导入过的旧全局文件改名留档，避免每个新存档重复继承。 */
+    private static void retireLegacy() {
+        if (legacyDirectory == null) {
+            return;
+        }
+        for (String name : new String[] {"unlocks.json", "ability_states.json"}) {
+            Path source = legacyDirectory.resolve(name);
+            if (!Files.exists(source)) {
+                continue;
+            }
+            try {
+                Files.move(source, legacyDirectory.resolve(name + ".migrated"), StandardCopyOption.REPLACE_EXISTING);
+                LOGGER.info("[morphext] Legacy player data migrated and retired: {}", source);
+            } catch (IOException error) {
+                LOGGER.warn("[morphext] Failed to retire legacy player data {}", source, error);
+            }
+        }
     }
 
     private static JsonObject readObject(Path file) throws IOException {
