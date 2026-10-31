@@ -160,13 +160,9 @@ public final class FactionRegistry {
                 new ItemStack(Blocks.STONEBRICK)))
                 .addPredicate(e -> e instanceof EntityGiantZombie);
 
-        // 地底隐士与洞穴异象 (含 Quark 生物)
+        // 地底隐士与洞穴异象（具体模组谓词由对应 patch 模组注入，核心只保留空阵营外壳）
         register(new Faction("underworld", "morphext.faction.underworld.name", "morphext.faction.underworld.desc",
-                new ItemStack(Blocks.COBBLESTONE)))
-                .addPredicate(e -> e != null && (e.getClass().getName().contains("quark")
-                        || e.getClass().getName().contains("Stoneling")
-                        || e.getClass().getName().contains("Dweller")
-                        || e.getClass().getName().contains("Wraith")));
+                new ItemStack(Blocks.COBBLESTONE)));
 
         // 预定义深渊扩展阵营外壳（具体谓词由 morphext-patch-abyssalcraft 动态注入）
         register(new Faction("abyssal", "morphext.faction.abyssal.name", "morphext.faction.abyssal.desc",

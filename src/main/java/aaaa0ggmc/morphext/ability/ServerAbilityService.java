@@ -38,36 +38,35 @@ public final class ServerAbilityService {
             return ActivationResult.unavailable();
         }
         try {
-            for (Map.Entry<String, Handler> entry : HANDLERS.entrySet()) {
-                if (id.startsWith(entry.getKey())) {
-                    PlayerAbilityData data = PlayerAbilityStore.get(player);
-                    if (!data.isAllowed(id, entry.getValue().isAvailable(player, id))) {
-                        return new ActivationResult(ActivationResult.Status.LOCKED, 0);
-                    }
-                    int cooldown = data.getCooldown(id, PlayerAbilityStore.now(player));
-                    if (cooldown > 0) {
-                        return new ActivationResult(ActivationResult.Status.COOLDOWN, cooldown);
-                    }
-                    int reserved = Math.max(0, entry.getValue().getCooldownTicks(player, id));
-                    if (reserved > 0) {
-                        PlayerAbilityStore.update(player, next ->
-                                next.setCooldown(id, PlayerAbilityStore.now(player), reserved));
-                    }
-                    ActivationResult raw = entry.getValue().activate(player, id);
-                    ActivationResult result = raw == null ? ActivationResult.unavailable() : raw;
-                    if (result.status == ActivationResult.Status.SUCCESS && result.cooldownTicks > reserved) {
-                        PlayerAbilityStore.update(player, next ->
-                                next.setCooldown(id, PlayerAbilityStore.now(player), result.cooldownTicks));
-                    }
-                    return new ActivationResult(result.status, Math.max(reserved, result.cooldownTicks));
-                }
+            Handler handler = handler(id);
+            if (handler == null) {
+                return ActivationResult.unavailable();
             }
+            PlayerAbilityData data = PlayerAbilityStore.get(player);
+            if (!data.isAllowed(id, handler.isAvailable(player, id))) {
+                return new ActivationResult(ActivationResult.Status.LOCKED, 0);
+            }
+            int cooldown = data.getCooldown(id, PlayerAbilityStore.now(player));
+            if (cooldown > 0) {
+                return new ActivationResult(ActivationResult.Status.COOLDOWN, cooldown);
+            }
+            int reserved = Math.max(0, handler.getCooldownTicks(player, id));
+            if (reserved > 0) {
+                PlayerAbilityStore.update(player, next ->
+                        next.setCooldown(id, PlayerAbilityStore.now(player), reserved));
+            }
+            ActivationResult raw = handler.activate(player, id);
+            ActivationResult result = raw == null ? ActivationResult.unavailable() : raw;
+            if (result.status == ActivationResult.Status.SUCCESS && result.cooldownTicks > reserved) {
+                PlayerAbilityStore.update(player, next ->
+                        next.setCooldown(id, PlayerAbilityStore.now(player), result.cooldownTicks));
+            }
+            return new ActivationResult(result.status, Math.max(reserved, result.cooldownTicks));
         } catch (RuntimeException error) {
             org.apache.logging.log4j.LogManager.getLogger("morph-extension")
                     .error("Server ability execution failed: {}", id, error);
             return new ActivationResult(ActivationResult.Status.FAILED, 0);
         }
-        return ActivationResult.unavailable();
     }
 
     public static boolean isAvailable(EntityPlayerMP player, String id) {
@@ -75,11 +74,21 @@ public final class ServerAbilityService {
         return PlayerAbilityStore.get(player).isAllowed(id, handler != null && handler.isAvailable(player, id));
     }
 
+    /**
+     * 按最长前缀匹配。这样 patch 模组可以用 {@code morphext:patch_specific} 之类的更具体命名空间
+     * 覆盖核心的通用 {@code morphext:} 处理器，而不依赖模组初始化顺序。
+     */
     public static Handler handler(String id) {
         if (!PlayerAbilityData.validId(id)) { return null; }
+        Handler best = null;
+        int bestLength = -1;
         for (Map.Entry<String, Handler> entry : HANDLERS.entrySet()) {
-            if (id.startsWith(entry.getKey())) { return entry.getValue(); }
+            String prefix = entry.getKey();
+            if (id.startsWith(prefix) && prefix.length() > bestLength) {
+                best = entry.getValue();
+                bestLength = prefix.length();
+            }
         }
-        return null;
+        return best;
     }
 }

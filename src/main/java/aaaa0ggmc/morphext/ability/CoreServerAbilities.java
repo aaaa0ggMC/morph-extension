@@ -11,7 +11,7 @@ public final class CoreServerAbilities implements ServerAbilityService.Handler {
 
     @Override
     public boolean isAvailable(EntityPlayerMP player, String id) {
-        return SPRINT.equals(id) || "morphext:demo_hello".equals(id) || HumanStatureAbility.ID.equals(id);
+        return SPRINT.equals(id) || "morphext:demo_hello".equals(id) || HumanStatureAbility.ID.equals(id) || MobAiToggleAbility.ID.equals(id);
     }
 
     @Override
@@ -45,6 +45,21 @@ public final class CoreServerAbilities implements ServerAbilityService.Handler {
             player.sendStatusMessage(new TextComponentTranslation("morphext.stature.switched", modeText), true);
             return ActivationResult.success(0);
         }
+        if (MobAiToggleAbility.ID.equals(id)) {
+            JsonObject state = PlayerAbilityStore.get(player).getState(MobAiToggleAbility.ID);
+            boolean enabled = !isEnabled(state);
+            state.addProperty("enabled", enabled);
+            PlayerAbilityStore.update(player, data -> data.putState(MobAiToggleAbility.ID, state));
+            player.getEntityData().setBoolean("morphext_mob_ai", enabled);
+
+            TextComponentTranslation msg = enabled
+                    ? new TextComponentTranslation("morphext.ability.mob_ai.enabled")
+                    : new TextComponentTranslation("morphext.ability.mob_ai.disabled");
+            player.sendStatusMessage(msg, true);
+            player.world.playSound(null, player.posX, player.posY, player.posZ,
+                    net.minecraft.init.SoundEvents.BLOCK_LEVER_CLICK, net.minecraft.util.SoundCategory.PLAYERS, 0.6F, enabled ? 1.2F : 0.8F);
+            return ActivationResult.success(0);
+        }
         if ("morphext:demo_hello".equals(id)) {
             player.sendMessage(new TextComponentString("[morph extension] ability activated!"));
             return ActivationResult.success(100);
@@ -62,8 +77,8 @@ public final class CoreServerAbilities implements ServerAbilityService.Handler {
 
     /** 仅在服务端玩家 tick 中调用；读取该玩家自己的持久开关。 */
     public static void tick(EntityPlayerMP player) {
-        // 服务端不需要每 tick 强行覆盖 player.setSprinting(true)；
-        // 疾跑状态由客户端根据实际移动输入通过动作包同步，静止时强行覆盖会导致脚底持续喷扬尘粒子。
+        // 驱动变身实体自主 AI 运行时沙盒与安全防护
+        aaaa0ggmc.morphext.ability.morph.MorphAiEngine.tick(player);
     }
 
     public static boolean isEnabled(JsonObject state) {

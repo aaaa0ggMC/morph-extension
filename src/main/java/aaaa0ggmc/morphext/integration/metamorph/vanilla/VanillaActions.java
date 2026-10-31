@@ -149,6 +149,10 @@ public final class VanillaActions {
         register("killer_bunny_blood_frenzy", new KillerBunnyBloodFrenzyAction());
         register("morphext:killer_bunny_blood_frenzy", new KillerBunnyBloodFrenzyAction());
 
+        // 生物自主 AI 切换动作
+        register(aaaa0ggmc.morphext.integration.metamorph.MobAiToggleAction.ID, new aaaa0ggmc.morphext.integration.metamorph.MobAiToggleAction());
+        register(aaaa0ggmc.morphext.integration.metamorph.MobAiToggleAction.ALIAS_ID, new aaaa0ggmc.morphext.integration.metamorph.MobAiToggleAction());
+
         LOGGER.info("[morphext] Registered {} vanilla mob actions into MorphManager", MorphManager.INSTANCE.actions.size());
     }
 

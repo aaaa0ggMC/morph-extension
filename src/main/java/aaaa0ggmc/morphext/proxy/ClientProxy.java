@@ -40,6 +40,7 @@ public class ClientProxy extends CommonProxy {
         // 代码级内置能力：直接触发行为（不模拟按键）
         AbilityRegistry.register(new SprintAbility());
         AbilityRegistry.register(new aaaa0ggmc.morphext.ability.HumanStatureAbility());
+        AbilityRegistry.register(new aaaa0ggmc.morphext.ability.MobAiToggleAbility());
         // Metamorph 集成（软依赖：仅当 Metamorph 存在时启用）
         if (Loader.isModLoaded("metamorph")) {
             MetamorphIntegration.init();
@@ -80,6 +81,31 @@ public class ClientProxy extends CommonProxy {
                     aaaa0ggmc.morphext.client.ClientPlayerData.clear();
                     org.apache.logging.log4j.LogManager.getLogger("morph-extension")
                             .error("Invalid player ability snapshot", error);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onCreeperSwelling(int entityId, boolean swelling) {
+        Minecraft mc = Minecraft.getMinecraft();
+        mc.addScheduledTask(() -> {
+            if (mc.world == null) return;
+            net.minecraft.entity.Entity entity = mc.world.getEntityByID(entityId);
+            if (entity instanceof net.minecraft.entity.player.EntityPlayer) {
+                mchorse.metamorph.capabilities.morphing.IMorphing capability =
+                        mchorse.metamorph.capabilities.morphing.Morphing.get((net.minecraft.entity.player.EntityPlayer) entity);
+                if (capability != null && capability.getCurrentMorph() instanceof mchorse.metamorph.api.morphs.EntityMorph) {
+                    net.minecraft.entity.EntityLivingBase dummy =
+                            ((mchorse.metamorph.api.morphs.EntityMorph) capability.getCurrentMorph()).getEntity();
+                    if (dummy instanceof net.minecraft.entity.monster.EntityCreeper) {
+                        net.minecraft.entity.monster.EntityCreeper creeper = (net.minecraft.entity.monster.EntityCreeper) dummy;
+                        creeper.setCreeperState(swelling ? 1 : -1);
+                        if (!swelling) {
+                            net.minecraftforge.fml.relauncher.ReflectionHelper.setPrivateValue(
+                                    net.minecraft.entity.monster.EntityCreeper.class, creeper, 0, "timeSinceIgnited", "field_70833_d");
+                        }
+                    }
                 }
             }
         });

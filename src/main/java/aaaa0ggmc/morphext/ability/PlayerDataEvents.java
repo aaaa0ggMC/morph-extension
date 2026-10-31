@@ -32,11 +32,18 @@ public final class PlayerDataEvents {
     }
 
     @SubscribeEvent public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) { sync(event.player); }
-    @SubscribeEvent public static void onRespawn(PlayerEvent.PlayerRespawnEvent event) { sync(event.player); }
-    @SubscribeEvent public static void onDimension(PlayerEvent.PlayerChangedDimensionEvent event) { sync(event.player); }
+    @SubscribeEvent public static void onRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        aaaa0ggmc.morphext.integration.metamorph.vanilla.CreeperFuseAction.clearPrimed(event.player);
+        sync(event.player);
+    }
+    @SubscribeEvent public static void onDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        aaaa0ggmc.morphext.integration.metamorph.vanilla.CreeperFuseAction.clearPrimed(event.player);
+        sync(event.player);
+    }
 
     @SubscribeEvent
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        aaaa0ggmc.morphext.integration.metamorph.vanilla.CreeperFuseAction.clearPrimed(event.player);
         if (event.player instanceof EntityPlayerMP && !event.player.world.isRemote) {
             PlayerAbilityStore.evict((EntityPlayerMP) event.player);
         }

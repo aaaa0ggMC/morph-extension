@@ -132,12 +132,7 @@ public final class MorphImmunityHandler {
         }
 
         // 2. 拦截针对玩家的恶意秒杀打击 (如 Integer.MAX_VALUE 破第四面墙)
-        if (source.getDamageType().equals("mob") && source.isDamageAbsolute() && source.isUnblockable()) {
-            // J'zahar 第四面墙秒杀判定
-            if (victim instanceof EntityPlayer && morphName != null && morphName.toLowerCase().contains("jzahar")) {
-                return true;
-            }
-        }
+        //    具体模组（如 AbyssalCraft 的 J'zahar）在各自 patch 中声明，核心不硬编码形态名。
 
         if (def == null || def.damageImmunities.isEmpty()) {
             return false;

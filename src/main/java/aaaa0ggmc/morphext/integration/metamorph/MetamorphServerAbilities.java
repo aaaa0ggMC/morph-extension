@@ -167,7 +167,14 @@ public final class MetamorphServerAbilities implements ServerAbilityService.Hand
         if (remaining > 0) {
             return new ActivationResult(ActivationResult.Status.COOLDOWN, remaining);
         }
-        action.execute(player, current);
+        EntityPlayerMP previousActor = MorphActionContext.push(player);
+        try {
+            MorphAnimationRegistry.pushActionContext(name);
+            action.execute(player, current);
+        } finally {
+            MorphAnimationRegistry.popActionContext();
+            MorphActionContext.restore(previousActor);
+        }
         MinecraftForge.EVENT_BUS.post(new MorphActionEvent(player, action, current));
         int cd = externalCooldown(player);
         if (action instanceof ICooldownAction) {

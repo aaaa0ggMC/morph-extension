@@ -1,9 +1,12 @@
 package aaaa0ggmc.morphext.integration.metamorph.vanilla;
 
 import aaaa0ggmc.morphext.integration.metamorph.ICooldownAction;
+import aaaa0ggmc.morphext.network.AbilityNetwork;
 import mchorse.metamorph.api.abilities.IAction;
 import mchorse.metamorph.api.morphs.AbstractMorph;
+import mchorse.metamorph.api.morphs.EntityMorph;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
@@ -11,22 +14,44 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 苦力怕主动技能：引信蓄力自爆 (Creeper Fuse)。
- * 蓄力 1.5 秒（播放嘶嘶声与膨胀烟雾粒子），随后产生威力 3.0 的安全冲击波大爆炸，
- * 对周围敌人造成大量爆炸伤害与强力击退，彻底豁免宿主玩家自身不自残。
+ *
+ * 玩法机制：
+ * 1. 蓄力点火：进入 1.5 秒 (30 ticks) 引信蓄力状态，苦力怕模型开始剧烈膨胀闪白并发出急促引信嘶嘶声；
+ * 2. 掐灭引信：蓄力期间若再次潜行使用该技能，可及时掐灭引信取消自爆；
+ * 3. 终极爆炸与副作用：
+ *    - 燃尽瞬间在玩家所在位置产生威力 3.0（高压充能状态下威力翻倍为 6.0）的真实环境大爆炸；
+ *    - 生存模式下玩家将承受致命自爆伤害而死亡（真实苦力怕代价），创造模式下免死生存；
+ *    - 爆炸后自动重置变身实体的膨胀与死亡状态，杜绝卡模型。
  */
 public class CreeperFuseAction implements IAction, ICooldownAction {
     public static final String ID = "creeper_fuse";
-    public static final int COOLDOWN = 400; // 20 秒
+    public static final int COOLDOWN = 300; // 15 秒（如果存活或创造模式）
     public static final int FUSE_TICKS = 30; // 1.5 秒
+
+    private static final Set<UUID> PRIMED_PLAYERS = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+    public static boolean isPrimed(EntityPlayer player) {
+        return player != null && PRIMED_PLAYERS.contains(player.getUniqueID());
+    }
+
+    public static void clearPrimed(EntityPlayer player) {
+        if (player != null) {
+            PRIMED_PLAYERS.remove(player.getUniqueID());
+        }
+    }
 
     @Override
     public int getCooldownTicks(EntityLivingBase entity) {
@@ -40,74 +65,111 @@ public class CreeperFuseAction implements IAction, ICooldownAction {
         }
 
         World world = entity.world;
+        UUID uuid = entity.getUniqueID();
 
-        // 初始引信嘶嘶声与短暂缓速蓄力感
+        // 潜行释放且当前正在蓄力中 -> 掐灭引信 (Defuse)
+        if (entity.isSneaking() && PRIMED_PLAYERS.contains(uuid)) {
+            PRIMED_PLAYERS.remove(uuid);
+            world.playSound(null, entity.posX, entity.posY, entity.posZ,
+                    SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.PLAYERS, 1.2F, 1.2F);
+            entity.removePotionEffect(MobEffects.SLOWNESS);
+
+            if (morph instanceof EntityMorph) {
+                EntityLivingBase dummy = ((EntityMorph) morph).getEntity(world);
+                if (dummy instanceof EntityCreeper) {
+                    EntityCreeper creeper = (EntityCreeper) dummy;
+                    creeper.setCreeperState(-1);
+                    ReflectionHelper.setPrivateValue(EntityCreeper.class, creeper, 0, "timeSinceIgnited", "field_70833_d");
+                }
+            }
+            if (entity instanceof EntityPlayer) {
+                AbilityNetwork.sendCreeperSwelling((EntityPlayer) entity, false);
+                ((EntityPlayer) entity).sendStatusMessage(new TextComponentTranslation("morphext.msg.creeper_defused"), true);
+            }
+            return;
+        }
+
+        if (PRIMED_PLAYERS.contains(uuid)) {
+            // 已在蓄力中，避免重复触发
+            return;
+        }
+
+        PRIMED_PLAYERS.add(uuid);
+
+        // 1. 播放苦力怕引爆前标志性嘶嘶声与缓速
         world.playSound(null, entity.posX, entity.posY, entity.posZ,
-                SoundEvents.ENTITY_CREEPER_PRIMED, SoundCategory.PLAYERS, 1.8F, 1.0F);
-        entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, FUSE_TICKS, 1, false, false));
+                SoundEvents.ENTITY_CREEPER_PRIMED, SoundCategory.PLAYERS, 2.0F, 0.5F);
+        entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, FUSE_TICKS, 2, false, false));
 
-        // 调度 1.5 秒蓄力粒子追踪与引爆
+        // 2. 设置 dummy 实体状态为膨胀并网络同步至客户端
+        boolean isPowered = false;
+        if (morph instanceof EntityMorph) {
+            EntityLivingBase dummy = ((EntityMorph) morph).getEntity(world);
+            if (dummy instanceof EntityCreeper) {
+                EntityCreeper creeper = (EntityCreeper) dummy;
+                isPowered = creeper.getPowered();
+                creeper.setCreeperState(1);
+            }
+        }
+        if (entity instanceof EntityPlayer) {
+            AbilityNetwork.sendCreeperSwelling((EntityPlayer) entity, true);
+        }
+
+        final boolean poweredFinal = isPowered;
+
+        // 3. 调度 1.5 秒蓄力引信与大爆炸
         ServerActionScheduler.scheduleTicker(FUSE_TICKS, remaining -> {
-            if (!entity.isEntityAlive()) {
+            if (!entity.isEntityAlive() || !PRIMED_PLAYERS.contains(uuid)) {
                 return;
             }
-            if (world instanceof WorldServer && remaining % 3 == 0) {
+            if (world instanceof WorldServer && remaining % 2 == 0) {
                 WorldServer ws = (WorldServer) world;
-                double spread = (FUSE_TICKS - remaining) * 0.02D;
-                ws.spawnParticle(EnumParticleTypes.CLOUD, entity.posX, entity.posY + entity.height * 0.5D, entity.posZ,
-                        8, spread, entity.height * 0.3D, spread, 0.03D);
+                double spread = (FUSE_TICKS - remaining) * 0.025D;
                 ws.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, entity.posX, entity.posY + entity.height * 0.5D, entity.posZ,
                         6, spread, entity.height * 0.3D, spread, 0.02D);
+                ws.spawnParticle(EnumParticleTypes.FLAME, entity.posX, entity.posY + entity.height * 0.4D, entity.posZ,
+                        2, spread * 0.5D, 0.1D, spread * 0.5D, 0.01D);
             }
         }, () -> {
-            if (!entity.isEntityAlive()) {
+            if (!PRIMED_PLAYERS.remove(uuid) || !entity.isEntityAlive()) {
                 return;
             }
 
             double x = entity.posX;
-            double y = entity.posY + entity.height * 0.5D;
+            double y = entity.posY + entity.height * 0.3D;
             double z = entity.posZ;
 
-            // 1. 震撼爆炸音效与全屏级视觉特效
-            world.playSound(null, x, y, z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, 2.5F, 0.9F);
-            if (world instanceof WorldServer) {
-                WorldServer ws = (WorldServer) world;
-                ws.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, x, y, z, 2, 0.0, 0.0, 0.0, 0.0);
-                ws.spawnParticle(EnumParticleTypes.SMOKE_LARGE, x, y, z, 35, 1.5, 1.0, 1.5, 0.15);
-                ws.spawnParticle(EnumParticleTypes.FLAME, x, y, z, 25, 1.2, 0.8, 1.2, 0.2);
+            float power = poweredFinal ? 6.0F : 3.0F;
+            boolean mobGriefing = world.getGameRules().getBoolean("mobGriefing");
+
+            // 恢复 dummy Creeper 状态（避免留在 dead/swollen 卡死状态）
+            if (morph instanceof EntityMorph) {
+                EntityLivingBase dummy = ((EntityMorph) morph).getEntity(world);
+                if (dummy instanceof EntityCreeper) {
+                    EntityCreeper creeper = (EntityCreeper) dummy;
+                    creeper.setCreeperState(-1);
+                    creeper.isDead = false;
+                    creeper.deathTime = 0;
+                    ReflectionHelper.setPrivateValue(EntityCreeper.class, creeper, 0, "timeSinceIgnited", "field_70833_d");
+                }
+            }
+            if (entity instanceof EntityPlayer) {
+                AbilityNetwork.sendCreeperSwelling((EntityPlayer) entity, false);
             }
 
-            // 2. 威力 3.0 安全冲击波（半径 6.0 格），严格豁免宿主自身
-            double radius = 6.0D;
-            AxisAlignedBB box = entity.getEntityBoundingBox().grow(radius, 3.0D, radius);
-            List<EntityLivingBase> targets = world.getEntitiesWithinAABB(EntityLivingBase.class, box,
-                    e -> e != null && e != entity && e.isEntityAlive() && !e.isOnSameTeam(entity));
+            // 4. 产生真实大爆炸
+            Explosion explosion = world.createExplosion(entity, x, y, z, power, mobGriefing);
 
-            DamageSource source = entity instanceof EntityPlayer
-                    ? DamageSource.causePlayerDamage((EntityPlayer) entity).setExplosion()
-                    : DamageSource.causeMobDamage(entity).setExplosion();
-
-            for (EntityLivingBase target : targets) {
-                double dist = entity.getDistance(target);
-                if (dist > radius) {
-                    continue;
+            // 5. 苦力怕真实代价副作用：生存模式下宿主因自爆而死亡！
+            if (entity instanceof EntityPlayer) {
+                EntityPlayer player = (EntityPlayer) entity;
+                if (!player.isCreative()) {
+                    DamageSource deathSource = DamageSource.causeExplosionDamage(explosion);
+                    player.attackEntityFrom(deathSource, Float.MAX_VALUE);
+                    if (player.isEntityAlive()) {
+                        player.attackEntityFrom(DamageSource.OUT_OF_WORLD, Float.MAX_VALUE);
+                    }
                 }
-
-                // 距离递减伤害公式：中心高额、边缘递减，威力等同 3.0 爆炸冲击
-                double factor = 1.0D - (dist / radius);
-                float damage = (float) (factor * 16.0D + 4.0D);
-                target.attackEntityFrom(source, damage);
-
-                // 强力水平与垂直击退
-                double dx = target.posX - entity.posX;
-                double dz = target.posZ - entity.posZ;
-                double norm = Math.max(0.1D, Math.sqrt(dx * dx + dz * dz));
-                double push = factor * 1.5D + 0.3D;
-
-                target.motionX += (dx / norm) * push;
-                target.motionY += 0.45D * factor + 0.15D;
-                target.motionZ += (dz / norm) * push;
-                target.velocityChanged = true;
             }
         });
     }

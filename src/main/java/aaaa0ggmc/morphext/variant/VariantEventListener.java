@@ -54,16 +54,21 @@ public final class VariantEventListener {
         }
         EntityMorph em = (EntityMorph) morph;
         IVariantHandler handler = VariantRegistry.getHandler(em);
-        if (handler == null) {
-            return;
-        }
         NBTTagCompound data = em.getEntityData();
-        if (data != null) {
+        if (data != null && handler != null) {
             handler.sanitizeEntityData(data);
         }
-        String variantKey = handler.getVariantKey(em.getEntity(), data);
-        float scale = handler.getScale(variantKey, data);
-        if (scale > 0.0F && scale != 1.0F) {
+        float scale = 1.0F;
+        if (handler != null) {
+            String variantKey = handler.getVariantKey(em.getEntity(), data);
+            scale = handler.getScale(variantKey, data);
+        } else if (data != null && data.hasKey("morphext_scale")) {
+            scale = data.getFloat("morphext_scale");
+        } else if (em.scale > 0.0F && Math.abs(em.scale - 1.0F) > 0.001F) {
+            scale = em.scale;
+        }
+
+        if (scale > 0.0F && Math.abs(scale - 1.0F) > 0.001F) {
             em.scale = scale;
             LOGGER.debug("[morphext] Applied variant scale {} to acquired morph {}", scale, morph.name);
         }
@@ -89,6 +94,9 @@ public final class VariantEventListener {
             return;
         }
 
+        // 全面同步生物的攻击力、护甲、韧性、击退抗性等战斗属性 (可通过 morph_abilities.json 自定义)
+        aaaa0ggmc.morphext.ability.morph.MorphAttributeSyncHandler.applyAttributes(player, morph);
+
         // 潜影贝防原地定死与 0 移速生物保底修复
         mchorse.metamorph.api.MorphSettings morphSettings = morph.getSettings();
         if (morphSettings != null) {
@@ -110,35 +118,48 @@ public final class VariantEventListener {
         }
 
         IVariantHandler handler = VariantRegistry.getHandler(morph);
-        if (handler == null) {
-            return;
-        }
-
         NBTTagCompound data = (morph instanceof EntityMorph) ? ((EntityMorph) morph).getEntityData() : null;
         String variantKey = MorphVariantHelper.getVariantKey(morph);
 
-        // 1. 动态生命值调整
-        if (!player.world.isRemote && morph.getSettings() != null) {
-            float defHealth = morph.getSettings().health;
-            float dynamicHealth = handler.getMaxHealth(variantKey, data, defHealth);
-            if (dynamicHealth > 0.0F && dynamicHealth != defHealth) {
-                applyDynamicHealth(player, dynamicHealth);
-            }
-        }
-
-        // 2. 属性修改器注入（如移速加成）
-        Map<IAttribute, AttributeModifier> modifiers = handler.getAttributeModifiers(variantKey, data);
-        if (modifiers != null && !modifiers.isEmpty()) {
-            for (Map.Entry<IAttribute, AttributeModifier> entry : modifiers.entrySet()) {
-                IAttributeInstance inst = player.getEntityAttribute(entry.getKey());
-                if (inst != null && !inst.hasModifier(entry.getValue())) {
-                    inst.applyModifier(entry.getValue());
+        if (handler != null) {
+            // 1. 动态生命值调整
+            if (!player.world.isRemote && morph.getSettings() != null) {
+                float defHealth = morph.getSettings().health;
+                float dynamicHealth = handler.getMaxHealth(variantKey, data, defHealth);
+                if (dynamicHealth > 0.0F && dynamicHealth != defHealth) {
+                    applyDynamicHealth(player, dynamicHealth);
                 }
             }
-        }
 
-        // 3. 初始碰撞箱与 EyeHeight 校准
-        updatePlayerScale(player, morph, handler, variantKey, data);
+            // 2. 属性修改器注入（如移速加成）
+            Map<IAttribute, AttributeModifier> modifiers = handler.getAttributeModifiers(variantKey, data);
+            if (modifiers != null && !modifiers.isEmpty()) {
+                for (Map.Entry<IAttribute, AttributeModifier> entry : modifiers.entrySet()) {
+                    IAttributeInstance inst = player.getEntityAttribute(entry.getKey());
+                    if (inst != null && !inst.hasModifier(entry.getValue())) {
+                        inst.applyModifier(entry.getValue());
+                    }
+                }
+            }
+
+            // 3. 初始碰撞箱与 EyeHeight 校准
+            float scale = handler.getScale(variantKey, data);
+            if (scale > 0.0F && Math.abs(scale - 1.0F) > 0.001F) {
+                updatePlayerScale(player, morph, scale);
+            }
+        } else if (morph instanceof EntityMorph) {
+            EntityMorph em = (EntityMorph) morph;
+            float scale = 1.0F;
+            if (data != null && data.hasKey("morphext_scale")) {
+                scale = data.getFloat("morphext_scale");
+                em.scale = scale;
+            } else if (em.scale > 0.0F && Math.abs(em.scale - 1.0F) > 0.001F) {
+                scale = em.scale;
+            }
+            if (scale > 0.0F && Math.abs(scale - 1.0F) > 0.001F) {
+                updatePlayerScale(player, morph, scale);
+            }
+        }
     }
 
     /**
@@ -179,21 +200,28 @@ public final class VariantEventListener {
         }
 
         IVariantHandler handler = VariantRegistry.getHandler(current);
-        if (handler == null) {
-            return;
-        }
-
         NBTTagCompound data = (current instanceof EntityMorph) ? ((EntityMorph) current).getEntityData() : null;
         String variantKey = MorphVariantHelper.getVariantKey(current);
-        float scale = handler.getScale(variantKey, data);
+        float scale = 1.0F;
 
-        if (scale > 0.0F && scale != 1.0F) {
-            updatePlayerScale(player, current, handler, variantKey, data);
+        if (handler != null) {
+            scale = handler.getScale(variantKey, data);
+        } else if (current instanceof EntityMorph) {
+            EntityMorph em = (EntityMorph) current;
+            if (data != null && data.hasKey("morphext_scale")) {
+                scale = data.getFloat("morphext_scale");
+                em.scale = scale;
+            } else if (em.scale > 0.0F && Math.abs(em.scale - 1.0F) > 0.001F) {
+                scale = em.scale;
+            }
+        }
+
+        if (scale > 0.0F && Math.abs(scale - 1.0F) > 0.001F) {
+            updatePlayerScale(player, current, scale);
         }
     }
 
-    private static void updatePlayerScale(EntityPlayer player, AbstractMorph morph,
-                                         IVariantHandler handler, String variantKey, NBTTagCompound data) {
+    private static void updatePlayerScale(EntityPlayer player, AbstractMorph morph, float scale) {
         HumanStatureAbility.Mode statureMode = getStatureMode(player);
         if (statureMode == HumanStatureAbility.Mode.HUMAN_MODEL) {
             setBox(player, 0.6F, 1.8F, player.getDefaultEyeHeight());
@@ -209,8 +237,7 @@ public final class VariantEventListener {
             return;
         }
 
-        float scale = handler != null ? handler.getScale(variantKey, data) : 1.0F;
-        if (scale <= 0.0F || scale == 1.0F) {
+        if (scale <= 0.0F || Math.abs(scale - 1.0F) < 0.001F) {
             return;
         }
         // 基于变身实体的实际尺寸缩放 Hitbox
@@ -262,6 +289,7 @@ public final class VariantEventListener {
     }
 
     private static void clearModifiers(EntityPlayer player) {
+        aaaa0ggmc.morphext.ability.morph.MorphAttributeSyncHandler.clearAttributes(player);
         IAttributeInstance speedInst = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
         if (speedInst != null) {
             speedInst.removeModifier(AgeableVariantHandler.BABY_SPEED_MODIFIER_UUID);

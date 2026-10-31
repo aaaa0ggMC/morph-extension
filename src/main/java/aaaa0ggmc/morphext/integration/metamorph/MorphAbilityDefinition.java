@@ -26,6 +26,14 @@ public class MorphAbilityDefinition {
     public Boolean rotate180 = null;
     public Float yawOffset = null;
     public Float speed = null;
+    public Double attackDamage = null;
+    public Double armor = null;
+    public Double armorToughness = null;
+    public Double knockbackResistance = null;
+    public java.util.Map<String, Double> attributes = new java.util.LinkedHashMap<>();
+    public java.util.Map<String, Boolean> actionAnimation = new java.util.LinkedHashMap<>();
+    public java.util.List<String> silentActions = new java.util.ArrayList<>();
+    public Boolean animateSameMorph = null;
 
     public MorphAbilityDefinition() {
     }

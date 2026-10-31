@@ -4,6 +4,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import mchorse.metamorph.api.events.AcquireMorphEvent;
 import mchorse.metamorph.api.events.MorphEvent;
+import mchorse.metamorph.api.events.RegisterRemapEvent;
 import mchorse.metamorph.api.events.ReloadMorphs;
 
 /**
@@ -27,12 +28,27 @@ public final class MetamorphEventHandler {
 
     @SubscribeEvent
     public static void onMorph(MorphEvent.Post event) {
+        if (event.player != null) {
+            aaaa0ggmc.morphext.integration.metamorph.vanilla.CreeperFuseAction.clearPrimed(event.player);
+        }
         scheduleRefresh();
     }
 
     @SubscribeEvent
     public static void onReload(ReloadMorphs event) {
         scheduleRefresh();
+    }
+
+    @SubscribeEvent
+    public static void onRegisterRemap(RegisterRemapEvent event) {
+        if (event != null && event.map != null) {
+            // 修格斯阶数重映射至底层实体 lessershoggoth
+            event.map.put("abyssalcraft:greatershoggoth", "abyssalcraft:lessershoggoth");
+            event.map.put("abyssalcraft:shoggoth", "abyssalcraft:lessershoggoth");
+            event.map.put("abyssalcraft.greatershoggoth", "abyssalcraft:lessershoggoth");
+            event.map.put("abyssalcraft.shoggoth", "abyssalcraft:lessershoggoth");
+            event.map.put("abyssalcraft:demonschicken", "abyssalcraft:demonchicken");
+        }
     }
 
     private static void scheduleRefresh() {

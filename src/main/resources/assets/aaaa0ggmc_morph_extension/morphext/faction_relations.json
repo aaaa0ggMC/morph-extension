@@ -1,0 +1,132 @@
+{
+  "factions": {
+    "undead": {
+      "parent": "monster"
+    },
+    "zombie": {
+      "parent": "undead"
+    },
+    "skeleton": {
+      "parent": "undead"
+    },
+    "wither": {
+      "parent": "undead"
+    },
+    "arthropod": {
+      "parent": "monster"
+    },
+    "spider": {
+      "parent": "arthropod"
+    },
+    "silverfish": {
+      "parent": "arthropod"
+    },
+    "endermite": {
+      "parent": "arthropod"
+    },
+    "ender": {
+      "parent": "monster"
+    },
+    "nether": {
+      "parent": "monster"
+    },
+    "illager": {
+      "parent": "monster"
+    },
+    "creeper": {
+      "parent": "monster"
+    },
+    "slime": {
+      "parent": "monster"
+    },
+    "villager": {},
+    "golem": {
+      "parent": "villager"
+    },
+    "animal": {},
+    "aquatic": {},
+    "beast": {
+      "parent": "animal"
+    }
+  },
+  "entity_mappings": {
+    "minecraft:zombie": ["zombie", "undead"],
+    "minecraft:zombie_villager": ["zombie", "undead"],
+    "minecraft:husk": ["zombie", "undead"],
+    "minecraft:drowned": ["zombie", "undead"],
+    "zombie": ["zombie", "undead"],
+    "zombie_villager": ["zombie", "undead"],
+    "husk": ["zombie", "undead"],
+    "minecraft:skeleton": ["skeleton", "undead"],
+    "minecraft:stray": ["skeleton", "undead"],
+    "minecraft:wither_skeleton": ["skeleton", "undead", "wither"],
+    "skeleton": ["skeleton", "undead"],
+    "stray": ["skeleton", "undead"],
+    "wither_skeleton": ["skeleton", "undead", "wither"],
+    "minecraft:wither": ["wither", "undead"],
+    "wither": ["wither", "undead"],
+    "minecraft:villager": ["villager"],
+    "villager": ["villager"],
+    "minecraft:villager_golem": ["golem", "villager"],
+    "minecraft:iron_golem": ["golem", "villager"],
+    "minecraft:snowman": ["golem", "villager"],
+    "villager_golem": ["golem", "villager"],
+    "iron_golem": ["golem", "villager"],
+    "snowman": ["golem", "villager"],
+    "minecraft:vindication_illager": ["illager"],
+    "minecraft:evocation_illager": ["illager"],
+    "minecraft:illusion_illager": ["illager"],
+    "minecraft:vex": ["illager"],
+    "minecraft:witch": ["illager"],
+    "vindication_illager": ["illager"],
+    "evocation_illager": ["illager"],
+    "illusion_illager": ["illager"],
+    "vex": ["illager"],
+    "witch": ["illager"],
+    "minecraft:creeper": ["creeper"],
+    "creeper": ["creeper"],
+    "minecraft:enderman": ["ender"],
+    "minecraft:shulker": ["ender"],
+    "minecraft:ender_dragon": ["ender"],
+    "enderman": ["ender"],
+    "shulker": ["ender"],
+    "ender_dragon": ["ender"],
+    "minecraft:spider": ["spider", "arthropod"],
+    "minecraft:cave_spider": ["spider", "arthropod"],
+    "spider": ["spider", "arthropod"],
+    "cave_spider": ["spider", "arthropod"],
+    "minecraft:silverfish": ["silverfish", "arthropod"],
+    "silverfish": ["silverfish", "arthropod"],
+    "minecraft:endermite": ["endermite", "arthropod"],
+    "endermite": ["endermite", "arthropod"],
+    "minecraft:blaze": ["nether"],
+    "minecraft:ghast": ["nether"],
+    "minecraft:magma_cube": ["nether", "slime"],
+    "minecraft:zombie_pigman": ["nether", "undead"],
+    "blaze": ["nether"],
+    "ghast": ["nether"],
+    "magma_cube": ["nether", "slime"],
+    "zombie_pigman": ["nether", "undead"],
+    "pig_zombie": ["nether", "undead"]
+  },
+  "relations": [
+    { "from": "undead", "to": "undead", "relation": "RELATIVE", "symmetric": true },
+    { "from": "zombie", "to": "zombie", "relation": "RELATIVE", "symmetric": true },
+    { "from": "skeleton", "to": "skeleton", "relation": "RELATIVE", "symmetric": true },
+    { "from": "wither", "to": "undead", "relation": "LORD", "symmetric": false },
+    { "from": "undead", "to": "wither", "relation": "RELATIVE", "symmetric": false },
+    { "from": "undead", "to": "villager", "relation": "ENEMY", "symmetric": true },
+    { "from": "undead", "to": "golem", "relation": "ENEMY", "symmetric": true },
+    { "from": "illager", "to": "villager", "relation": "ENEMY", "symmetric": true },
+    { "from": "illager", "to": "golem", "relation": "ENEMY", "symmetric": true },
+    { "from": "illager", "to": "illager", "relation": "RELATIVE", "symmetric": true },
+    { "from": "villager", "to": "golem", "relation": "RELATIVE", "symmetric": true },
+    { "from": "golem", "to": "villager", "relation": "LORD", "symmetric": false },
+    { "from": "ender", "to": "ender", "relation": "RELATIVE", "symmetric": true },
+    { "from": "ender", "to": "endermite", "relation": "ENEMY", "symmetric": true },
+    { "from": "arthropod", "to": "arthropod", "relation": "RELATIVE", "symmetric": true },
+    { "from": "animal", "to": "animal", "relation": "MEMBER", "symmetric": true },
+    { "from": "creeper", "to": "creeper", "relation": "RELATIVE", "symmetric": true },
+    { "from": "creeper", "to": "ocelot", "relation": "ENEMY", "symmetric": true }
+  ]
+}

@@ -13,8 +13,7 @@ public final class ClientAbilityExecutor {
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.player == null || ability == null || ability.isPassive()) {
             return;
-        }
-        if (!AbilityUnlocks.isReady()) {
+        }        if (!AbilityUnlocks.isReady()) {
             mc.player.sendStatusMessage(new TextComponentTranslation("gui.morphext.syncing"), true);
             return;
         }
@@ -46,6 +45,28 @@ public final class ClientAbilityExecutor {
                     .error("Client ability execution failed: {}", ability.getId(), error);
             showResult(new ActivationResult(ActivationResult.Status.FAILED, 0));
         }
+    }
+
+    /**
+     * 按能力 id 释放（键位入口使用）。轮盘槽位可能在能力暂时不可用时仍然保留绑定，
+     * 此时 AbilityRegistry 可能只能从“最近见过”的缓存里取到原型，甚至完全取不到；
+     * 后者也要给出“我忘了这个技能了”的反馈，而不是静默无响应。
+     */
+    public static void activateById(String abilityId) {
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.player == null || abilityId == null || abilityId.isEmpty()) {
+            return;
+        }
+        if (!AbilityUnlocks.isReady()) {
+            mc.player.sendStatusMessage(new TextComponentTranslation("gui.morphext.syncing"), true);
+            return;
+        }
+        IAbility ability = AbilityRegistry.get(abilityId);
+        if (ability == null) {
+            showResult(new ActivationResult(ActivationResult.Status.LOCKED, 0));
+            return;
+        }
+        activate(ability);
     }
 
     public static void acceptResult(String id, ActivationResult result) {

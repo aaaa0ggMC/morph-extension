@@ -75,9 +75,6 @@
     "actions": [
       "creeper_fuse",
       "creeper_hiss"
-    ],
-    "damageImmunities": [
-      "explosion"
     ]
   },
   "donkey": {
@@ -312,7 +309,9 @@
       "fall",
       "cactus",
       "drown"
-    ]
+    ],
+    "attackDamage": 14.0,
+    "knockbackResistance": 1.0
   },
   "llama": {
     "abilities": [
@@ -417,9 +416,6 @@
     "actions": [
       "creeper_fuse",
       "creeper_hiss"
-    ],
-    "damageImmunities": [
-      "explosion"
     ]
   },
   "minecraft:donkey": {
@@ -654,7 +650,9 @@
       "fall",
       "cactus",
       "drown"
-    ]
+    ],
+    "attackDamage": 14.0,
+    "knockbackResistance": 1.0
   },
   "minecraft:llama": {
     "abilities": [
@@ -770,7 +768,16 @@
     "actions": [
       "sheep_graze",
       "sheep_shear"
-    ]
+    ],
+    "silentActions": [
+      "sheep_graze",
+      "sheep_shear"
+    ],
+    "actionAnimation": {
+      "sheep_graze": false,
+      "sheep_shear": false
+    },
+    "animateSameMorph": false
   },
   "minecraft:shulker": {
     "abilities": [
@@ -782,12 +789,23 @@
       "shulker_shell",
       "shulker_teleport"
     ],
+    "silentActions": [
+      "shulker_shell",
+      "shulker_teleport"
+    ],
+    "actionAnimation": {
+      "shulker_shell": false,
+      "shulker_teleport": false
+    },
+    "animateSameMorph": false,
     "immunities": [
       "levitation"
     ],
     "damageImmunities": [
       "fall"
     ],
+    "armor": 20.0,
+    "knockbackResistance": 1.0,
     "speed": 0.08
   },
   "minecraft:silverfish": {
@@ -989,7 +1007,9 @@
       "fall",
       "cactus",
       "drown"
-    ]
+    ],
+    "attackDamage": 14.0,
+    "knockbackResistance": 1.0
   },
   "minecraft:vindication_illager": {
     "abilities": [
@@ -1246,7 +1266,16 @@
     "actions": [
       "sheep_graze",
       "sheep_shear"
-    ]
+    ],
+    "silentActions": [
+      "sheep_graze",
+      "sheep_shear"
+    ],
+    "actionAnimation": {
+      "sheep_graze": false,
+      "sheep_shear": false
+    },
+    "animateSameMorph": false
   },
   "shulker": {
     "abilities": [
@@ -1258,12 +1287,23 @@
       "shulker_shell",
       "shulker_teleport"
     ],
+    "silentActions": [
+      "shulker_shell",
+      "shulker_teleport"
+    ],
+    "actionAnimation": {
+      "shulker_shell": false,
+      "shulker_teleport": false
+    },
+    "animateSameMorph": false,
     "immunities": [
       "levitation"
     ],
     "damageImmunities": [
       "fall"
     ],
+    "armor": 20.0,
+    "knockbackResistance": 1.0,
     "speed": 0.08
   },
   "silverfish": {
@@ -1465,7 +1505,9 @@
       "fall",
       "cactus",
       "drown"
-    ]
+    ],
+    "attackDamage": 14.0,
+    "knockbackResistance": 1.0
   },
   "vindication_illager": {
     "abilities": [

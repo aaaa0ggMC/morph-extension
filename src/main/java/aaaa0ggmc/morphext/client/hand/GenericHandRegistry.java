@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 通用手部骨骼注册与检索中心 (Generic Hand Registry)。
  *
  * 1. 优先级 1：形态显式配置（来自外部 JSON 或各模组 morph_abilities.json 中的 rightHand / leftHand）。
- * 2. 优先级 2：模型类/形态显式预设映射（内置 Quark、AbyssalCraft、BOP、Dawn of Time 与原版非标准模型）。
+ * 2. 优先级 2：模型类/形态显式预设映射（核心内置原版非标准模型；第三方模组模型由对应 patch 注入）。
  * 3. 优先级 3：自动通用启发式骨骼探测（ModelBoneScanner）。
  */
 public final class GenericHandRegistry {

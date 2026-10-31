@@ -138,6 +138,14 @@ public final class MetamorphIntegration {
                 }
             }
 
+            /* 变身实体自主 AI 开关 (AI [ON/OFF] 状态调试能力) */
+            if (morph instanceof mchorse.metamorph.api.morphs.EntityMorph) {
+                aaaa0ggmc.morphext.ability.IAbility aiToggle = aaaa0ggmc.morphext.ability.AbilityRegistry.get(aaaa0ggmc.morphext.ability.MobAiToggleAbility.ID);
+                if (aiToggle != null && !granted.contains(aiToggle)) {
+                    granted.add(aiToggle);
+                }
+            }
+
             /* 外部数据驱动能力注入（由 morph_abilities.json 或其他模组注入） */
             MorphAbilityDefinition def = MorphJsonConfig.get(morph.name);
             if (def != null) {
@@ -145,14 +153,24 @@ public final class MetamorphIntegration {
                     for (String abName : def.abilities) {
                         boolean already = false;
                         for (aaaa0ggmc.morphext.ability.IAbility g : granted) {
-                            if (g.getId().endsWith(":" + abName)) {
+                            if (g.getId().equals(abName) || g.getId().endsWith(":" + abName)) {
                                 already = true;
                                 break;
                             }
                         }
-                        if (!already) {
-                            mchorse.metamorph.api.abilities.IAbility metaAb = MorphManager.INSTANCE.abilities.get(abName);
+                        if (already) {
+                            continue;
+                        }
+                        mchorse.metamorph.api.abilities.IAbility metaAb = MorphManager.INSTANCE.abilities.get(abName);
+                        if (metaAb != null) {
                             granted.add(new MorphGrantedAbility(morph.name, abName, metaAb, null, icon));
+                        } else {
+                            // 核心/加载项自身注册的能力（如 morphext:example_toggle、faction_xxx）
+                            // 通过数据驱动方式声明在形态定义里，不再需要核心硬编码具体模组判断。
+                            aaaa0ggmc.morphext.ability.IAbility registered = AbilityRegistry.get(abName);
+                            if (registered != null) {
+                                granted.add(registered);
+                            }
                         }
                     }
                 }

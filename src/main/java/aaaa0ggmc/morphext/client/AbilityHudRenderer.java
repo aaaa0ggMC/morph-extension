@@ -14,6 +14,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -39,18 +40,21 @@ public class AbilityHudRenderer {
         if (mc.player == null || mc.gameSettings.hideGUI) {
             return;
         }
-        IAbility ability = AbilityRegistry.get(ModConfig.activeAbility);
-        if (ability == null || !AbilityUnlocks.isUnlocked(ability)) {
+        IAbility ability = AbilityRegistry.get(ModConfig.getActiveAbility());
+        if (ability == null) {
             return;
         }
+        boolean locked = AbilityUnlocks.isReady() && !AbilityUnlocks.isUnlocked(ability);
 
         ScaledResolution res = event.getResolution();
         FontRenderer font = mc.fontRenderer;
 
-        boolean cooling = !AbilityCooldowns.isReady(ability.getId());
+        boolean cooling = !locked && !AbilityCooldowns.isReady(ability.getId());
         String name = ability.getDisplayName();
         String suffix = "";
-        if (cooling) {
+        if (locked) {
+            suffix = " : " + I18n.translateToLocal("gui.morphext.hud.forgotten");
+        } else if (cooling) {
             suffix = " : CD " + AbilityCooldowns.getRemainingText(ability.getId()) + "s";
         } else if (ability instanceof IStatefulAbility && ability.isStateToggleable()) {
             IStatefulAbility stateful = (IStatefulAbility) ability;
@@ -98,7 +102,8 @@ public class AbilityHudRenderer {
             /* 物品渲染后混合函数可能被留在非标准状态，强制复位（HUD 在帧中段渲染，不关深度，避免影响世界渲染） */
             aaaa0ggmc.morphext.client.RenderUtil.resetBlendFunc();
         }
-        font.drawStringWithShadow(title, x + textX, y + 5, cooling ? 0xFFAA66 : 0xFFFFFF);
+        font.drawStringWithShadow(title, x + textX, y + 5,
+                locked ? 0x999999 : cooling ? 0xFFAA66 : 0xFFFFFF);
 
         /* 冷却背景进度条：底栏，剩余比例填充 */
         if (cooling) {

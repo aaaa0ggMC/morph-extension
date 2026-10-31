@@ -54,6 +54,11 @@ public class MorphExtension {
     }
 
     @Mod.EventHandler
+    public void serverStarting(net.minecraftforge.fml.common.event.FMLServerStartingEvent event) {
+        event.registerServerCommand(new aaaa0ggmc.morphext.command.CommandMorphExt());
+    }
+
+    @Mod.EventHandler
     public void serverStopped(net.minecraftforge.fml.common.event.FMLServerStoppedEvent event) {
         aaaa0ggmc.morphext.ability.PlayerAbilityStore.clear();
     }

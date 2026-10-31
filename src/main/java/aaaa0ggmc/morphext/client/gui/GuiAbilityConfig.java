@@ -13,12 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 配置 UI（McLib 框架）：轮盘槽位数量（1-8 可配置）与 8 个槽位的能力绑定。
+ * 配置 UI（McLib 框架）：轮盘 Profile、槽位数量（1-8 可配置）与槽位能力绑定。
  * 点击槽位按钮 -> 打开能力选择器（选择器内可清空）。
  */
 public class GuiAbilityConfig extends GuiBase {
     private final List<GuiButtonElement> slotButtons = new ArrayList<>();
     private GuiLabelElement maxSlotsLabel;
+    private GuiLabelElement profileLabel;
     private int editingSlot = -1;
 
     @Override
@@ -37,49 +38,91 @@ public class GuiAbilityConfig extends GuiBase {
 
         GuiButtonElement hud = new GuiButtonElement(this.mc, IKey.str("HUD position"),
                 b -> this.mc.displayGuiScreen(new GuiHudConfig(this)));
-        hud.flex().relative(this.root).x(w - 100).y(6).w(90).h(20);
+        hud.flex().relative(this.root).x(w - 100).y(4).w(90).h(20);
         this.root.add(hud);
+
+        /* ---- Profile 行 ---- */
+        GuiButtonElement prevProfile = new GuiButtonElement(this.mc, IKey.str("<"), b -> {
+            int count = ModConfig.profileCount();
+            ModConfig.setActiveProfile((ModConfig.activeProfile() - 1 + count) % count);
+            this.rebuild();
+        });
+        prevProfile.flex().relative(this.root).x(10).y(28).w(20).h(18);
+        this.root.add(prevProfile);
+
+        this.profileLabel = new GuiLabelElement(this.mc, profileText());
+        this.profileLabel.flex().relative(this.root).x(36).y(28).w(w - 200).h(18);
+        this.root.add(this.profileLabel);
+
+        GuiButtonElement nextProfile = new GuiButtonElement(this.mc, IKey.str(">"), b -> {
+            int count = ModConfig.profileCount();
+            ModConfig.setActiveProfile((ModConfig.activeProfile() + 1) % count);
+            this.rebuild();
+        });
+        nextProfile.flex().relative(this.root).x(w - 148).y(28).w(20).h(18);
+        this.root.add(nextProfile);
+
+        GuiButtonElement status = new GuiButtonElement(this.mc, IKey.str("Status"), b ->
+                this.mc.displayGuiScreen(new GuiAbilityStatus(this)));
+        status.flex().relative(this.root).x(w - 90).y(28).w(80).h(18);
+        this.root.add(status);
 
         /* ---- max slots 行 ---- */
         GuiLabelElement maxLabel = new GuiLabelElement(this.mc, "Max slots:");
-        maxLabel.flex().relative(this.root).x(10).y(32).w(80).h(18);
+        maxLabel.flex().relative(this.root).x(10).y(52).w(80).h(18);
         this.root.add(maxLabel);
 
         GuiButtonElement minus = new GuiButtonElement(this.mc, IKey.str("-"), b -> {
             ModConfig.setMaxSlots(ModConfig.maxSlots - 1);
             this.rebuild();
         });
-        minus.flex().relative(this.root).x(95).y(32).w(24).h(18);
+        minus.flex().relative(this.root).x(95).y(52).w(24).h(18);
         this.root.add(minus);
 
         this.maxSlotsLabel = new GuiLabelElement(this.mc, String.valueOf(ModConfig.maxSlots));
-        this.maxSlotsLabel.flex().relative(this.root).x(123).y(32).w(30).h(18);
+        this.maxSlotsLabel.flex().relative(this.root).x(123).y(52).w(30).h(18);
         this.root.add(this.maxSlotsLabel);
 
         GuiButtonElement plus = new GuiButtonElement(this.mc, IKey.str("+"), b -> {
             ModConfig.setMaxSlots(ModConfig.maxSlots + 1);
             this.rebuild();
         });
-        plus.flex().relative(this.root).x(157).y(32).w(24).h(18);
+        plus.flex().relative(this.root).x(157).y(52).w(24).h(18);
         this.root.add(plus);
 
-        /* 状态总览入口 */
-        GuiButtonElement status = new GuiButtonElement(this.mc, IKey.str("Status"), b ->
-                this.mc.displayGuiScreen(new GuiAbilityStatus(this)));
-        status.flex().relative(this.root).x(w - 90).y(32).w(80).h(18);
-        this.root.add(status);
+        /* ---- Profile 数量 ---- */
+        GuiLabelElement profileCountLabel = new GuiLabelElement(this.mc,
+                "Profiles: " + ModConfig.profileCount());
+        profileCountLabel.flex().relative(this.root).x(w - 220).y(52).w(90).h(18);
+        this.root.add(profileCountLabel);
 
-        /* ---- 8 个槽位 ---- */
-        int top = 60;
-        int rowH = 24;
+        GuiButtonElement profileMinus = new GuiButtonElement(this.mc, IKey.str("-"), b -> {
+            ModConfig.setProfileCount(ModConfig.profileCount() - 1);
+            this.rebuild();
+        });
+        profileMinus.flex().relative(this.root).x(w - 128).y(52).w(24).h(18);
+        this.root.add(profileMinus);
+
+        GuiButtonElement profilePlus = new GuiButtonElement(this.mc, IKey.str("+"), b -> {
+            ModConfig.setProfileCount(ModConfig.profileCount() + 1);
+            this.rebuild();
+        });
+        profilePlus.flex().relative(this.root).x(w - 100).y(52).w(24).h(18);
+        this.root.add(profilePlus);
+
+        /* ---- 8 个槽位（当前 Profile） ---- */
+        int top = 78;
+        int rowH = 22;
         for (int i = 0; i < ModConfig.MAX_SLOTS_HARD_CAP; i++) {
             final int slot = i;
             boolean active = i < ModConfig.activeSlotCount();
-            IAbility ability = AbilityRegistry.get(ModConfig.SLOT_ABILITY_IDS[i]);
-            String label = (i + 1) + ". " + (ability != null ? ability.getDisplayName() : "(empty)");
+            String id = ModConfig.getSlot(i);
+            IAbility ability = AbilityRegistry.get(id);
+            String label = (i + 1) + ". " + (ability != null ? ability.getDisplayName()
+                    : id.isEmpty() ? "(empty)" : id);
 
             GuiButtonElement button = new GuiButtonElement(this.mc, IKey.str(label), b -> this.openPicker(slot));
-            button.flex().relative(this.root).x(10).y(top + i * rowH).w(w - 20).h(20);
+            button.flex().relative(this.root).x(10).y(top + i * rowH).w(w - 20).h(19);
             if (!active) {
                 button.background(false).textColor(0x777777, false);
             }
@@ -91,6 +134,14 @@ public class GuiAbilityConfig extends GuiBase {
         GuiButtonElement done = new GuiButtonElement(this.mc, IKey.str("Done"), b -> this.close());
         done.flex().relative(this.root).x(10).y(top + ModConfig.MAX_SLOTS_HARD_CAP * rowH + 6).w(w - 20).h(20);
         this.root.add(done);
+    }
+
+    private String profileText() {
+        int p = ModConfig.activeProfile();
+        String key = ModConfig.getProfileKeyName(p);
+        return "Profile " + (p + 1) + "/" + ModConfig.profileCount()
+                + ": " + ModConfig.getProfileName(p)
+                + (key == null || key.isEmpty() ? "" : "  [" + key + "]");
     }
 
     private void rebuild() {

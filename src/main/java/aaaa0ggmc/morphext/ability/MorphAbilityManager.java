@@ -309,6 +309,12 @@ public final class MorphAbilityManager {
     public void onLivingAttack(LivingAttackEvent event) {
         if (event.getEntityLiving() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) event.getEntityLiving();
+            // 宿主自伤绝对豁免：调试 AI 自身或其投掷物/爆炸绝不伤害宿主玩家
+            if (aaaa0ggmc.morphext.ability.morph.MorphAiEngine.isHostDummyEntity(player, event.getSource().getTrueSource())
+                    || aaaa0ggmc.morphext.ability.morph.MorphAiEngine.isHostDummyEntity(player, event.getSource().getImmediateSource())) {
+                event.setCanceled(true);
+                return;
+            }
             List<IPassiveAbility> passives = activePassives.get(player.getUniqueID());
             if (passives != null && !passives.isEmpty()) {
                 MorphContext context = new MorphContext(player, null, currentMorphs.get(player.getUniqueID()), null);
@@ -331,6 +337,13 @@ public final class MorphAbilityManager {
         // 1. 受击防御/免疫分发
         if (event.getEntityLiving() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) event.getEntityLiving();
+            // 宿主自伤绝对豁免
+            if (aaaa0ggmc.morphext.ability.morph.MorphAiEngine.isHostDummyEntity(player, event.getSource().getTrueSource())
+                    || aaaa0ggmc.morphext.ability.morph.MorphAiEngine.isHostDummyEntity(player, event.getSource().getImmediateSource())) {
+                event.setCanceled(true);
+                event.setAmount(0.0F);
+                return;
+            }
             List<IPassiveAbility> passives = activePassives.get(player.getUniqueID());
             if (passives != null && !passives.isEmpty()) {
                 MorphContext context = new MorphContext(player, null, currentMorphs.get(player.getUniqueID()), null);

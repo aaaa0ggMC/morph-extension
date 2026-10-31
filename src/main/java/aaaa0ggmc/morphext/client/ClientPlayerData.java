@@ -62,10 +62,8 @@ public final class ClientPlayerData {
         if (wasSprintAllowed && !AbilityUnlocks.isUnlocked(sprint) && mc.player != null) {
             mc.player.setSprinting(false);
         }
-        IAbility selected = AbilityRegistry.get(ModConfig.activeAbility);
-        if (selected != null && !AbilityUnlocks.isUnlocked(selected)) {
-            ModConfig.setActiveAbility("");
-        }
+        // 注意：不因为当前形态不再拥有某个能力就清空轮盘选中的槽位。
+        // 槽位绑定与当前选择必须保留，能力暂时不可用时由轮盘显示锁定、释放时给出“已遗忘”提示。
         if (wipedAbility != null && !wipedAbility.isEmpty()) {
             AbilityCooldowns.clearAbility(wipedAbility);
             IAbility ability = AbilityRegistry.get(wipedAbility);

@@ -15,6 +15,7 @@ public class CommonProxy {
         aaaa0ggmc.morphext.ability.PlayerAbilityStore.init(event.getModConfigurationDirectory());
         aaaa0ggmc.morphext.network.AbilityNetwork.init();
         aaaa0ggmc.morphext.integration.metamorph.MorphJsonConfig.init(event.getModConfigurationDirectory());
+        aaaa0ggmc.morphext.faction.FactionJsonConfig.init(event.getModConfigurationDirectory());
     }
 
     public void init(FMLInitializationEvent event) {
@@ -37,6 +38,8 @@ public class CommonProxy {
     }
 
     public void onPlayerSnapshot(String json, String wipedAbility) { }
+
+    public void onCreeperSwelling(int entityId, boolean swelling) { }
 
     public void postInit(FMLPostInitializationEvent event) {
         aaaa0ggmc.morphext.config.ModConfig.applyMetamorphBypass();

@@ -35,7 +35,8 @@ public class SprintAbility extends Ability implements IStatefulAbility {
 
     @Override
     public String getStateLabel(EntityPlayer player) {
-        return enabled() ? "On" : "Off";
+        return net.minecraft.util.text.translation.I18n.translateToLocal(
+                enabled() ? "gui.morphext.state.on" : "gui.morphext.state.off");
     }
 
     @Override

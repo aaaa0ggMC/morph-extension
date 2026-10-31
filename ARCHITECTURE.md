@@ -28,6 +28,12 @@
 
 ## 扩展入口
 
+### 第三方 patch 边界
+
+核心 morphext 只保留通用机制。具体模组的实体/形态/能力/伤害类型适配放在 `morphext-patch-<modid>`；生物量少的放 `morphext-patch-modpack`。核心不得写死第三方 modid、实体类名、形态 id 或能力 id。
+
+patch 通过 `ServerAbilityService.register("morphext:patch_specific", handler)` 注册更具体的前缀；服务端按**最长前缀**匹配，而不是模组初始化顺序。形态专属能力可以直接在 patch 的 `morph_abilities.json` 的 `abilities` 列表中声明核心能力 id（如 `morphext:example_toggle`），`MetamorphIntegration.syncGranted` 会从 `AbilityRegistry` 取出真实能力并临时授予。
+
 ### 旧能力
 
 现有 `onActivate(EntityPlayer)` 保留，默认 `CLIENT`。新契约 `activate` 会调用旧方法并把基础冷却包装到结果中。这里是兼容层，不代表所有旧能力都适合客户端执行。

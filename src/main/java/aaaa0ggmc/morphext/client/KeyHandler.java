@@ -166,7 +166,7 @@ public class KeyHandler {
 
     /** 释放键：触发当前选中的能力（未解锁/冷却中则拒绝并提示）。 */
     private static void castActiveAbility(Minecraft mc) {
-        ClientAbilityExecutor.activate(AbilityRegistry.get(ModConfig.activeAbility));
+        ClientAbilityExecutor.activateById(ModConfig.getActiveAbility());
     }
 
     @SubscribeEvent

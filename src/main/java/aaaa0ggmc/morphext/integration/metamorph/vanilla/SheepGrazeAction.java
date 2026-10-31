@@ -1,11 +1,11 @@
 package aaaa0ggmc.morphext.integration.metamorph.vanilla;
 
 import aaaa0ggmc.morphext.integration.metamorph.ICooldownAction;
+import aaaa0ggmc.morphext.integration.metamorph.IMorphAnimationAction;
+import aaaa0ggmc.morphext.integration.metamorph.MorphSyncHelper;
 import mchorse.metamorph.api.abilities.IAction;
 import mchorse.metamorph.api.morphs.AbstractMorph;
 import mchorse.metamorph.api.morphs.EntityMorph;
-import mchorse.metamorph.network.Dispatcher;
-import mchorse.metamorph.network.common.survival.PacketMorphPlayer;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntitySheep;
@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 4. 关键联动：若当前处于秃毛状态 (isSheared == true)，吃草后立刻重置为 false，让羊毛完整重生；
  * 5. 全网广播 PacketMorphPlayer 同步新羊毛外观与 NBT 数据。
  */
-public class SheepGrazeAction implements IAction, ICooldownAction {
+public class SheepGrazeAction implements IAction, ICooldownAction, IMorphAnimationAction {
     public static final String ID = "sheep_graze";
     public static final String ALIAS_ID = "morphext:sheep_graze";
     public static final int COOLDOWN_GRAZE = 200;  // 10 秒
@@ -127,11 +127,8 @@ public class SheepGrazeAction implements IAction, ICooldownAction {
             }
 
             if (wasSheared) {
-                // 广播同步羊毛重生长外观
-                Dispatcher.sendToTracked(player, new PacketMorphPlayer(player.getEntityId(), morph));
-                if (player instanceof EntityPlayerMP) {
-                    Dispatcher.sendTo(new PacketMorphPlayer(player.getEntityId(), morph), (EntityPlayerMP) player);
-                }
+                // 广播同步羊毛重生长外观 (平滑更替，不触发 20-tick 翻转爆炸过渡动画)
+                MorphSyncHelper.syncMorph(player, morph);
                 player.sendStatusMessage(new TextComponentTranslation("morphext.action.sheep_graze.wool_regrown"), true);
                 world.playSound(null, player.posX, player.posY, player.posZ,
                         SoundEvents.ENTITY_SHEEP_AMBIENT, SoundCategory.PLAYERS, 1.2F, 1.1F);

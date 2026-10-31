@@ -21,10 +21,17 @@ import net.minecraft.entity.player.EntityPlayer;
 public class AbilityRegistry {
     private static final Map<String, IAbility> ABILITIES = new LinkedHashMap<>();
     private static final Map<String, Map<String, IAbility>> GRANTS = new LinkedHashMap<>();
+    /**
+     * 最近一次见过的能力原型（包含已撤销的变身临时能力）。
+     * 轮盘槽位需要在能力暂时不可用时仍能显示名称/图标并标记为“已遗忘”，
+     * 因此 get() 允许回退到这份只读缓存；是否可释放仍由 AbilityUnlocks 判定。
+     */
+    private static final Map<String, IAbility> KNOWN = new java.util.concurrent.ConcurrentHashMap<>();
 
     public static void register(IAbility ability) {
         if (ability != null && ability.getId() != null && !ability.getId().isEmpty()) {
             ABILITIES.put(ability.getId(), ability);
+            KNOWN.put(ability.getId(), ability);
         }
     }
 
@@ -47,7 +54,7 @@ public class AbilityRegistry {
                 return grants.get(id);
             }
         }
-        return null;
+        return KNOWN.get(id);
     }
 
     public static Collection<IAbility> all() {
@@ -94,6 +101,7 @@ public class AbilityRegistry {
             }
             // 支持动态装载已注册能力（如 UAPA 架构中已在全局 ABILITIES 注册的被动与动作原型）
             next.put(ability.getId(), old.getOrDefault(ability.getId(), ability));
+            KNOWN.putIfAbsent(ability.getId(), ability);
         }
         GRANTS.put(source, next);
         for (IAbility ability : old.values()) {

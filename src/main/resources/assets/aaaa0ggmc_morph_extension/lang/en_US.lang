@@ -7,7 +7,7 @@ key.morphext.cast=Cast Selected Ability
 gui.morphext.wheel.empty=No abilities bound - press any key to search
 gui.morphext.wheel.count=Bound: %d / %d
 gui.morphext.wheel.selected=selected - cast key to use
-gui.morphext.locked=Ability locked
+gui.morphext.locked=I've forgotten this ability
 gui.morphext.unavailable=Ability unavailable in the current form
 gui.morphext.failed=Ability execution failed
 gui.morphext.data_failed=Ability data unavailable; check the server log (original files retained)
@@ -17,6 +17,17 @@ gui.morphext.cooldown=On cooldown: %ss
 gui.morphext.cooldown.short=Cooldown: %ss
 gui.morphext.search.count=%d abilities
 gui.morphext.search.placeholder=Search...
+gui.morphext.wheel.profile=Profile: %s
+gui.morphext.wheel.empty_slot=Empty slot
+gui.morphext.wheel.locked=Forgotten - still selectable
+gui.morphext.profile.tab=[%s] %s
+gui.morphext.hud.forgotten=Forgotten
+gui.morphext.state.on=On
+gui.morphext.state.off=Off
+gui.morphext.state.ai.on=AI: ON
+gui.morphext.state.ai.off=AI: OFF
+gui.morphext.state.passive=Passive
+gui.morphext.state.castable=Castable
 item.morphext.ability_scroll.name=Ability Scroll
 item.morphext.ability_scroll_powerful.name=Ability Purge Scroll
 morphext.scroll.unlocked=Unlocked: %s
@@ -226,8 +237,9 @@ morphext.passive.immunity_potion.name=Potion Immunity
 morphext.passive.immunity_potion.desc=Complete immunity to specific harmful potions and plagues.
 
 # Unified Vanilla Mob Actions (UAPA)
+morphext.msg.creeper_defused=§e[Creeper] Fuse successfully extinguished and defused!
 morphext.metamorph.action.creeper_fuse=Creeper Fuse
-morphext.metamorph.desc.creeper_fuse=Creeper Fuse: Prime fuse for 1.5s with hissing sounds and swelling smoke, then detonate a safe 3.0-power shockwave dealing heavy damage and knockback to surrounding foes without damaging the host, 20s cooldown.
+morphext.metamorph.desc.creeper_fuse=Creeper Fuse: Prime fuse for 1.5s with hissing sounds and swelling flash, then detonate a real 3.0-power (6.0 if charged) explosion! [Cost] In survival mode, the host dies from self-destruction (creative mode survives); sneak-cast to defuse.
 morphext.metamorph.action.creeper_hiss=Creeper Hiss
 morphext.metamorph.desc.creeper_hiss=Creeper Hiss: Emit an alarming creeper hiss, panicking surrounding non-friendly entities within 10 blocks and inflicting Slowness for 3s, 10s cooldown.
 morphext.metamorph.action.wither_strike=Wither Strike
@@ -382,6 +394,10 @@ morphext.passive.morphext.endermite_bait.desc=Emits an irritating void vibration
 
 # Creative Morph Categories & Variants
 morph.category.variants=Variants & Baby Morphs
+morph.category.abyssalcraft=AbyssalCraft
+morph.category.quark=Quark
+morph.category.biomesoplenty=Biomes O' Plenty
+morph.category.dawnoftimebuilder=Dawn of Time
 morph.section.variants=Morph Variants
 morphext.variant.baby=Baby
 
@@ -555,5 +571,29 @@ morphext.metamorph.desc.pigman_wrath_shout=Roar in fury, granting Strength II an
 morphext.metamorph.action.killer_bunny_blood_frenzy=Blood Frenzy Pounce
 morphext.metamorph.desc.killer_bunny_blood_frenzy=Leap violently forward, inflicting 16 true armor-piercing damage!
 
+# Autonomous Mob AI System
+morphext.ability.mob_ai.name=Mob Autonomous AI
+morphext.ability.mob_ai.desc=Toggles the autonomous mob AI sandbox. When enabled, your morph entity exhibits natural head tracking, vigilant awareness, cooperative combat assistance and native abilities with built-in suicide/explosion/griefing barriers.
+morphext.ability.mob_ai.enabled=§a[MorphExt] Mob Autonomous AI Enabled (AI: ON) §7- Vigilant assistance active
+morphext.ability.mob_ai.disabled=§c[MorphExt] Mob Autonomous AI Disabled (AI: OFF) §7- Full manual control restored
+morphext.metamorph.action.ai_toggle=Toggle Autonomous AI
+morphext.metamorph.desc.ai_toggle=Toggles autonomous mob AI state (AI [ON/OFF]). Assists in awareness and combat with built-in safety barriers.
+morphext.metamorph.action.morphext:ai_toggle=Toggle Autonomous AI
+morphext.metamorph.desc.morphext:ai_toggle=Toggles autonomous mob AI state (AI [ON/OFF]). Assists in awareness and combat with built-in safety barriers.
 
-
+# Faction Relation Tiers
+morphext.faction.relation.enemy=Enemy
+morphext.faction.relation.moderate=Moderate
+morphext.faction.relation.member=Member
+morphext.faction.relation.relative=Relative
+morphext.faction.relation.lord=Lord
+gui.morphext.wheel.locked.short=Forgotten
+gui.morphext.wheel.hint=Hover or press a number to pick an ability
+gui.morphext.wheel.details.title=Ability Details
+gui.morphext.wheel.details.empty=Hover or select an ability to see details
+gui.morphext.wheel.details.empty_slot=Empty slot: bind an ability in the config screen
+gui.morphext.wheel.details.locked=You no longer have this ability. The binding is kept; casting will say it is forgotten.
+gui.morphext.wheel.details.source=Source: %s
+gui.morphext.wheel.details.id=ID: %s
+gui.morphext.wheel.details.state=State: %s
+gui.morphext.wheel.details.cooldown=Cooldown: %ss

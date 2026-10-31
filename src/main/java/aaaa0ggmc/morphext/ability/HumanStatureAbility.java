@@ -1,7 +1,7 @@
 package aaaa0ggmc.morphext.ability;
 
 import com.google.gson.JsonObject;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -77,8 +77,8 @@ public class HumanStatureAbility extends Ability implements IStatefulAbility {
     public String getDisplayName() {
         if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
             try {
-                if (I18n.hasKey("ability.morphext.human_stature")) {
-                    return I18n.format("ability.morphext.human_stature");
+                if (I18n.canTranslate("ability.morphext.human_stature")) {
+                    return I18n.translateToLocal("ability.morphext.human_stature");
                 }
             } catch (Throwable ignored) {
             }
@@ -91,8 +91,8 @@ public class HumanStatureAbility extends Ability implements IStatefulAbility {
         Mode mode = getClientMode();
         if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
             try {
-                if (I18n.hasKey("morphext.stature.mode." + mode.id)) {
-                    return I18n.format("morphext.stature.mode." + mode.id);
+                if (I18n.canTranslate("morphext.stature.mode." + mode.id)) {
+                    return I18n.translateToLocal("morphext.stature.mode." + mode.id);
                 }
             } catch (Throwable ignored) {
             }
@@ -127,8 +127,8 @@ public class HumanStatureAbility extends Ability implements IStatefulAbility {
     public String getDescription() {
         if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
             try {
-                if (I18n.hasKey("ability.morphext.human_stature.desc")) {
-                    return I18n.format("ability.morphext.human_stature.desc");
+                if (I18n.canTranslate("ability.morphext.human_stature.desc")) {
+                    return I18n.translateToLocal("ability.morphext.human_stature.desc");
                 }
             } catch (Throwable ignored) {
             }

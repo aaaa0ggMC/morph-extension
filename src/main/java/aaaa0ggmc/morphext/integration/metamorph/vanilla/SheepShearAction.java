@@ -1,6 +1,8 @@
 package aaaa0ggmc.morphext.integration.metamorph.vanilla;
 
 import aaaa0ggmc.morphext.integration.metamorph.ICooldownAction;
+import aaaa0ggmc.morphext.integration.metamorph.IMorphAnimationAction;
+import aaaa0ggmc.morphext.integration.metamorph.MorphSyncHelper;
 import mchorse.metamorph.api.abilities.IAction;
 import mchorse.metamorph.api.morphs.AbstractMorph;
 import mchorse.metamorph.api.morphs.EntityMorph;
@@ -38,7 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *    若无剪刀也能自然脱落羊毛，冷却为 30 秒；
  * 5. 状态同步：调用 setSheared(true) 并广播 PacketMorphPlayer，播放剪毛音效与飞散绒毛粒子。
  */
-public class SheepShearAction implements IAction, ICooldownAction {
+public class SheepShearAction implements IAction, ICooldownAction, IMorphAnimationAction {
     public static final String ID = "sheep_shear";
     public static final String ALIAS_ID = "morphext:sheep_shear";
     public static final int COOLDOWN_TOOL = 300;     // 15 秒（持剪刀精修）
@@ -149,11 +151,8 @@ public class SheepShearAction implements IAction, ICooldownAction {
             entityData.setBoolean("Sheared", true);
         }
 
-        // 状态全网广播同步
-        Dispatcher.sendToTracked(player, new PacketMorphPlayer(player.getEntityId(), morph));
-        if (player instanceof EntityPlayerMP) {
-            Dispatcher.sendTo(new PacketMorphPlayer(player.getEntityId(), morph), (EntityPlayerMP) player);
-        }
+        // 状态全网广播同步 (平滑更新秃毛外观，不触发 20-tick 翻转爆炸动画)
+        MorphSyncHelper.syncMorph(player, morph);
 
         // 剪毛音效与飞散绒毛粒子
         world.playSound(null, player.posX, player.posY, player.posZ,

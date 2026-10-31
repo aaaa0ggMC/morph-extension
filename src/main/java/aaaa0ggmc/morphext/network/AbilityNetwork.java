@@ -29,6 +29,8 @@ public final class AbilityNetwork {
         CHANNEL.registerMessage(ReplyHandler.class, Reply.class, 1, Side.CLIENT);
         CHANNEL.registerMessage(SnapshotHandler.class, Snapshot.class, 2, Side.CLIENT);
         CHANNEL.registerMessage(SyncHandler.class, SyncRequest.class, 3, Side.SERVER);
+        CHANNEL.registerMessage(MorphSyncHandler.class, MorphSyncPacket.class, 4, Side.CLIENT);
+        CHANNEL.registerMessage(CreeperSwellingHandler.class, CreeperSwellingPacket.class, 5, Side.CLIENT);
     }
 
     public static void syncPlayer(EntityPlayerMP player, String wipedAbility) {
@@ -173,6 +175,110 @@ public final class AbilityNetwork {
         @Override public IMessage onMessage(Reply message, MessageContext context) {
             // 通过 sided proxy 进入客户端主线程；common/network 不加载 Minecraft 类。
             MorphExtension.proxy.onActivationResult(message.id, message.result);
+            return null;
+        }
+    }
+
+    public static class MorphSyncPacket implements IMessage {
+        public int entityId;
+        public boolean animate;
+        public mchorse.metamorph.api.morphs.AbstractMorph morph;
+
+        public MorphSyncPacket() {}
+
+        public MorphSyncPacket(int entityId, mchorse.metamorph.api.morphs.AbstractMorph morph, boolean animate) {
+            this.entityId = entityId;
+            this.morph = morph;
+            this.animate = animate;
+        }
+
+        @Override
+        public void fromBytes(ByteBuf buf) {
+            this.entityId = buf.readInt();
+            this.animate = buf.readBoolean();
+            if (buf.readBoolean()) {
+                this.morph = mchorse.metamorph.api.MorphManager.INSTANCE.morphFromNBT(ByteBufUtils.readTag(buf));
+            } else {
+                this.morph = null;
+            }
+        }
+
+        @Override
+        public void toBytes(ByteBuf buf) {
+            buf.writeInt(this.entityId);
+            buf.writeBoolean(this.animate);
+            if (this.morph != null) {
+                buf.writeBoolean(true);
+                ByteBufUtils.writeTag(buf, mchorse.metamorph.api.MorphUtils.toNBT(this.morph));
+            } else {
+                buf.writeBoolean(false);
+            }
+        }
+    }
+
+    public static class MorphSyncHandler implements IMessageHandler<MorphSyncPacket, IMessage> {
+        @Override
+        public IMessage onMessage(MorphSyncPacket message, MessageContext context) {
+            net.minecraft.client.Minecraft.getMinecraft().addScheduledTask(() -> {
+                net.minecraft.client.multiplayer.WorldClient world = net.minecraft.client.Minecraft.getMinecraft().world;
+                if (world == null) return;
+                net.minecraft.entity.Entity entity = world.getEntityByID(message.entityId);
+                if (entity instanceof net.minecraft.entity.player.EntityPlayer) {
+                    mchorse.metamorph.capabilities.morphing.IMorphing capability =
+                            entity.getCapability(mchorse.metamorph.capabilities.morphing.MorphingProvider.MORPHING_CAP, null);
+                    if (capability != null) {
+                        try {
+                            if (!message.animate) {
+                                aaaa0ggmc.morphext.integration.metamorph.MorphAnimationRegistry.setSilentSyncContext(true);
+                            }
+                            capability.setCurrentMorph(message.morph, (net.minecraft.entity.player.EntityPlayer) entity, true);
+                        } finally {
+                            aaaa0ggmc.morphext.integration.metamorph.MorphAnimationRegistry.setSilentSyncContext(false);
+                        }
+                    }
+                }
+            });
+            return null;
+        }
+    }
+
+    public static void sendCreeperSwelling(net.minecraft.entity.player.EntityPlayer player, boolean swelling) {
+        if (player == null || player.world.isRemote) return;
+        CreeperSwellingPacket packet = new CreeperSwellingPacket(player.getEntityId(), swelling);
+        CHANNEL.sendToAllTracking(packet, player);
+        if (player instanceof EntityPlayerMP) {
+            CHANNEL.sendTo(packet, (EntityPlayerMP) player);
+        }
+    }
+
+    public static class CreeperSwellingPacket implements IMessage {
+        public int entityId;
+        public boolean swelling;
+
+        public CreeperSwellingPacket() {}
+
+        public CreeperSwellingPacket(int entityId, boolean swelling) {
+            this.entityId = entityId;
+            this.swelling = swelling;
+        }
+
+        @Override
+        public void fromBytes(ByteBuf buf) {
+            this.entityId = buf.readInt();
+            this.swelling = buf.readBoolean();
+        }
+
+        @Override
+        public void toBytes(ByteBuf buf) {
+            buf.writeInt(this.entityId);
+            buf.writeBoolean(this.swelling);
+        }
+    }
+
+    public static class CreeperSwellingHandler implements IMessageHandler<CreeperSwellingPacket, IMessage> {
+        @Override
+        public IMessage onMessage(CreeperSwellingPacket message, MessageContext context) {
+            MorphExtension.proxy.onCreeperSwelling(message.entityId, message.swelling);
             return null;
         }
     }

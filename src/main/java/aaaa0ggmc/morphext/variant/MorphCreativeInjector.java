@@ -26,10 +26,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 创造模式形态选单与检索增强注入器 (Morph Creative Search & Variant Injector)。
  *
  * 架构规范：
- * 1. 采用插件式 SPI 架构：通过 registerProvider() 接收各补丁模组（如 morphext-patch-abyssalcraft）注入的专属复杂变种；
- * 2. 统一管理并注入到 Metamorph 创造模式选单列表与检索系统；
- * 3. 增强搜索关键词匹配，变种形态拥有清晰的中英文双语 DisplayName；
- * 4. 防御性安全检查，规避 GUI 模型渲染异常。
+ * 1. 采用插件式 SPI 架构：通过 registerProvider() 接收各补丁模组（如 morphext-patch-abyssalcraft, quark, modpack）注入的专属变体；
+ * 2. 具备智能实体 ID 回退与阶数重映射机制：当某变体形态（如巨型修格斯、中型修格斯）未被底层注册为独立 Entity 时，
+ *    自动将其解析映射至宿主基础实体（如 lessershoggoth）并施加精确的 scale 缩放与 NBT 标记；
+ * 3. 目标分类自适应拓扑生成：若目标分类（如 abyssalcraft, quark, animal, hostile）在选单 Section 中尚未存在，自动予以初始化；
+ * 4. 增强搜索关键词匹配：变体形态均配备详尽的中英文双语 DisplayName。
  */
 @SideOnly(Side.CLIENT)
 public final class MorphCreativeInjector {
@@ -38,6 +39,27 @@ public final class MorphCreativeInjector {
 
     // 变种提供者注册列表
     private static final List<ICreativeVariantProvider> PROVIDERS = new CopyOnWriteArrayList<>();
+
+    // 实体回退元数据映射
+    public static class FallbackEntityInfo {
+        public final String baseId;
+        public final float defaultScale;
+
+        public FallbackEntityInfo(String baseId, float defaultScale) {
+            this.baseId = baseId;
+            this.defaultScale = defaultScale;
+        }
+    }
+
+    private static final Map<String, FallbackEntityInfo> KNOWN_FALLBACKS = new HashMap<>();
+    static {
+        // 修格斯阶数重映射 (AbyssalCraft 1.10.3 统一依托 EntityLesserShoggoth 渲染模型)
+        KNOWN_FALLBACKS.put("abyssalcraft:greatershoggoth", new FallbackEntityInfo("abyssalcraft:lessershoggoth", 1.85F));
+        KNOWN_FALLBACKS.put("abyssalcraft:shoggoth", new FallbackEntityInfo("abyssalcraft:lessershoggoth", 1.25F));
+        KNOWN_FALLBACKS.put("abyssalcraft.greatershoggoth", new FallbackEntityInfo("abyssalcraft:lessershoggoth", 1.85F));
+        KNOWN_FALLBACKS.put("abyssalcraft.shoggoth", new FallbackEntityInfo("abyssalcraft:lessershoggoth", 1.25F));
+        KNOWN_FALLBACKS.put("abyssalcraft:demonschicken", new FallbackEntityInfo("abyssalcraft:demonchicken", 1.0F));
+    }
 
     private MorphCreativeInjector() {
     }
@@ -59,7 +81,7 @@ public final class MorphCreativeInjector {
         if (registered) return;
         registered = true;
 
-        // 注册原版自带幼年变体提供者
+        // 注册原版全量变体提供者
         registerProvider(new VanillaBabyVariantProvider());
 
         MinecraftForge.EVENT_BUS.register(new MorphCreativeInjector());
@@ -130,25 +152,67 @@ public final class MorphCreativeInjector {
 
             for (CreativeVariantDef def : allDefs) {
                 String entityId = def.getEntityId();
+                String baseEntityId = def.getBaseEntityId();
+                String actualEntityId = entityId;
+                float appliedScale = def.getScale();
+
                 ResourceLocation rl = new ResourceLocation(entityId);
                 if (!EntityList.isRegistered(rl)) {
+                    // 1. 优先回退到显式声明的基础实体
+                    if (baseEntityId != null && EntityList.isRegistered(new ResourceLocation(baseEntityId))) {
+                        actualEntityId = baseEntityId;
+                    }
+                    // 2. 检查已知虚拟变种回退表 (如 greatershoggoth -> lessershoggoth)
+                    else if (KNOWN_FALLBACKS.containsKey(entityId)) {
+                        FallbackEntityInfo fb = KNOWN_FALLBACKS.get(entityId);
+                        if (EntityList.isRegistered(new ResourceLocation(fb.baseId))) {
+                            actualEntityId = fb.baseId;
+                            if (appliedScale <= 0.001F || Math.abs(appliedScale - 1.0F) < 0.001F) {
+                                appliedScale = fb.defaultScale;
+                            }
+                        }
+                    }
+                    // 3. 检查 Metamorph remap
+                    else {
+                        String remapped = MorphManager.INSTANCE.remap(entityId);
+                        if (!remapped.equals(entityId) && EntityList.isRegistered(new ResourceLocation(remapped))) {
+                            actualEntityId = remapped;
+                        }
+                    }
+                }
+
+                // 若最终仍无法解析到合法实体，则防御性跳过
+                if (!EntityList.isRegistered(new ResourceLocation(actualEntityId))) {
+                    LOGGER.debug("[morphext] Skipping variant '{}' (id: {}): entity not registered",
+                            def.getDisplayName(), entityId);
                     continue;
                 }
 
                 EntityMorph morph = new EntityMorph();
-                morph.name = entityId;
-                morph.setEntityData(def.getEntityData().copy());
+                morph.name = actualEntityId;
+                NBTTagCompound data = def.getEntityData().copy();
+                if (appliedScale > 0.001F) {
+                    morph.scale = appliedScale;
+                    data.setFloat("morphext_scale", appliedScale);
+                }
+                morph.setEntityData(data);
                 morph.displayName = def.getDisplayName();
 
-                // 注入专属集中分类
+                // 注入专属集中分类 "variants"
                 if (!hasMorphWithDisplayName(variantCategory, morph.displayName)) {
                     variantCategory.add(morph);
                     injectedCount++;
                 }
 
-                // 同步注入宿主分类（如 animal/hostile/abyssalcraft）
-                MorphCategory targetCat = catMap.get(def.getTargetCategory());
-                if (targetCat != null && !hasMorphWithDisplayName(targetCat, morph.displayName)) {
+                // 同步注入宿主分类（如 animal / hostile / abyssalcraft / quark 等）
+                String targetCatName = def.getTargetCategory();
+                MorphCategory targetCat = catMap.get(targetCatName);
+                if (targetCat == null) {
+                    targetCat = new MorphCategory(section, targetCatName);
+                    section.categories.add(targetCat);
+                    catMap.put(targetCatName, targetCat);
+                }
+                if (!hasMorphWithDisplayName(targetCat, morph.displayName)) {
                     targetCat.add(morph);
                 }
             }
@@ -171,7 +235,7 @@ public final class MorphCreativeInjector {
     }
 
     /**
-     * 内置的原版创意变体提供者（覆盖幼年生物、16色绵羊、16色潜影贝、各职业村民）
+     * 内置原版全量变体提供者（覆盖全部原版幼年、16色绵羊、16色潜影贝、6职业村民/僵尸村民、高压苦力怕、杀手兔、微/中/大/巨型史莱姆等）。
      */
     private static class VanillaBabyVariantProvider implements ICreativeVariantProvider {
         private static final Map<String, String[]> VANILLA_BABIES = new LinkedHashMap<>();
@@ -223,7 +287,7 @@ public final class MorphCreativeInjector {
             VANILLA_BABIES.put("minecraft:villager", new String[]{"村民", "Villager", "animal"});
             VANILLA_BABIES.put("minecraft:polar_bear", new String[]{"北极熊", "Polar Bear", "animal"});
 
-            // 幼年敌对怪物
+            // 幼年怪物
             VANILLA_BABIES.put("minecraft:zombie", new String[]{"僵尸", "Zombie", "hostile"});
             VANILLA_BABIES.put("minecraft:husk", new String[]{"尸壳", "Husk", "hostile"});
             VANILLA_BABIES.put("minecraft:zombie_pigman", new String[]{"僵尸猪人", "Zombie Pigman", "hostile"});
@@ -257,14 +321,115 @@ public final class MorphCreativeInjector {
                 list.add(new CreativeVariantDef("minecraft:shulker", display, "hostile", shulkerData));
             }
 
-            // 4. 原版不同职业村民
+            // 4. 原版不同职业村民与僵尸村民
             for (int i = 0; i < VILLAGER_PROFESSIONS.length; i++) {
+                // 普通村民
                 NBTTagCompound villagerData = new NBTTagCompound();
                 villagerData.setInteger("Profession", i);
                 villagerData.setString("morphext_variant", "profession_" + i);
                 String display = "村民 (" + VILLAGER_PROFESSIONS[i][0] + ") - " + VILLAGER_PROFESSIONS[i][1] + " Villager";
                 list.add(new CreativeVariantDef("minecraft:villager", display, "animal", villagerData));
+
+                // 僵尸村民职业
+                NBTTagCompound zVillagerData = new NBTTagCompound();
+                zVillagerData.setInteger("Profession", i);
+                zVillagerData.setString("morphext_variant", "zombie_profession_" + i);
+                String zDisplay = "僵尸村民 (" + VILLAGER_PROFESSIONS[i][0] + ") - Zombie " + VILLAGER_PROFESSIONS[i][1];
+                list.add(new CreativeVariantDef("minecraft:zombie_villager", zDisplay, "hostile", zVillagerData));
             }
+
+            // 5. 高压苦力怕 (Charged Creeper)
+            NBTTagCompound chargedCreeper = new NBTTagCompound();
+            chargedCreeper.setBoolean("powered", true);
+            chargedCreeper.setString("morphext_variant", "charged_creeper");
+            list.add(new CreativeVariantDef("minecraft:creeper", "苦力怕 (高压充能) - Charged Creeper", "hostile", chargedCreeper));
+
+            // 6. 兔子全色系与杀手兔
+            NBTTagCompound killerBunny = new NBTTagCompound();
+            killerBunny.setInteger("RabbitType", 99);
+            killerBunny.setString("morphext_variant", "killer_bunny");
+            list.add(new CreativeVariantDef("minecraft:rabbit", "兔子 (杀手兔) - Killer Bunny", "hostile", killerBunny));
+
+            String[][] rabbitTypes = new String[][]{
+                    {"棕色", "Brown"},
+                    {"纯白", "White"},
+                    {"纯黑", "Black"},
+                    {"黑白斑点", "Black & White"},
+                    {"金黄", "Gold"},
+                    {"椒盐", "Salt & Pepper"}
+            };
+            for (int i = 1; i < rabbitTypes.length; i++) {
+                NBTTagCompound rabbitData = new NBTTagCompound();
+                rabbitData.setInteger("RabbitType", i);
+                rabbitData.setString("morphext_variant", "rabbit_type_" + i);
+                list.add(new CreativeVariantDef("minecraft:rabbit", "兔子 (" + rabbitTypes[i][0] + ") - " + rabbitTypes[i][1] + " Rabbit", "animal", rabbitData));
+            }
+
+            // 7. 史莱姆与岩浆怪体型变体 (微型 1、大型 4、巨型 8)
+            int[] slimeSizes = new int[]{1, 4, 8};
+            float[] slimeScales = new float[]{0.5F, 2.0F, 3.5F};
+            String[] sizeNamesZh = new String[]{"微型", "大型", "泰坦超巨型"};
+            String[] sizeNamesEn = new String[]{"Tiny", "Big", "Colossal"};
+            for (int s = 0; s < slimeSizes.length; s++) {
+                // 史莱姆
+                NBTTagCompound sData = new NBTTagCompound();
+                sData.setInteger("Size", slimeSizes[s]);
+                sData.setString("morphext_variant", "slime_size_" + slimeSizes[s]);
+                list.add(new CreativeVariantDef("minecraft:slime", "史莱姆 (" + sizeNamesZh[s] + ") - " + sizeNamesEn[s] + " Slime", "hostile", sData, slimeScales[s]));
+
+                // 岩浆怪
+                NBTTagCompound mData = new NBTTagCompound();
+                mData.setInteger("Size", slimeSizes[s]);
+                mData.setString("morphext_variant", "magmacube_size_" + slimeSizes[s]);
+                list.add(new CreativeVariantDef("minecraft:magma_cube", "岩浆怪 (" + sizeNamesZh[s] + ") - " + sizeNamesEn[s] + " Magma Cube", "hostile", mData, slimeScales[s]));
+            }
+
+            // 8. 猫种群变体 (野生豹猫、燕尾服黑猫、红虎斑猫、暹罗猫)
+            String[][] catTypes = new String[][]{
+                    {"燕尾服黑猫", "Tuxedo Cat"},
+                    {"红虎斑猫", "Red Tabby Cat"},
+                    {"暹罗猫", "Siamese Cat"}
+            };
+            for (int c = 0; c < catTypes.length; c++) {
+                NBTTagCompound cData = new NBTTagCompound();
+                cData.setInteger("CatType", c + 1);
+                cData.setString("morphext_variant", "cat_type_" + (c + 1));
+                list.add(new CreativeVariantDef("minecraft:ocelot", "猫 (" + catTypes[c][0] + ") - " + catTypes[c][1], "animal", cData));
+            }
+
+            // 9. 鹦鹉色彩变种 (红、蓝、绿、青、灰)
+            String[][] parrotColors = new String[][]{
+                    {"红金刚", "Red Parrot"},
+                    {"蓝金刚", "Blue Parrot"},
+                    {"绿鹦鹉", "Green Parrot"},
+                    {"青色鹦鹉", "Cyan Parrot"},
+                    {"灰色鹦鹉", "Gray Parrot"}
+            };
+            for (int p = 1; p < parrotColors.length; p++) {
+                NBTTagCompound pData = new NBTTagCompound();
+                pData.setInteger("Variant", p);
+                pData.setString("morphext_variant", "parrot_color_" + p);
+                list.add(new CreativeVariantDef("minecraft:parrot", "鹦鹉 (" + parrotColors[p][0] + ") - " + parrotColors[p][1], "animal", pData));
+            }
+
+            // 10. 羊驼变种 (奶油色、白色、棕色、灰色)
+            String[][] llamaColors = new String[][]{
+                    {"纯白色", "White Llama"},
+                    {"棕褐色", "Brown Llama"},
+                    {"高原灰", "Gray Llama"}
+            };
+            for (int l = 0; l < llamaColors.length; l++) {
+                NBTTagCompound lData = new NBTTagCompound();
+                lData.setInteger("Variant", l + 1);
+                lData.setString("morphext_variant", "llama_variant_" + (l + 1));
+                list.add(new CreativeVariantDef("minecraft:llama", "羊驼 (" + llamaColors[l][0] + ") - " + llamaColors[l][1], "animal", lData));
+            }
+
+            // 11. 骷髅陷阱马
+            NBTTagCompound skelTrap = new NBTTagCompound();
+            skelTrap.setBoolean("SkeletonTrap", true);
+            skelTrap.setString("morphext_variant", "skeleton_trap_horse");
+            list.add(new CreativeVariantDef("minecraft:skeleton_horse", "骷髅马 (陷阱四骑士) - Skeleton Trap Horse", "hostile", skelTrap));
 
             return list;
         }

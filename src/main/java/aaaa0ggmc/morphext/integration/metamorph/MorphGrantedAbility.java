@@ -148,7 +148,8 @@ public class MorphGrantedAbility extends Ability implements IStatefulAbility {
 
     @Override
     public String getStateLabel(EntityPlayer player) {
-        return this.passiveType ? "Passive" : "Castable";
+        return net.minecraft.util.text.translation.I18n.translateToLocal(
+                this.passiveType ? "gui.morphext.state.passive" : "gui.morphext.state.castable");
     }
 
     @Override
