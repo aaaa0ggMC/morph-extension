@@ -372,3 +372,62 @@ morph.category.variants=变体与幼年形态
 morph.section.variants=形态变体区
 morphext.variant.baby=幼年
 
+# 野兽威慑、狼群与商队专精动作与被动 (UAPA)
+morphext.metamorph.action.polar_bear_maul=人立暴怒猛击
+morphext.metamorph.desc.polar_bear_maul=人立暴怒猛击：人立而起并发出震耳咆哮，向前猛力挥爪扑杀身前 3.8 格内的敌人，造成 14 点纯正破甲重击并附带 5 秒极寒迟缓 II 与巨力击飞，冷却 7 秒。
+morphext.metamorph.action.wolf_howl=狼群战意长嚎
+morphext.metamorph.desc.wolf_howl=狼群战意长嚎：仰天长嚎激发群狼战意，使自身与周围 16 格队友获得 12 秒力量 I 与速度 I 增益，并震慑驱退周围 12 格内的骷髅亡灵，冷却 15 秒。
+morphext.metamorph.action.wolf_battle_howl=狼群战意长嚎
+morphext.metamorph.desc.wolf_battle_howl=狼群战意长嚎：仰天长嚎激发群狼战意，使自身与周围 16 格队友获得 12 秒力量 I 与速度 I 增益，并震慑驱退周围 12 格内的骷髅亡灵，冷却 15 秒。
+morphext.metamorph.action.wolf_bite=利齿撕咬扑杀
+morphext.metamorph.desc.wolf_bite=利齿撕咬扑杀：向前小段位移飞扑咬向目标，造成 8 点物理伤害并附加 3 秒流血虚弱与迟缓，冷却 4 秒。
+morphext.metamorph.action.llama_spit_barrage=连珠口水弹幕
+morphext.metamorph.desc.llama_spit_barrage=连珠口水弹幕：朝准星视线方向连环喷射 3 颗强力口水飞弹，安全起点前移 1.5 格规避自碰，命中产生击退与微量伤害，冷却 3.5 秒。
+
+morphext.passive.creeper_panic.name=苦力怕天敌恐慌威慑
+morphext.passive.creeper_panic.desc=猫与豹猫的天敌威慑：每 10 ticks 强制熄灭周围 16 格内苦力怕的引信并清空其攻击目标，赋予其速度加成向反方向狂奔恐慌逃窜。
+morphext.passive.morphext.creeper_panic.name=苦力怕天敌恐慌威慑
+morphext.passive.morphext.creeper_panic.desc=猫与豹猫的天敌威慑：每 10 ticks 强制熄灭周围 16 格内苦力怕的引信并清空其攻击目标，赋予其速度加成向反方向狂奔恐慌逃窜。
+
+morphext.passive.polar_bear_cub_protection.name=幼崽守护狂怒
+morphext.passive.polar_bear_cub_protection.desc=母性守护狂怒：检测周围 16 格内是否存在幼年北极熊或变身为小北极熊的友方玩家；若存在，激发生物母性狂怒，攻击力提升 100%（力量 II）并获得持续生命恢复与抗性提升。
+morphext.passive.morphext.polar_bear_cub_protection.name=幼崽守护狂怒
+morphext.passive.morphext.polar_bear_cub_protection.desc=母性守护狂怒：检测周围 16 格内是否存在幼年北极熊或变身为小北极熊的友方玩家；若存在，激发生物母性狂怒，攻击力提升 100%（力量 II）并获得持续生命恢复与抗性提升。
+
+morphext.passive.llama_caravan.name=商队领头
+morphext.passive.llama_caravan.desc=引领羊驼商队行进：自身行进移速提升 15%，周围 16 格内的野生与驯服羊驼自动紧随队伍并获得 15% 移速加成。
+morphext.passive.morphext.llama_caravan.name=商队领头
+morphext.passive.morphext.llama_caravan.desc=引领羊驼商队行进：自身行进移速提升 15%，周围 16 格内的野生与驯服羊驼自动紧随队伍并获得 15% 移速加成。
+
+# 极寒射手与不死坐骑专精动作与被动
+morphext.metamorph.action.stray_frost_arrow=极寒缓慢箭齐射
+morphext.metamorph.desc.stray_frost_arrow=极寒缓慢箭齐射：向准星扇面射出 3 发附带深度缓慢 II (15秒) 与极寒冰霜微粒的药水箭，发射起点安全前移 1.2 格规避自碰，冷却 5 秒。
+morphext.metamorph.action.skeleton_rapid_shot=快速连发疾射
+morphext.metamorph.desc.skeleton_rapid_shot=快速连发疾射：以极快的手速连续发射 3 发高速穿透箭矢，带微弱后坐力与暴击破空手感，冷却 4 秒。
+morphext.metamorph.action.skeleton_melee_jab=骨刃近身刺击
+morphext.metamorph.desc.skeleton_melee_jab=骨刃近身刺击：身前 2.5 格快速骨刺横扫，击退贴脸敌人并造成 6 点物理伤害，带空挥破空手感，冷却 3 秒。
+morphext.metamorph.action.snowman_blizzard=暴雪机枪扫射
+morphext.metamorph.desc.snowman_blizzard=暴雪机枪扫射：按住连续朝准星高速轰出 10 发高能压制雪球，击退并迟缓目标 (迟缓 II)，冷却 6 秒。
+morphext.metamorph.action.skeleton_trap_slam=雷霆四骑士践踏
+morphext.metamorph.desc.skeleton_trap_slam=雷霆四骑士践踏：前蹄高高扬起引发雷鸣音效与天雷电光冲击波，击退周围 8 格所有敌人并造成高额冲击伤害与电击麻痹，冷却 20 秒。
+
+morphext.passive.stray_frost_aura.name=极寒霜冻光环
+morphext.passive.stray_frost_aura.desc=周围 5 格敌对生物持续受到轻度缓慢侵袭；踏水短暂凝结为浮冰，如履平地。
+morphext.passive.morphext.stray_frost_aura.name=极寒霜冻光环
+morphext.passive.morphext.stray_frost_aura.desc=周围 5 格敌对生物持续受到轻度缓慢侵袭；踏水短暂凝结为浮冰，如履平地。
+morphext.metamorph.desc.stray_frost_aura=极寒霜冻光环：周围 5 格敌对生物持续受到轻度缓慢侵袭；踏水短暂凝结为浮冰，如履平地。
+
+morphext.passive.snowman_snow_trail.name=极寒雪径
+morphext.passive.snowman_snow_trail.desc=足迹所过之地在可支持方块上生成雪层；遇到高温熔岩自然融化；炎热生物群系每秒受灼热伤害。
+morphext.passive.morphext.snowman_snow_trail.name=极寒雪径
+morphext.passive.morphext.snowman_snow_trail.desc=足迹所过之地在可支持方块上生成雪层；遇到高温熔岩自然融化；炎热生物群系每秒受灼热伤害。
+morphext.metamorph.desc.snowman_snow_trail=极寒雪径：足迹所过之地在可支持方块上生成雪层；遇到高温熔岩自然融化；炎热生物群系每秒受灼热伤害。
+
+morphext.passive.undead_horse_water.name=深海疾驰
+morphext.passive.undead_horse_water.desc=不死坐骑特性：在深海底部无阻碍疾驰与跳跃，始终保持充足肺活量，完全免疫溺水伤害。
+morphext.passive.morphext.undead_horse_water.name=深海疾驰
+morphext.passive.morphext.undead_horse_water.desc=不死坐骑特性：在深海底部无阻碍疾驰与跳跃，始终保持充足肺活量，完全免疫溺水伤害。
+morphext.metamorph.desc.undead_horse_water=深海疾驰：在深海底部无阻碍疾驰与跳跃，始终保持充足肺活量，完全免疫溺水伤害。
+
+
+

@@ -52,12 +52,12 @@
   },
   "skeleton": {
     "abilities": ["sun_allergy", "rotten"],
-    "actions": ["rapid_shot", "strafe_dodge"],
+    "actions": ["skeleton_rapid_shot", "skeleton_melee_jab", "strafe_dodge"],
     "immunities": ["poison"]
   },
   "stray": {
-    "abilities": ["sun_allergy", "rotten"],
-    "actions": ["frost_shot", "strafe_dodge"],
+    "abilities": ["stray_frost_aura", "sun_allergy", "rotten"],
+    "actions": ["stray_frost_arrow", "frost_shot", "strafe_dodge"],
     "immunities": ["poison", "slowness"]
   },
   "squid": {
@@ -67,16 +67,16 @@
     "damageImmunities": ["drown"]
   },
   "wolf": {
-    "actions": ["wolf_howl", "furious_bite"]
+    "actions": ["wolf_howl", "wolf_bite"]
   },
   "ocelot": {
-    "abilities": ["prevent_fall"],
+    "abilities": ["creeper_panic", "prevent_fall"],
     "actions": ["feline_pounce"],
     "damageImmunities": ["fall"]
   },
   "snowman": {
-    "abilities": ["snow_walk", "water_allergy"],
-    "actions": ["snowstorm_volley", "frost_aura"],
+    "abilities": ["snowman_snow_trail", "water_allergy"],
+    "actions": ["snowman_blizzard", "frost_aura", "snowstorm_volley"],
     "immunities": ["slowness"],
     "damageImmunities": ["fall"]
   },
@@ -159,7 +159,8 @@
     "damageImmunities": ["inFire", "onFire", "lava", "fall"]
   },
   "llama": {
-    "actions": ["llama_spit"]
+    "abilities": ["llama_caravan"],
+    "actions": ["llama_spit_barrage"]
   },
   "rabbit": {
     "abilities": ["jumping", "prevent_fall"],
@@ -167,8 +168,8 @@
     "damageImmunities": ["fall"]
   },
   "polar_bear": {
-    "abilities": ["swim"],
-    "actions": ["polar_maul"]
+    "abilities": ["polar_bear_cub_protection", "swim"],
+    "actions": ["polar_bear_maul"]
   },
   "ghast": {
     "abilities": ["fly", "fire_proof", "prevent_fall", "night_vision"],
@@ -201,5 +202,17 @@
     "actions": ["wither_skull", "wither_blue_skull", "wither_birth_blast"],
     "immunities": ["wither", "poison"],
     "damageImmunities": ["wither", "inFire", "onFire", "lava", "hotFloor", "inWall", "drown", "fall"]
+  },
+  "skeleton_horse": {
+    "abilities": ["undead_horse_water", "hungerless", "rotten"],
+    "actions": ["skeleton_trap_slam"],
+    "immunities": ["poison"],
+    "damageImmunities": ["drown", "fall"]
+  },
+  "zombie_horse": {
+    "abilities": ["undead_horse_water", "hungerless", "rotten"],
+    "actions": ["skeleton_trap_slam"],
+    "immunities": ["poison"],
+    "damageImmunities": ["drown", "fall"]
   }
 }

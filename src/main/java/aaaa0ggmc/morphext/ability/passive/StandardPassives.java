@@ -49,6 +49,15 @@ public final class StandardPassives {
 
         // 3. 实体特性光环、反伤与生物专属被动
         register(new CreeperRepelPassive());
+        register(new CreeperPanicPassive());
+        register(new CreeperPanicPassive("creeper_panic"));
+        register(new CreeperPanicPassive("morphext:creeper_panic"));
+        register(new PolarBearCubProtectionPassive());
+        register(new PolarBearCubProtectionPassive("polar_bear_cub_protection"));
+        register(new PolarBearCubProtectionPassive("morphext:polar_bear_cub_protection"));
+        register(new LlamaCaravanPassive());
+        register(new LlamaCaravanPassive("llama_caravan"));
+        register(new LlamaCaravanPassive("morphext:llama_caravan"));
         register(new ThornsPassive("thorns"));
         register(new ThornsPassive("morphext:thorns"));
         register(new WebImmunityPassive("web_immunity"));
@@ -78,6 +87,19 @@ public final class StandardPassives {
         register(new EndermiteBaitPassive());
         register(new EndermiteBaitPassive("endermite_bait"));
         register(new EndermiteBaitPassive("morphext:endermite_bait"));
+
+        // 极寒射手与不死坐骑专属被动
+        register(new StrayFrostAuraPassive());
+        register(new StrayFrostAuraPassive("stray_frost_aura"));
+        register(new StrayFrostAuraPassive("morphext:stray_frost_aura"));
+        register(new SnowmanSnowTrailPassive());
+        register(new SnowmanSnowTrailPassive("snowman_snow_trail"));
+        register(new SnowmanSnowTrailPassive("morphext:snowman_snow_trail"));
+        register(new SnowmanSnowTrailPassive("snow_walk"));
+        register(new SnowmanSnowTrailPassive("morphext:snow_walk"));
+        register(new UndeadHorseWaterPassive());
+        register(new UndeadHorseWaterPassive("undead_horse_water"));
+        register(new UndeadHorseWaterPassive("morphext:undead_horse_water"));
 
         // 4. 通用属性修饰被动
         register(new AttributeModifierPassive("iron_knockback_res",

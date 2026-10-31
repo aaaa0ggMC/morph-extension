@@ -74,136 +74,140 @@ public final class MetamorphIntegration {
      * demorph 时全部移除。
      */
     public static void syncGranted() {
-        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getMinecraft();
-        if (mc.player == null) {
-            return;
-        }
-        java.util.List<aaaa0ggmc.morphext.ability.IAbility> granted = new ArrayList<>();
+        try {
+            net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getMinecraft();
+            if (mc.player == null) {
+                return;
+            }
+            java.util.List<aaaa0ggmc.morphext.ability.IAbility> granted = new ArrayList<>();
 
-        IMorphing morphing = Morphing.get(mc.player);
-        AbstractMorph morph = morphing == null ? null : morphing.getCurrentMorph();
-        if (morph == null) {
-            AbilityRegistry.replaceGrants("metamorph:current", granted, mc.player);
-            return;
-        }
-        mchorse.metamorph.api.MorphSettings settings = morph.getSettings();
-        if (settings == null) {
-            AbilityRegistry.replaceGrants("metamorph:current", granted, mc.player);
-            return;
-        }
-        ItemStack icon = MorphIcons.forMorph(morph.name);
-        LOGGER.info("[metamorph] syncGranted: morph={} abilities={} attack={} action={}",
-                morph.name,
-                settings.abilities == null ? 0 : settings.abilities.size(),
-                settings.attack != null, settings.action != null);
+            IMorphing morphing = Morphing.get(mc.player);
+            AbstractMorph morph = morphing == null ? null : morphing.getCurrentMorph();
+            if (morph == null) {
+                AbilityRegistry.replaceGrants("metamorph:current", granted, mc.player);
+                return;
+            }
+            mchorse.metamorph.api.MorphSettings settings = morph.getSettings();
+            if (settings == null) {
+                AbilityRegistry.replaceGrants("metamorph:current", granted, mc.player);
+                return;
+            }
+            ItemStack icon = MorphIcons.forMorph(morph.name);
+            LOGGER.info("[metamorph] syncGranted: morph={} abilities={} attack={} action={}",
+                    morph.name,
+                    settings.abilities == null ? 0 : settings.abilities.size(),
+                    settings.attack != null, settings.action != null);
 
-        /* 被动能力 */
-        if (settings.abilities != null) {
-            for (mchorse.metamorph.api.abilities.IAbility ability : settings.abilities) {
-                if (ability == null) {
-                    continue;
+            /* 被动能力 */
+            if (settings.abilities != null) {
+                for (mchorse.metamorph.api.abilities.IAbility ability : settings.abilities) {
+                    if (ability == null) {
+                        continue;
+                    }
+                    String name = abilityName(ability);
+                    String id = GRANTED_PREFIX + morph.name + ":" + name;
+                    granted.add(new MorphGrantedAbility(morph.name, name, ability, null, icon));
                 }
-                String name = abilityName(ability);
-                String id = GRANTED_PREFIX + morph.name + ":" + name;
-                granted.add(new MorphGrantedAbility(morph.name, name, ability, null, icon));
             }
-        }
-        /* attack：作为被动展示项 */
-        if (settings.attack != null) {
-            String name = attackName(settings.attack);
-            granted.add(new MorphGrantedAbility(morph.name, name, null, null, icon));
-        }
-        /* action（mob act）：主动能力，morph 期间可释放 */
-        if (settings.action != null) {
-            String name = actionName(settings.action);
-            String id = GRANTED_PREFIX + morph.name + ":" + name;
-            granted.add(new MorphGrantedAbility(morph.name, name, null, settings.action, icon));
-        }
-        /*
-         * 通用 mob act：Metamorph Max 的 AITarget 对任何 EntityMorph 都有效
-         * （让变身后的生物仇恨玩家准星瞄准的实体，潜行释放=清除目标），
-         * 但 morphs.json 只给守卫配了它——这里给所有实体形态补上，
-         * 这样任何模组的任何生物变身后都有这个主动能力。
-         * 配置里已显式配了 ai_target 的形态不重复注入（避免同一能力两个条目）。
-         * 软依赖：没装 Metamorph Max 时反射取不到实例就跳过。
-         */
-        if (morph instanceof mchorse.metamorph.api.morphs.EntityMorph
-                && !isAITarget(settings.action)) {
-            mchorse.metamorph.api.abilities.IAction mobAct = createMobActAction();
-            if (mobAct != null) {
-                String name = "mob_act";
-                String id = GRANTED_PREFIX + morph.name + ":" + name;
-                granted.add(new MorphGrantedAbility(morph.name, name, null, mobAct, icon));
+            /* attack：作为被动展示项 */
+            if (settings.attack != null) {
+                String name = attackName(settings.attack);
+                granted.add(new MorphGrantedAbility(morph.name, name, null, null, icon));
             }
-        }
+            /* action（mob act）：主动能力，morph 期间可释放 */
+            if (settings.action != null) {
+                String name = actionName(settings.action);
+                String id = GRANTED_PREFIX + morph.name + ":" + name;
+                granted.add(new MorphGrantedAbility(morph.name, name, null, settings.action, icon));
+            }
+            /*
+             * 通用 mob act：Metamorph Max 的 AITarget 对任何 EntityMorph 都有效
+             * （让变身后的生物仇恨玩家准星瞄准的实体，潜行释放=清除目标），
+             * 但 morphs.json 只给守卫配了它——这里给所有实体形态补上，
+             * 这样任何模组的任何生物变身后都有这个主动能力。
+             * 配置里已显式配了 ai_target 的形态不重复注入（避免同一能力两个条目）。
+             * 软依赖：没装 Metamorph Max 时反射取不到实例就跳过。
+             */
+            if (morph instanceof mchorse.metamorph.api.morphs.EntityMorph
+                    && !isAITarget(settings.action)) {
+                mchorse.metamorph.api.abilities.IAction mobAct = createMobActAction();
+                if (mobAct != null) {
+                    String name = "mob_act";
+                    String id = GRANTED_PREFIX + morph.name + ":" + name;
+                    granted.add(new MorphGrantedAbility(morph.name, name, null, mobAct, icon));
+                }
+            }
 
-        /* 外部数据驱动能力注入（由 morph_abilities.json 或其他模组注入） */
-        MorphAbilityDefinition def = MorphJsonConfig.get(morph.name);
-        if (def != null) {
-            if (def.abilities != null) {
-                for (String abName : def.abilities) {
-                    boolean already = false;
+            /* 外部数据驱动能力注入（由 morph_abilities.json 或其他模组注入） */
+            MorphAbilityDefinition def = MorphJsonConfig.get(morph.name);
+            if (def != null) {
+                if (def.abilities != null) {
+                    for (String abName : def.abilities) {
+                        boolean already = false;
+                        for (aaaa0ggmc.morphext.ability.IAbility g : granted) {
+                            if (g.getId().endsWith(":" + abName)) {
+                                already = true;
+                                break;
+                            }
+                        }
+                        if (!already) {
+                            mchorse.metamorph.api.abilities.IAbility metaAb = MorphManager.INSTANCE.abilities.get(abName);
+                            granted.add(new MorphGrantedAbility(morph.name, abName, metaAb, null, icon));
+                        }
+                    }
+                }
+                java.util.List<String> actionList = new ArrayList<>();
+                if (def.action != null && !def.action.isEmpty()) {
+                    actionList.add(def.action);
+                }
+                if (def.actions != null) {
+                    for (String act : def.actions) {
+                        if (act != null && !act.isEmpty() && !actionList.contains(act)) {
+                            actionList.add(act);
+                        }
+                    }
+                }
+                for (String actName : actionList) {
+                    boolean actionAlready = false;
                     for (aaaa0ggmc.morphext.ability.IAbility g : granted) {
-                        if (g.getId().endsWith(":" + abName)) {
-                            already = true;
+                        if (g.getId().endsWith(":" + actName)) {
+                            actionAlready = true;
                             break;
                         }
                     }
-                    if (!already) {
-                        mchorse.metamorph.api.abilities.IAbility metaAb = MorphManager.INSTANCE.abilities.get(abName);
-                        granted.add(new MorphGrantedAbility(morph.name, abName, metaAb, null, icon));
-                    }
-                }
-            }
-            java.util.List<String> actionList = new ArrayList<>();
-            if (def.action != null && !def.action.isEmpty()) {
-                actionList.add(def.action);
-            }
-            if (def.actions != null) {
-                for (String act : def.actions) {
-                    if (act != null && !act.isEmpty() && !actionList.contains(act)) {
-                        actionList.add(act);
-                    }
-                }
-            }
-            for (String actName : actionList) {
-                boolean actionAlready = false;
-                for (aaaa0ggmc.morphext.ability.IAbility g : granted) {
-                    if (g.getId().endsWith(":" + actName)) {
-                        actionAlready = true;
-                        break;
-                    }
-                }
-                if (!actionAlready) {
-                    mchorse.metamorph.api.abilities.IAction metaAct = MorphManager.INSTANCE.actions.get(actName);
-                    if (metaAct != null) {
-                        granted.add(new MorphGrantedAbility(morph.name, actName, null, metaAct, icon));
-                    } else {
-                        aaaa0ggmc.morphext.ability.IAbility customAbility = AbilityRegistry.get(actName);
-                        if (customAbility != null) {
-                            granted.add(customAbility);
+                    if (!actionAlready) {
+                        mchorse.metamorph.api.abilities.IAction metaAct = MorphManager.INSTANCE.actions.get(actName);
+                        if (metaAct != null) {
+                            granted.add(new MorphGrantedAbility(morph.name, actName, null, metaAct, icon));
+                        } else {
+                            aaaa0ggmc.morphext.ability.IAbility customAbility = AbilityRegistry.get(actName);
+                            if (customAbility != null) {
+                                granted.add(customAbility);
+                            }
                         }
                     }
                 }
             }
-        }
 
-        /* 接入统一能力架构 (UAPA)：将 MorphAbilityManager 解析的所有统一主动与被动能力挂载到 UI 列表中 */
-        java.util.List<aaaa0ggmc.morphext.ability.IAbility> unified = aaaa0ggmc.morphext.ability.MorphAbilityManager.getInstance().resolveAbilitiesForMorph(morph.name);
-        for (aaaa0ggmc.morphext.ability.IAbility ab : unified) {
-            boolean already = false;
-            for (aaaa0ggmc.morphext.ability.IAbility g : granted) {
-                if (g.getId().equals(ab.getId()) || g.getId().endsWith(":" + ab.getId())) {
-                    already = true;
-                    break;
+            /* 接入统一能力架构 (UAPA)：将 MorphAbilityManager 解析的所有统一主动与被动能力挂载到 UI 列表中 */
+            java.util.List<aaaa0ggmc.morphext.ability.IAbility> unified = aaaa0ggmc.morphext.ability.MorphAbilityManager.getInstance().resolveAbilitiesForMorph(morph.name);
+            for (aaaa0ggmc.morphext.ability.IAbility ab : unified) {
+                boolean already = false;
+                for (aaaa0ggmc.morphext.ability.IAbility g : granted) {
+                    if (g.getId().equals(ab.getId()) || g.getId().endsWith(":" + ab.getId())) {
+                        already = true;
+                        break;
+                    }
+                }
+                if (!already) {
+                    granted.add(ab);
                 }
             }
-            if (!already) {
-                granted.add(ab);
-            }
-        }
 
-        AbilityRegistry.replaceGrants("metamorph:current", granted, mc.player);
+            AbilityRegistry.replaceGrants("metamorph:current", granted, mc.player);
+        } catch (Throwable t) {
+            LOGGER.error("[morphext] Error syncing granted abilities for metamorph", t);
+        }
     }
 
     /** 判断是否已是 AITarget 或 SafeMobActAction（避免和配置里显式配置的条目重复注入）。 */
@@ -280,23 +284,27 @@ public final class MetamorphIntegration {
      * （服务端）触发，客户端 @SubscribeEvent 收不到——不开 UI 时被动能力就永远不同步。
      */
     public static void tick() {
-        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getMinecraft();
-        if (mc.player == null) {
-            return;
-        }
-        IMorphing morphing = Morphing.get(mc.player);
-        if (morphing == null) {
-            return;
-        }
-        mchorse.metamorph.api.morphs.AbstractMorph current = morphing.getCurrentMorph();
-        String name = current == null || current.name == null ? "" : current.name;
-        int acquired = morphing.getAcquiredMorphs() == null ? 0 : morphing.getAcquiredMorphs().size();
-        if (mc.player != lastPlayer || !name.equals(lastMorphName) || acquired != lastAcquiredCount) {
-            lastPlayer = mc.player;
-            lastMorphName = name;
-            lastAcquiredCount = acquired;
-            refresh();
-            syncGranted();
+        try {
+            net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getMinecraft();
+            if (mc.player == null) {
+                return;
+            }
+            IMorphing morphing = Morphing.get(mc.player);
+            if (morphing == null) {
+                return;
+            }
+            mchorse.metamorph.api.morphs.AbstractMorph current = morphing.getCurrentMorph();
+            String name = current == null || current.name == null ? "" : current.name;
+            int acquired = morphing.getAcquiredMorphs() == null ? 0 : morphing.getAcquiredMorphs().size();
+            if (mc.player != lastPlayer || !name.equals(lastMorphName) || acquired != lastAcquiredCount) {
+                lastPlayer = mc.player;
+                lastMorphName = name;
+                lastAcquiredCount = acquired;
+                refresh();
+                syncGranted();
+            }
+        } catch (Throwable t) {
+            LOGGER.error("[morphext] Error in MetamorphIntegration.tick()", t);
         }
     }
 

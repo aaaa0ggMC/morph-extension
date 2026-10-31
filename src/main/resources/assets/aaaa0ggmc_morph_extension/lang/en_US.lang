@@ -372,3 +372,62 @@ morph.category.variants=Variants & Baby Morphs
 morph.section.variants=Morph Variants
 morphext.variant.baby=Baby
 
+# Beast Deterrence, Wolf Pack & Caravan Specialization (UAPA)
+morphext.metamorph.action.polar_bear_maul=Polar Bear Maul
+morphext.metamorph.desc.polar_bear_maul=Polar Bear Maul: Rear up on hind legs with an intimidating roar, then violently slam down upon enemies within 3.8m, dealing 14 pure armor-piercing damage with Slowness II (5s) and massive knockback, 7s cooldown.
+morphext.metamorph.action.wolf_howl=Wolf Battle Howl
+morphext.metamorph.desc.wolf_howl=Wolf Battle Howl: Howl toward the skies to rally the pack, granting Strength I and Speed I to yourself and teammates within 16m for 12s while terrorizing and knocking back skeletons within 12m, 15s cooldown.
+morphext.metamorph.action.wolf_battle_howl=Wolf Battle Howl
+morphext.metamorph.desc.wolf_battle_howl=Wolf Battle Howl: Howl toward the skies to rally the pack, granting Strength I and Speed I to yourself and teammates within 16m for 12s while terrorizing and knocking back skeletons within 12m, 15s cooldown.
+morphext.metamorph.action.wolf_bite=Furious Bite
+morphext.metamorph.desc.wolf_bite=Furious Bite: Leap forward a short distance and bite the target, dealing 8 physical damage while inflicting Weakness and Slowness for 3s, 4s cooldown.
+morphext.metamorph.action.llama_spit_barrage=Llama Spit Barrage
+morphext.metamorph.desc.llama_spit_barrage=Llama Spit Barrage: Fire a rapid barrage of 3 llama spit projectiles toward crosshairs, offset forward by 1.5m to eliminate self-collision, dealing damage and knockback on hit, 3.5s cooldown.
+
+morphext.passive.creeper_panic.name=Creeper Panic Deterrence
+morphext.passive.creeper_panic.desc=Feline Apex Predator Aura: Scans every 10 ticks for Creepers within 16m, forcibly extinguishing their fuses, wiping attack targets, and sending them sprinting away in terror with bonus speed.
+morphext.passive.morphext.creeper_panic.name=Creeper Panic Deterrence
+morphext.passive.morphext.creeper_panic.desc=Feline Apex Predator Aura: Scans every 10 ticks for Creepers within 16m, forcibly extinguishing their fuses, wiping attack targets, and sending them sprinting away in terror with bonus speed.
+
+morphext.passive.polar_bear_cub_protection.name=Cub Protection Fury
+morphext.passive.polar_bear_cub_protection.desc=Maternal Instinct Fury: Senses baby polar bears or allied players morphed as polar bear cubs within 16m; if present, triggers protective maternal rage, doubling attack strength (Strength II) and granting continuous Regeneration and Resistance.
+morphext.passive.morphext.polar_bear_cub_protection.name=Cub Protection Fury
+morphext.passive.morphext.polar_bear_cub_protection.desc=Maternal Instinct Fury: Senses baby polar bears or allied players morphed as polar bear cubs within 16m; if present, triggers protective maternal rage, doubling attack strength (Strength II) and granting continuous Regeneration and Resistance.
+
+morphext.passive.llama_caravan.name=Caravan Leader
+morphext.passive.llama_caravan.desc=Llama Caravan Leader: Grants +15% movement speed to yourself; nearby wild or tamed llamas within 16m automatically join the caravan line and gain +15% travel speed.
+morphext.passive.morphext.llama_caravan.name=Caravan Leader
+morphext.passive.morphext.llama_caravan.desc=Llama Caravan Leader: Grants +15% movement speed to yourself; nearby wild or tamed llamas within 16m automatically join the caravan line and gain +15% travel speed.
+
+# Frost Archer & Undead Steed Actions and Passives
+morphext.metamorph.action.stray_frost_arrow=Frost Arrow Volley
+morphext.metamorph.desc.stray_frost_arrow=Frost Arrow Volley: Fire a conical fan-burst of 3 glacial arrows infused with Slowness II for 15 seconds (300 ticks) and snow particles. Safe 1.2m forward offset, 5s cooldown.
+morphext.metamorph.action.skeleton_rapid_shot=Rapid Shot Burst
+morphext.metamorph.desc.skeleton_rapid_shot=Rapid Shot Burst: Rapid-fire 3 high-velocity precision arrows in swift succession with micro-recoil and crisp sound feedback, 4s cooldown.
+morphext.metamorph.action.skeleton_melee_jab=Melee Bone Jab
+morphext.metamorph.desc.skeleton_melee_jab=Melee Bone Jab: Swiftly sweep a sharp bone jab 2.5 blocks forward, knocking back close enemies and dealing 6 physical damage with swoosh feedback, 3s cooldown.
+morphext.metamorph.action.snowman_blizzard=Blizzard Barrage
+morphext.metamorph.desc.snowman_blizzard=Blizzard Barrage: Unleash a rapid machine-gun barrage of 10 suppressing snowballs that damage, knock back, and inflict Slowness II on targets, 6s cooldown.
+morphext.metamorph.action.skeleton_trap_slam=Four Horsemen Thunder Slam
+morphext.metamorph.desc.skeleton_trap_slam=Four Horsemen Thunder Slam: Rear front hooves high to summon thunder and a lightning shockwave, heavily knocking back and damaging all enemies within 8 blocks, 20s cooldown.
+
+morphext.passive.stray_frost_aura.name=Glacial Aura
+morphext.passive.stray_frost_aura.desc=Hostile mobs within 5 blocks continuously suffer light slowness; walking on water freezes it temporarily into frosted ice.
+morphext.passive.morphext.stray_frost_aura.name=Glacial Aura
+morphext.passive.morphext.stray_frost_aura.desc=Hostile mobs within 5 blocks continuously suffer light slowness; walking on water freezes it temporarily into frosted ice.
+morphext.metamorph.desc.stray_frost_aura=Glacial Aura: Hostile mobs within 5 blocks continuously suffer light slowness; walking on water freezes it temporarily into frosted ice.
+
+morphext.passive.snowman_snow_trail.name=Snow Trail
+morphext.passive.snowman_snow_trail.desc=Leaves a layer of snow upon supported blocks as you walk; melts naturally when near hot lava; takes thermal damage every second in hot biomes.
+morphext.passive.morphext.snowman_snow_trail.name=Snow Trail
+morphext.passive.morphext.snowman_snow_trail.desc=Leaves a layer of snow upon supported blocks as you walk; melts naturally when near hot lava; takes thermal damage every second in hot biomes.
+morphext.metamorph.desc.snowman_snow_trail=Snow Trail: Leaves a layer of snow upon supported blocks as you walk; melts naturally when near hot lava; takes thermal damage every second in hot biomes.
+
+morphext.passive.undead_horse_water.name=Ocean Trench Gallop
+morphext.passive.undead_horse_water.desc=Undead steed nature: Gallop and leap unimpeded across the deep sea floor, retaining infinite breath and total immunity to drowning damage.
+morphext.passive.morphext.undead_horse_water.name=Ocean Trench Gallop
+morphext.passive.morphext.undead_horse_water.desc=Undead steed nature: Gallop and leap unimpeded across the deep sea floor, retaining infinite breath and total immunity to drowning damage.
+morphext.metamorph.desc.undead_horse_water=Ocean Trench Gallop: Gallop and leap unimpeded across the deep sea floor, retaining infinite breath and total immunity to drowning damage.
+
+
+

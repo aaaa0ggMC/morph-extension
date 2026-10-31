@@ -59,12 +59,20 @@ public class AbilityTickHandler {
         }
         /* Metamorph morph 轮询（事件可能只在服务端触发，这里兜底） */
         if (MetamorphBridge.available()) {
-            MetamorphIntegration.tick();
+            try {
+                MetamorphIntegration.tick();
+            } catch (Throwable t) {
+                // Prevent crash in tick handler
+            }
         }
         for (IAbility ability : AbilityRegistry.all()) {
             // 锁定的能力不 tick——效果随移除停止（强力卷轴再清掉积累数据）
             if (ability instanceof IStatefulAbility && AbilityUnlocks.isUnlocked(ability)) {
-                ((IStatefulAbility) ability).onTick(mc.player);
+                try {
+                    ((IStatefulAbility) ability).onTick(mc.player);
+                } catch (Throwable t) {
+                    // Prevent single ability bug from killing client loop
+                }
             }
         }
     }

@@ -72,31 +72,37 @@ public class AbilityRegistry {
     /** 客户端主线程：按来源差量替换临时能力，不写永久解锁文件，不重复触发生命周期。 */
     public static void replaceGrants(String source, Collection<IAbility> abilities, EntityPlayer player) {
         if (source == null || source.isEmpty()) {
-            throw new IllegalArgumentException("Grant source must not be empty");
+            return;
+        }
+        if (abilities == null) {
+            abilities = java.util.Collections.emptyList();
         }
         Map<String, IAbility> old = GRANTS.getOrDefault(source, java.util.Collections.emptyMap());
         Map<String, IAbility> next = new LinkedHashMap<>();
         for (IAbility ability : abilities) {
-            if (ability == null || ability.getId() == null || ability.getId().isEmpty()
-                    || ABILITIES.containsKey(ability.getId())) {
-                throw new IllegalArgumentException("Invalid or permanent ability in grant source: " + source);
+            if (ability == null || ability.getId() == null || ability.getId().isEmpty()) {
+                continue;
             }
-            for (Map.Entry<String, Map<String, IAbility>> entry : GRANTS.entrySet()) {
-                if (!entry.getKey().equals(source) && entry.getValue().containsKey(ability.getId())) {
-                    throw new IllegalArgumentException("Duplicate granted ability: " + ability.getId());
-                }
-            }
+            // 支持动态装载已注册能力（如 UAPA 架构中已在全局 ABILITIES 注册的被动与动作原型）
             next.put(ability.getId(), old.getOrDefault(ability.getId(), ability));
         }
         GRANTS.put(source, next);
         for (IAbility ability : old.values()) {
             if (!next.containsKey(ability.getId())) {
-                ability.onRevoked(player);
+                try {
+                    ability.onRevoked(player);
+                } catch (Throwable t) {
+                    // Safe guard
+                }
             }
         }
         for (IAbility ability : next.values()) {
             if (!old.containsKey(ability.getId())) {
-                ability.onGranted(player);
+                try {
+                    ability.onGranted(player);
+                } catch (Throwable t) {
+                    // Safe guard
+                }
             }
         }
     }

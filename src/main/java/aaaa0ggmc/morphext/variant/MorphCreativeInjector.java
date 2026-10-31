@@ -171,10 +171,40 @@ public final class MorphCreativeInjector {
     }
 
     /**
-     * 内置的原版幼年变体提供者
+     * 内置的原版创意变体提供者（覆盖幼年生物、16色绵羊、16色潜影贝、各职业村民）
      */
     private static class VanillaBabyVariantProvider implements ICreativeVariantProvider {
         private static final Map<String, String[]> VANILLA_BABIES = new LinkedHashMap<>();
+
+        // 16 种标准原版染料色彩映射: {zh, en}
+        private static final String[][] DYE_COLORS = new String[][]{
+                {"白色", "White"},
+                {"橙色", "Orange"},
+                {"品红", "Magenta"},
+                {"浅蓝", "Light Blue"},
+                {"黄色", "Yellow"},
+                {"黄绿", "Lime"},
+                {"粉红", "Pink"},
+                {"灰色", "Gray"},
+                {"浅灰", "Light Gray"},
+                {"青色", "Cyan"},
+                {"紫色", "Purple"},
+                {"蓝色", "Blue"},
+                {"棕色", "Brown"},
+                {"绿色", "Green"},
+                {"红色", "Red"},
+                {"黑色", "Black"}
+        };
+
+        // 6 种村民职业映射: {zh, en}
+        private static final String[][] VILLAGER_PROFESSIONS = new String[][]{
+                {"农夫", "Farmer"},
+                {"图书管理员", "Librarian"},
+                {"牧师", "Priest"},
+                {"铁匠", "Blacksmith"},
+                {"屠夫", "Butcher"},
+                {"傻子", "Nitwit"}
+        };
 
         static {
             // 幼年动物
@@ -203,9 +233,39 @@ public final class MorphCreativeInjector {
         @Override
         public List<CreativeVariantDef> getVariants(World world) {
             List<CreativeVariantDef> list = new ArrayList<>();
+
+            // 1. 原版幼年全家桶
             for (Map.Entry<String, String[]> e : VANILLA_BABIES.entrySet()) {
                 list.add(CreativeVariantDef.createBaby(e.getKey(), e.getValue()[0], e.getValue()[1], e.getValue()[2]));
             }
+
+            // 2. 原版 16 色羊毛绵羊 (除默认白色外其余 15 种彩色羊)
+            for (int i = 1; i < DYE_COLORS.length; i++) {
+                NBTTagCompound sheepData = new NBTTagCompound();
+                sheepData.setByte("Color", (byte) i);
+                sheepData.setString("morphext_variant", "color_" + i);
+                String display = "羊 (" + DYE_COLORS[i][0] + ") - " + DYE_COLORS[i][1] + " Sheep";
+                list.add(new CreativeVariantDef("minecraft:sheep", display, "animal", sheepData));
+            }
+
+            // 3. 原版 16 种染色潜影贝
+            for (int i = 0; i < DYE_COLORS.length; i++) {
+                NBTTagCompound shulkerData = new NBTTagCompound();
+                shulkerData.setByte("Color", (byte) i);
+                shulkerData.setString("morphext_variant", "shulker_color_" + i);
+                String display = "潜影贝 (" + DYE_COLORS[i][0] + ") - " + DYE_COLORS[i][1] + " Shulker";
+                list.add(new CreativeVariantDef("minecraft:shulker", display, "hostile", shulkerData));
+            }
+
+            // 4. 原版不同职业村民
+            for (int i = 0; i < VILLAGER_PROFESSIONS.length; i++) {
+                NBTTagCompound villagerData = new NBTTagCompound();
+                villagerData.setInteger("Profession", i);
+                villagerData.setString("morphext_variant", "profession_" + i);
+                String display = "村民 (" + VILLAGER_PROFESSIONS[i][0] + ") - " + VILLAGER_PROFESSIONS[i][1] + " Villager";
+                list.add(new CreativeVariantDef("minecraft:villager", display, "animal", villagerData));
+            }
+
             return list;
         }
     }

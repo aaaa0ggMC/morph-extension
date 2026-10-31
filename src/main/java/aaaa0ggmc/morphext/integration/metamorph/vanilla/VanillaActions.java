@@ -34,7 +34,8 @@ public final class VanillaActions {
         register(RapidShotAction.ID, new RapidShotAction());
         register(FrostShotAction.ID, new FrostShotAction());
         register(InkJetAction.ID, new InkJetAction());
-        register(WolfHowlAction.ID, new WolfHowlAction());
+        register(WolfBattleHowlAction.ID, new WolfBattleHowlAction());
+        register(WolfBattleHowlAction.ALIAS_ID, new WolfBattleHowlAction());
         register(FelinePounceAction.ID, new FelinePounceAction());
         register(SnowstormVolleyAction.ID, new SnowstormVolleyAction());
         register(BlazeFireRingAction.ID, new BlazeFireRingAction());
@@ -46,7 +47,8 @@ public final class VanillaActions {
         register(UltrasonicShriekAction.ID, new UltrasonicShriekAction());
         register(SpikeBurstAction.ID, new SpikeBurstAction());
         register(SpectralDazeAction.ID, new SpectralDazeAction());
-        register(FuriousBiteAction.ID, new FuriousBiteAction());
+        register(WolfFuriousBiteAction.ID, new WolfFuriousBiteAction());
+        register(WolfFuriousBiteAction.ALIAS_ID, new WolfFuriousBiteAction());
         register(BlazeFireballAction.ID, new BlazeFireballAction());
         register(VenomStrikeAction.ID, new VenomStrikeAction());
         register(StrafeDodgeAction.ID, new StrafeDodgeAction());
@@ -80,9 +82,11 @@ public final class VanillaActions {
         register(EndermanScreechAction.ID, new EndermanScreechAction());
         register(SlimeBounceAction.ID, new SlimeBounceAction());
         register(MagmaSlamAction.ID, new MagmaSlamAction());
-        register(LlamaSpitAction.ID, new LlamaSpitAction());
+        register(LlamaSpitBarrageAction.ID, new LlamaSpitBarrageAction());
+        register(LlamaSpitBarrageAction.ALIAS_ID, new LlamaSpitBarrageAction());
         register(RabbitHopAction.ID, new RabbitHopAction());
-        register(PolarMaulAction.ID, new PolarMaulAction());
+        register(PolarBearMaulAction.ID, new PolarBearMaulAction());
+        register("polar_maul", new PolarBearMaulAction());
         register(GhastFireballAction.ID, new GhastFireballAction());
         register(GhastScreechAction.ID, new GhastScreechAction());
         register(BatRoostAction.ID, new BatRoostAction());
@@ -100,6 +104,13 @@ public final class VanillaActions {
         register(WitherBirthBlastAction.ID, new WitherBirthBlastAction());
         register(EndermiteBurrowAction.ID, new EndermiteBurrowAction());
         register(EndermiteBiteAction.ID, new EndermiteBiteAction());
+
+        // 极寒射手与不死坐骑专精技能动作
+        register(StrayFrostArrowAction.ID, new StrayFrostArrowAction());
+        register(SkeletonRapidShotAction.ID, new SkeletonRapidShotAction());
+        register(SkeletonMeleeJabAction.ID, new SkeletonMeleeJabAction());
+        register(SnowmanBlizzardAction.ID, new SnowmanBlizzardAction());
+        register(SkeletonTrapAction.ID, new SkeletonTrapAction());
 
         LOGGER.info("[morphext] Registered {} vanilla mob actions into MorphManager", MorphManager.INSTANCE.actions.size());
     }
