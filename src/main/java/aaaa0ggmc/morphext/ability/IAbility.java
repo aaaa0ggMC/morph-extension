@@ -53,7 +53,12 @@ public interface IAbility {
 
     /** 被动能力：由 morph 等授予、自动生效、不可主动释放（不出现在轮盘/搜索，只进状态栏被动区）。 */
     default boolean isPassive() {
-        return false;
+        return getType() == AbilityType.PASSIVE;
+    }
+
+    /** 能力核心类型（ACTIVE 主动 / PASSIVE 被动 / TOGGLE 开关） */
+    default AbilityType getType() {
+        return AbilityType.ACTIVE;
     }
 
     /** 是否在状态总览页列出（默认列出；可释放的 morph action 之类设为 false 避免噪音）。 */

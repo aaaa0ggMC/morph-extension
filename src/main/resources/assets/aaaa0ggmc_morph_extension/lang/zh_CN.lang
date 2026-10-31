@@ -189,3 +189,23 @@ morphext.stature.switched=身形规整已切换为：%s
 
 # 变种相关
 morphext.variant.baby=(幼年)
+
+# Standard Passives
+morphext.passive.morphext.fly.name=飞行
+morphext.passive.morphext.fly.desc=具备翱翔天际的自由飞行能力。
+morphext.passive.morphext.water_breath.name=水下呼吸
+morphext.passive.morphext.water_breath.desc=在水中自由呼吸，免除溺水伤害。
+morphext.passive.morphext.prevent_fall.name=轻盈缓降
+morphext.passive.morphext.prevent_fall.desc=免疫全部坠落伤害，空中下落可平缓滑翔。
+morphext.passive.morphext.creeper_repel.name=苦力怕威慑
+morphext.passive.morphext.creeper_repel.desc=散发天敌气场，使周围 16 格内的苦力怕惊恐逃离。
+morphext.passive.morphext.thorns.name=海晶尖刺
+morphext.passive.morphext.thorns.desc=受到近战攻击时向攻击者反射真实伤害。
+morphext.passive.morphext.iron_knockback_res.name=坚如磐石
+morphext.passive.morphext.iron_knockback_res.desc=获得完全的击退抗性加成。
+morphext.passive.morphext.feline_speed.name=灵猫敏捷
+morphext.passive.morphext.feline_speed.desc=获得敏捷的移动速度提升。
+morphext.passive.immunity_damage.name=元素伤害免疫
+morphext.passive.immunity_damage.desc=针对特定环境或元素的完全伤害豁免。
+morphext.passive.immunity_potion.name=药水瘟疫免疫
+morphext.passive.immunity_potion.desc=免疫特定有害药水与致命深渊瘟疫。

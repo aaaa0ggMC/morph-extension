@@ -188,6 +188,21 @@ public final class MetamorphIntegration {
             }
         }
 
+        /* 接入统一能力架构 (UAPA)：将 MorphAbilityManager 解析的所有统一主动与被动能力挂载到 UI 列表中 */
+        java.util.List<aaaa0ggmc.morphext.ability.IAbility> unified = aaaa0ggmc.morphext.ability.MorphAbilityManager.getInstance().resolveAbilitiesForMorph(morph.name);
+        for (aaaa0ggmc.morphext.ability.IAbility ab : unified) {
+            boolean already = false;
+            for (aaaa0ggmc.morphext.ability.IAbility g : granted) {
+                if (g.getId().equals(ab.getId()) || g.getId().endsWith(":" + ab.getId())) {
+                    already = true;
+                    break;
+                }
+            }
+            if (!already) {
+                granted.add(ab);
+            }
+        }
+
         AbilityRegistry.replaceGrants("metamorph:current", granted, mc.player);
     }
 

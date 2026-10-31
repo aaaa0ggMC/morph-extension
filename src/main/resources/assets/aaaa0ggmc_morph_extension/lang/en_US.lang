@@ -189,3 +189,23 @@ morphext.stature.switched=Human Stature set to: %s
 
 # Variants
 morphext.variant.baby=(Baby)
+
+# Standard Passives
+morphext.passive.morphext.fly.name=Flight
+morphext.passive.morphext.fly.desc=Grants the ability to freely fly through the skies.
+morphext.passive.morphext.water_breath.name=Water Breathing
+morphext.passive.morphext.water_breath.desc=Breathe freely underwater without drowning.
+morphext.passive.morphext.prevent_fall.name=Feather Fall
+morphext.passive.morphext.prevent_fall.desc=Complete immunity to fall damage and slow gliding in air.
+morphext.passive.morphext.creeper_repel.name=Creeper Deterrence
+morphext.passive.morphext.creeper_repel.desc=Emits an aura that scares creepers away within 16 blocks.
+morphext.passive.morphext.thorns.name=Prismarine Thorns
+morphext.passive.morphext.thorns.desc=Reflects damage back to melee attackers.
+morphext.passive.morphext.iron_knockback_res.name=Steadfast Iron
+morphext.passive.morphext.iron_knockback_res.desc=Grants full knockback resistance.
+morphext.passive.morphext.feline_speed.name=Feline Agility
+morphext.passive.morphext.feline_speed.desc=Grants bonus movement speed.
+morphext.passive.immunity_damage.name=Damage Immunity
+morphext.passive.immunity_damage.desc=Complete immunity to specific damage types.
+morphext.passive.immunity_potion.name=Potion Immunity
+morphext.passive.immunity_potion.desc=Complete immunity to specific harmful potions and plagues.

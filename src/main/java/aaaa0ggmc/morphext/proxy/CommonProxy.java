@@ -20,6 +20,8 @@ public class CommonProxy {
     public void init(FMLInitializationEvent event) {
         aaaa0ggmc.morphext.ability.ServerAbilityService.register("morphext:",
                 new aaaa0ggmc.morphext.ability.CoreServerAbilities());
+        aaaa0ggmc.morphext.ability.passive.StandardPassives.registerAll();
+        aaaa0ggmc.morphext.ability.MorphAbilityManager.register();
         if (net.minecraftforge.fml.common.Loader.isModLoaded("metamorph")) {
             aaaa0ggmc.morphext.integration.metamorph.vanilla.VanillaActions.registerAll();
             aaaa0ggmc.morphext.integration.metamorph.MetamorphServerAbilities.register();
