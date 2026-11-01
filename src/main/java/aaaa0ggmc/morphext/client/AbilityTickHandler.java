@@ -5,6 +5,7 @@ import aaaa0ggmc.morphext.ability.AbilityRegistry;
 import aaaa0ggmc.morphext.ability.IAbility;
 import aaaa0ggmc.morphext.ability.AbilityCooldowns;
 import aaaa0ggmc.morphext.ability.AbilityUnlocks;
+import aaaa0ggmc.morphext.ability.ExecutionSide;
 import aaaa0ggmc.morphext.ability.IStatefulAbility;
 import aaaa0ggmc.morphext.integration.metamorph.MetamorphBridge;
 import aaaa0ggmc.morphext.integration.metamorph.MetamorphIntegration;
@@ -81,6 +82,18 @@ public class AbilityTickHandler {
         long statefulStart = ProfilerBridge.begin();
         for (IAbility ability : AbilityRegistry.getGrantedAbilities()) {
             if (ability instanceof IStatefulAbility) {
+                try {
+                    ((IStatefulAbility) ability).onTick(mc.player);
+                } catch (Throwable t) {
+                    // Safe guard
+                }
+            }
+        }
+        /* 纯客户端状态能力（如疾跑）：不在 grants 中，由客户端本地开关驱动 */
+        for (IAbility ability : AbilityRegistry.available()) {
+            if (ability instanceof IStatefulAbility
+                    && ability.getExecutionSide() == ExecutionSide.CLIENT
+                    && !AbilityRegistry.isGranted(ability.getId())) {
                 try {
                     ((IStatefulAbility) ability).onTick(mc.player);
                 } catch (Throwable t) {

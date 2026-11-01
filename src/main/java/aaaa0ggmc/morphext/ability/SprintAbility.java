@@ -7,20 +7,34 @@ import net.minecraft.item.ItemStack;
 
 
 /**
- * 疾跑开关（状态型能力示范）。
+ * 疾跑开关（客户端本地功能）。
  *
- * 状态语义由能力自己定义：布尔开关由服务端按玩家 UUID 持久化，客户端读取快照。
- * 开启后效果持续——每个 client tick 通过 {@link #onTick} 保持疾跑，
- * 直到再次激活关闭，或在状态总览页面点击关闭；切换选中其他能力不影响本状态。
+ * 疾跑是纯客户端行为：开关状态保存在客户端本地，开启后每个 client tick 直接
+ * 通过 {@link #onTick} 维持疾跑，不依赖服务端状态或网络往返。
+ * 进入世界后首次读取时会从服务端镜像（旧版本的按存档状态）种子化一次，
+ * 保证老存档的开关状态不丢；此后切换只作用于本地，重启游戏后需重新开启。
  */
 public class SprintAbility extends Ability implements IStatefulAbility {
+    /** null = 尚未从旧存档镜像种子化。 */
+    private static Boolean localEnabled = null;
+
     private boolean enabled() {
-        JsonObject state = AbilityStateStore.get(getId());
-        return CoreServerAbilities.isEnabled(state);
+        Boolean local = localEnabled;
+        if (local == null) {
+            // 只读种子：兼容旧版本存进服务端 states 的开关状态。
+            local = CoreServerAbilities.isEnabled(AbilityStateStore.get(getId()));
+            localEnabled = local;
+        }
+        return local;
+    }
+
+    /** 断线/退出世界时清除本地缓存，下次进入重新种子化。 */
+    public static void resetLocal() {
+        localEnabled = null;
     }
 
     @Override
-    public ExecutionSide getExecutionSide() { return ExecutionSide.SERVER; }
+    public ExecutionSide getExecutionSide() { return ExecutionSide.CLIENT; }
 
     public SprintAbility() {
         super("morphext:sprint", "Sprint");
@@ -45,6 +59,15 @@ public class SprintAbility extends Ability implements IStatefulAbility {
     }
 
     @Override
+    public ActivationResult activate(EntityPlayer player) {
+        if (player == null || !player.world.isRemote) {
+            return ActivationResult.unavailable();
+        }
+        localEnabled = !enabled();
+        return ActivationResult.success(0);
+    }
+
+    @Override
     public void onTick(EntityPlayer player) {
         if (!enabled() || player == null) {
             return;
@@ -65,8 +88,9 @@ public class SprintAbility extends Ability implements IStatefulAbility {
 
     @Override
     public void onActivate(EntityPlayer player) {
+        // 客户端本地开关，无服务端往返。
         if (player != null && player.world.isRemote) {
-            aaaa0ggmc.morphext.client.ClientAbilityExecutor.activate(this);
+            activate(player);
         }
     }
 
@@ -79,11 +103,12 @@ public class SprintAbility extends Ability implements IStatefulAbility {
 
     @Override
     public void loadState(JsonObject state) {
-        // 状态直接从当前连接的服务端镜像读取；不再保存在共享实例字段中。
+        // 本地开关状态；不依赖服务端状态存储。
     }
 
     @Override
     public String getDescription() {
-        return "疾跑锁定。释放一次开启，再次释放关闭；开启后持续维持疾跑，松开释放键、停止移动或切换能力都不会关闭。";
+        return "疾跑锁定（客户端开关）。释放一次开启，再次释放关闭；开启后持续维持疾跑，"
+                + "松开释放键、停止移动或切换能力都不会关闭。";
     }
 }

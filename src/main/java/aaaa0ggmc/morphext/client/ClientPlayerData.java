@@ -89,6 +89,7 @@ public final class ClientPlayerData {
         AbilityStateStore.load();
         AbilityCooldowns.clear();
         ClientWheelConfig.reset();
+        SprintAbility.resetLocal();
         AbilityStateStore.applyToAbilities();
     }
 }
