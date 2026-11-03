@@ -22,7 +22,8 @@ public class PotionImmunityPassive extends AbstractPassiveAbility {
         if (potionNames != null) {
             for (String p : potionNames) {
                 if (p != null && !p.trim().isEmpty()) {
-                    immunePotionNames.add(p.trim().toLowerCase());
+                    // Locale.ROOT：与 MorphAbilityManager.normalizeNames 同规格，避免默认 locale 小写漂移
+                    immunePotionNames.add(p.trim().toLowerCase(java.util.Locale.ROOT));
                 }
             }
         }
@@ -61,9 +62,9 @@ public class PotionImmunityPassive extends AbstractPassiveAbility {
 
     private boolean matches(Potion potion) {
         ResourceLocation rl = potion.getRegistryName();
-        String regName = rl != null ? rl.toString().toLowerCase() : "";
-        String path = rl != null ? rl.getPath().toLowerCase() : "";
-        String unloc = potion.getName().toLowerCase();
+        String regName = rl != null ? rl.toString().toLowerCase(java.util.Locale.ROOT) : "";
+        String path = rl != null ? rl.getPath().toLowerCase(java.util.Locale.ROOT) : "";
+        String unloc = potion.getName().toLowerCase(java.util.Locale.ROOT);
         String unlocRaw = unloc.startsWith("potion.") ? unloc.substring(7) : unloc;
 
         for (String imm : immunePotionNames) {

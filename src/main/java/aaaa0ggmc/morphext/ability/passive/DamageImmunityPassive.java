@@ -35,7 +35,9 @@ public class DamageImmunityPassive extends AbstractPassiveAbility {
         if (types != null) {
             for (String t : types) {
                 if (t != null && !t.trim().isEmpty()) {
-                    immuneTypes.add(t.trim().toLowerCase());
+                    // Locale.ROOT：与 MorphAbilityManager.normalizeNames 同规格，
+                    // 避免默认 locale（如土耳其语 I→ı）导致免疫表比对/命中失配。
+                    immuneTypes.add(t.trim().toLowerCase(java.util.Locale.ROOT));
                 }
             }
         }
@@ -79,7 +81,8 @@ public class DamageImmunityPassive extends AbstractPassiveAbility {
         int tick = player.ticksExisted;
         UUID uuid = player.getUniqueID();
         Integer last = LAST_LOG_TICK.get(uuid);
-        if (last != null && tick - last < LOG_INTERVAL_TICKS) {
+        // tick >= last 才限流：玩家重进后 ticksExisted 归零，旧阈值不再压制新日志
+        if (last != null && tick >= last && tick - last < LOG_INTERVAL_TICKS) {
             return;
         }
         LAST_LOG_TICK.put(uuid, tick);
@@ -87,8 +90,15 @@ public class DamageImmunityPassive extends AbstractPassiveAbility {
                 player.getName(), source.getDamageType(), amount, getId());
     }
 
+    /** 玩家登出时清理限流记录，避免 UUID→tick 表随玩家更替无限增长。 */
+    public static void clearLogThrottle(UUID uuid) {
+        if (uuid != null) {
+            LAST_LOG_TICK.remove(uuid);
+        }
+    }
+
     private boolean isImmune(DamageSource source) {
-        String type = source.damageType != null ? source.damageType.toLowerCase().trim() : "";
+        String type = source.damageType != null ? source.damageType.toLowerCase(java.util.Locale.ROOT).trim() : "";
         if (immuneTypes.contains(type)) {
             return true;
         }

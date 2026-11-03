@@ -209,7 +209,7 @@ public final class SkillRegistry {
         if (form == null || player == null) {
             return;
         }
-        if (readIds(PlayerAbilityStore.get(player), FORMS_SEEN_KEY).contains(form)) {
+        if (readSeenForms(player).contains(form)) {
             return;
         }
         PlayerAbilityStore.update(player, data -> writeId(data, FORMS_SEEN_KEY, form));
@@ -333,7 +333,17 @@ public final class SkillRegistry {
 
     private static void evaluate(EntityPlayerMP player) {
         Set<String> owned = readIds(PlayerAbilityStore.get(player), SKILLS_KEY);
-        if (owned.size() == INSTANCE.ordered.size()) {
+        // 全部定义都已拥有才早退。不能用 owned.size() == ordered.size()：
+        // owned 可能含已无定义的遗留 id（见 ownedSnapshot 注释），同尺寸≠同集合，
+        // 否则未拥有但可授予的技能会被永久跳过。
+        boolean allOwned = true;
+        for (SkillDefinition definition : INSTANCE.ordered) {
+            if (!owned.contains(definition.id)) {
+                allOwned = false;
+                break;
+            }
+        }
+        if (allOwned) {
             return;
         }
         for (SkillDefinition definition : INSTANCE.ordered) {
@@ -358,7 +368,7 @@ public final class SkillRegistry {
                 if (forms == null || forms.isEmpty()) {
                     return false;
                 }
-                Set<String> seen = readIds(PlayerAbilityStore.get(player), FORMS_SEEN_KEY);
+                Set<String> seen = readSeenForms(player);
                 for (String raw : forms) {
                     String form = FormCategories.normalize(raw);
                     if (form == null || !seen.contains(form)) {
@@ -372,7 +382,7 @@ public final class SkillRegistry {
                 if (forms == null || forms.isEmpty()) {
                     return false;
                 }
-                Set<String> seen = readIds(PlayerAbilityStore.get(player), FORMS_SEEN_KEY);
+                Set<String> seen = readSeenForms(player);
                 for (String raw : forms) {
                     String form = FormCategories.normalize(raw);
                     if (form != null && seen.contains(form)) {
@@ -424,6 +434,22 @@ public final class SkillRegistry {
     }
 
     // ---------------------------------------------------------------- 存档读写
+
+    /**
+     * 玩家已见形态集合（FormCategories.normalize 归一化后）。
+     * ul.forms_seen 由整合包/其他机制写入的条目可能未归一化，
+     * 读取侧统一归一化，保证与 grant.forms 侧的比较规格一致。
+     */
+    private static Set<String> readSeenForms(EntityPlayerMP player) {
+        Set<String> out = ConcurrentHashMap.newKeySet();
+        for (String raw : readIds(PlayerAbilityStore.get(player), FORMS_SEEN_KEY)) {
+            String form = FormCategories.normalize(raw);
+            if (form != null) {
+                out.add(form);
+            }
+        }
+        return out;
+    }
 
     private static Set<String> readIds(PlayerAbilityData data, String key) {
         Set<String> out = ConcurrentHashMap.newKeySet();

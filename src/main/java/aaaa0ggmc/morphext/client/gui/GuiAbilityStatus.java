@@ -262,12 +262,14 @@ public class GuiAbilityStatus extends GuiScreen {
      */
     private int drawSections(int y, int top, int bottom, int off) {
         FontRenderer font = this.fontRenderer;
-        try {
-            boolean first = true;
-            for (IStatusSection section : StatusSectionRegistry.getSections()) {
-                if (section == null) {
-                    continue;
-                }
+        boolean first = true;
+        for (IStatusSection section : StatusSectionRegistry.getSections()) {
+            if (section == null) {
+                continue;
+            }
+            /* 每个区块独立兜底：单个外部区块出错只跳过它自己，
+               不能吞掉后续区块（此前整段共用一个 try，一坏全断）。 */
+            try {
                 List<String> lines = section.getLines();
                 if (lines == null || lines.isEmpty()) {
                     continue;
@@ -290,11 +292,11 @@ public class GuiAbilityStatus extends GuiScreen {
                     y += 10;
                 }
                 y += 4;
-            }
-        } catch (Throwable t) {
-            if (!this.sectionErrorLogged) {
-                this.sectionErrorLogged = true;
-                LOGGER.warn("[GuiAbilityStatus] status section render failed: {}", t.toString());
+            } catch (Throwable t) {
+                if (!this.sectionErrorLogged) {
+                    this.sectionErrorLogged = true;
+                    LOGGER.warn("[GuiAbilityStatus] status section render failed: {}", t.toString());
+                }
             }
         }
         return y;

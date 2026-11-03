@@ -139,12 +139,34 @@ public final class MorphJsonConfig {
                 continue;
             }
             try {
-                out.put(key, GSON.fromJson(value, MorphAbilityDefinition.class));
+                MorphAbilityDefinition def = GSON.fromJson(value, MorphAbilityDefinition.class);
+                sanitize(def);
+                out.put(key, def);
             } catch (Throwable t) {
                 LOGGER.warn("[morphext] {}: entry '{}' failed to parse, skipped: {}", source, key, t.toString());
             }
         }
         return out;
+    }
+
+    /**
+     * Gson 对显式 {@code null} 字段会覆盖字段初始化器（如 {@code "abilities": null}），
+     * 这里把 null 集合还原为空集合，保证 mergeDefinitions/查询侧不会因单条脏数据
+     * 抛 NPE 而把同一文件剩余条目全部丢掉（与逐条容错解析同一目标）。
+     */
+    private static void sanitize(MorphAbilityDefinition def) {
+        if (def == null) {
+            return;
+        }
+        if (def.abilities == null) def.abilities = new java.util.ArrayList<>();
+        if (def.actions == null) def.actions = new java.util.ArrayList<>();
+        if (def.removeAbilities == null) def.removeAbilities = new java.util.ArrayList<>();
+        if (def.immunities == null) def.immunities = new java.util.ArrayList<>();
+        if (def.damageImmunities == null) def.damageImmunities = new java.util.ArrayList<>();
+        if (def.silentActions == null) def.silentActions = new java.util.ArrayList<>();
+        if (def.factions == null) def.factions = new LinkedHashMap<>();
+        if (def.attributes == null) def.attributes = new LinkedHashMap<>();
+        if (def.actionAnimation == null) def.actionAnimation = new LinkedHashMap<>();
     }
 
     private static void writeDefaultConfig() {
@@ -295,6 +317,7 @@ public final class MorphJsonConfig {
      */
     public static void register(String morphName, MorphAbilityDefinition def) {
         if (morphName == null || def == null) return;
+        sanitize(def);
         Map<String, MorphAbilityDefinition> single = new HashMap<>();
         single.put(morphName, def);
         mergeDefinitions(single);

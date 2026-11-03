@@ -187,7 +187,8 @@ public final class MorphAbilityManager {
         if (names != null) {
             for (String n : names) {
                 if (n != null && !n.trim().isEmpty()) {
-                    out.add(n.trim().toLowerCase());
+                    // Locale.ROOT：与 DamageImmunityPassive/PotionImmunityPassive 构造器同规格
+                    out.add(n.trim().toLowerCase(java.util.Locale.ROOT));
                 }
             }
         }
@@ -534,6 +535,7 @@ public final class MorphAbilityManager {
     public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.player != null) {
             aaaa0ggmc.morphext.integration.metamorph.vanilla.GatedActionProxy.clear(event.player.getUniqueID());
+            DamageImmunityPassive.clearLogThrottle(event.player.getUniqueID());
             handleMorphChange(event.player, currentMorphs.get(event.player.getUniqueID()), null, null);
         }
     }
