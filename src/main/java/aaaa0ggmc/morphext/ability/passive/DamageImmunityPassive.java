@@ -11,12 +11,21 @@ import net.minecraft.util.SoundCategory;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 声明式伤害免疫被动 (Declarative Damage Immunity Passive)。
  * 支持同时免疫多种指定伤害类型（如 fall, drown, inFire, onFire, lava, cactus, acid, antimatter, dread 等）。
  */
 public class DamageImmunityPassive extends AbstractPassiveAbility {
+    private static final org.apache.logging.log4j.Logger LOGGER =
+            org.apache.logging.log4j.LogManager.getLogger("morph-extension");
+
+    /** 免疫命中日志限流（每玩家每 100 tick 至多一行），避免持续伤害每 tick 刷屏。 */
+    private static final int LOG_INTERVAL_TICKS = 100;
+    private static final ConcurrentHashMap<UUID, Integer> LAST_LOG_TICK = new ConcurrentHashMap<>();
+
     private final Set<String> immuneTypes = new HashSet<>();
     private final boolean playDeflectSound;
 
@@ -48,6 +57,7 @@ public class DamageImmunityPassive extends AbstractPassiveAbility {
             return false;
         }
         if (isImmune(source)) {
+            logHit(player, source, amount);
             // 火焰相关伤害同时扑灭身体燃烧状态
             if (source.isFireDamage() || immuneTypes.contains("infire") || immuneTypes.contains("lava")) {
                 player.extinguish();
@@ -59,6 +69,22 @@ public class DamageImmunityPassive extends AbstractPassiveAbility {
             return true;
         }
         return false;
+    }
+
+    /** 命中免疫时打一行（限流）：排查免疫链路时能直接确认被动是否真的生效。 */
+    private void logHit(EntityPlayer player, DamageSource source, float amount) {
+        if (player == null || player.world == null || player.world.isRemote) {
+            return;
+        }
+        int tick = player.ticksExisted;
+        UUID uuid = player.getUniqueID();
+        Integer last = LAST_LOG_TICK.get(uuid);
+        if (last != null && tick - last < LOG_INTERVAL_TICKS) {
+            return;
+        }
+        LAST_LOG_TICK.put(uuid, tick);
+        LOGGER.info("[morphext] damage immunity hit: player={} type={} amount={} passive={}",
+                player.getName(), source.getDamageType(), amount, getId());
     }
 
     private boolean isImmune(DamageSource source) {

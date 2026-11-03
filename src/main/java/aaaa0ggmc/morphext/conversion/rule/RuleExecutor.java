@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * 规则执行：命中后把「死亡」换成「转化」，一次做完：
- *   取消死亡 -&gt; 变身 -&gt; 回满血 -&gt; 死法残留清理 -&gt; 消耗献祭物 -&gt;
+ *   取消死亡 -&gt; 变身 -&gt; 置 1 点血 -&gt; 死法残留清理 -&gt; 消耗献祭物 -&gt;
  *   表现（标题/粒子/音效）-&gt; 记录（morphext 状态 + ConversionEvent）-&gt; 日志。
  */
 public final class RuleExecutor {
@@ -48,8 +48,10 @@ public final class RuleExecutor {
             MorphAPI.acquire(player, morph);
             MorphAPI.morph(player, morph, true);
 
-            // 形态会改写最大生命，变身之后回满
-            player.setHealth(player.getMaxHealth());
+            // 转化后只给 1 点血，绝不回满：回满血=刷血漏洞（尸壳埋沙反复触发 sand_burial
+            // 即可无限回满）。metamorph 变身时按比例折算血量，死亡取消后残血接近 0，
+            // 这里显式置 1.0F：既防刷血，又保证不留下 0 血/Float.MIN_VALUE 残留立刻二次死亡。
+            player.setHealth(1.0F);
 
             ResidueCleanup.cleanup(player, ctx.source, rule);
             consume(player, rule);
@@ -62,8 +64,9 @@ public final class RuleExecutor {
             return true;
         } catch (Throwable t) {
             LOGGER.error("[morphext] Conversion rule {} failed", rule.id, t);
-            // 死亡已被取消：兜底回满血，避免留下 0 血活人
-            player.setHealth(player.getMaxHealth());
+            // 死亡已被取消：兜底给 1 点血，避免留下 0 血活人立刻二次死亡。
+            // 与成功路径同语义——转化只给 1 点血，异常兜底同样不得回满（防刷血）。
+            player.setHealth(1.0F);
             return false;
         }
     }

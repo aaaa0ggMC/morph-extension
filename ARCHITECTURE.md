@@ -76,6 +76,28 @@ AbilityNetwork.syncPlayer(player, "");
 
 Metamorph 被动包装只展示。原模组已运行 `update/onMorph/onDemorph`，包装层不能再次调用。
 
+### 状态页区块 SPI（客户端）
+
+状态页（`client/gui/GuiAbilityStatus`）在 Passives 之后按注册顺序渲染外部通用区块，核心不含任何具体模组/整合包内容：
+
+```java
+package aaaa0ggmc.morphext.client.status;
+
+public interface IStatusSection {
+    String getTitle();                    // 已本地化标题
+    java.util.List<String> getLines();    // 客户端可读的行；空列表=不显示
+}
+
+public final class StatusSectionRegistry {
+    public static void register(IStatusSection section);
+    public static java.util.List<IStatusSection> getSections();
+}
+```
+
+- 客户端专用：在 addon 的客户端初始化里注册，服务端不要引用 `client.status` 包。
+- 线程安全：注册表为 COW 快照；`getLines()` 会被渲染线程每帧调用，应返回稳定快照、便宜且无副作用。
+- 空列表区块整块不显示、不占位；区块随主内容区滚动；区块异常只吞不抛（限一次告警）。
+
 ## 玩家存档、迁移与卷轴
 
 - 文件：`<overworld>/data/morphext/players/<UUID>.json`，包含 schema、owner、unlocked、removed、states、cooldowns。

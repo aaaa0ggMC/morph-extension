@@ -2,6 +2,7 @@ package aaaa0ggmc.morphext.integration.metamorph;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
@@ -22,6 +23,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -64,17 +66,16 @@ public final class MorphJsonConfig {
      * 扫描各模组 jar 内的 assets/<modid>/morphext/morph_abilities.json
      */
     private static void loadModResources() {
-        Type type = new TypeToken<Map<String, MorphAbilityDefinition>>() {}.getType();
         for (ModContainer mod : Loader.instance().getActiveModList()) {
             String modId = mod.getModId().toLowerCase();
             String path = "assets/" + modId + "/morphext/morph_abilities.json";
             try (InputStream is = MorphJsonConfig.class.getClassLoader().getResourceAsStream(path)) {
                 if (is != null) {
                     try (Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
-                        Map<String, MorphAbilityDefinition> map = GSON.fromJson(reader, type);
-                        if (map != null) {
+                        Map<String, MorphAbilityDefinition> map = parseDefinitionMap(path, reader);
+                        if (!map.isEmpty()) {
                             mergeDefinitions(map);
-                            LOGGER.info("[morphext] Loaded embedded morph abilities from {}", path);
+                            LOGGER.info("[morphext] Loaded {} embedded morph abilities from {}", map.size(), path);
                         }
                     }
                 }
@@ -97,16 +98,53 @@ public final class MorphJsonConfig {
             return;
         }
 
-        Type type = new TypeToken<Map<String, MorphAbilityDefinition>>() {}.getType();
         try (InputStream is = new FileInputStream(configFile);
              Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
-            Map<String, MorphAbilityDefinition> map = GSON.fromJson(reader, type);
-            if (map != null) {
+            Map<String, MorphAbilityDefinition> map = parseDefinitionMap(configFile.getPath(), reader);
+            if (!map.isEmpty()) {
                 mergeDefinitions(map);
             }
         } catch (Throwable t) {
             LOGGER.error("[morphext] Failed to load config/morphext/morph_abilities.json", t);
         }
+    }
+
+    /**
+     * 逐条目容错解析（Dual-Safe Entry Parse）：
+     * 先按 {@code Map<String, JsonElement>} 读入，再逐条反序列化。
+     * 单个条目写错（字段类型不符 / 值不是对象）只跳过该条目并告警，
+     * 绝不拖垮整个文件——此前一个非对象条目（如整合包用 {@code "_doc": "..."} 写说明）
+     * 会让 Gson 在 beginObject 处抛异常，整份 morph_abilities.json 被静默作废，
+     * 连带 husk 等形态的 damageImmunities 全部丢失（表现为免疫完全不生效）。
+     * 以 {@code _} 或 {@code #} 开头的键按注释/元数据约定静默跳过，不刷告警。
+     */
+    private static Map<String, MorphAbilityDefinition> parseDefinitionMap(String source, Reader reader) {
+        Type type = new TypeToken<Map<String, JsonElement>>() {}.getType();
+        Map<String, JsonElement> raw = GSON.fromJson(reader, type);
+        Map<String, MorphAbilityDefinition> out = new LinkedHashMap<>();
+        if (raw == null) {
+            return out;
+        }
+        for (Map.Entry<String, JsonElement> entry : raw.entrySet()) {
+            String key = entry.getKey();
+            JsonElement value = entry.getValue();
+            if (value == null || value.isJsonNull()) {
+                continue;
+            }
+            if (!value.isJsonObject()) {
+                if (key != null && (key.startsWith("_") || key.startsWith("#"))) {
+                    continue;
+                }
+                LOGGER.warn("[morphext] {}: entry '{}' is not a JSON object, skipped", source, key);
+                continue;
+            }
+            try {
+                out.put(key, GSON.fromJson(value, MorphAbilityDefinition.class));
+            } catch (Throwable t) {
+                LOGGER.warn("[morphext] {}: entry '{}' failed to parse, skipped: {}", source, key, t.toString());
+            }
+        }
+        return out;
     }
 
     private static void writeDefaultConfig() {

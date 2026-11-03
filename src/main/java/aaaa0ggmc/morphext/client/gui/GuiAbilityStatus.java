@@ -5,6 +5,8 @@ import aaaa0ggmc.morphext.ability.AbilityUnlocks;
 import aaaa0ggmc.morphext.ability.IAbility;
 import aaaa0ggmc.morphext.ability.IStatefulAbility;
 import aaaa0ggmc.morphext.client.RenderUtil;
+import aaaa0ggmc.morphext.client.status.IStatusSection;
+import aaaa0ggmc.morphext.client.status.StatusSectionRegistry;
 import aaaa0ggmc.morphext.integration.metamorph.MetamorphBridge;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -26,6 +28,7 @@ import java.util.Map;
  * 状态总览（自绘，不依赖 McLib 框架）：
  *  - Active states：状态能力，左键行切换（能力自定义语义）
  *  - Passives：morph 授予的被动能力（只读，双列网格）
+ *  - 外部区块：{@link StatusSectionRegistry} 注册的通用 SPI 区块（标题 + 逐行文本，空列表不显示）
  *  - 右键任意行/格子：打开详情面板（名称 + 类型 + 状态 + 描述）
  * 内容超出可视区时右侧出现滚动条（滚轮 / 拖动滑块 / 点轨道）。
  */
@@ -59,6 +62,9 @@ public class GuiAbilityStatus extends GuiScreen {
     private int cachedDetailTextW = -1;
     private List<String> cachedDetailLines = Collections.emptyList();
     private final Map<String, String> trimmedNameCache = new HashMap<>();
+
+    /* 外部区块渲染异常只告警一次，避免每帧刷屏 */
+    private boolean sectionErrorLogged = false;
 
     private static final org.apache.logging.log4j.Logger LOGGER =
             org.apache.logging.log4j.LogManager.getLogger("morph-extension");
@@ -207,6 +213,9 @@ public class GuiAbilityStatus extends GuiScreen {
             y += rows * (cellH + 2);
         }
 
+        /* 外部注册的状态区块（通用 SPI）：渲染在 Passives 之后，空列表不占位 */
+        y = this.drawSections(y, top, bottom, off);
+
         this.maxScroll = Math.max(0, y - bottom);
         if (this.maxScroll <= 0) {
             this.scroll = 0;
@@ -242,6 +251,53 @@ public class GuiAbilityStatus extends GuiScreen {
         }
 
         super.drawScreen(mouseX, mouseY, partialTicks);
+    }
+
+    /* ---------------- 通用区块（SPI） ---------------- */
+
+    /**
+     * 渲染 {@link StatusSectionRegistry} 注册的通用区块，返回累加后的 y。
+     * 空列表区块整块跳过（不显示、不占位）；行内容随主内容区一起滚动。
+     * 渲染线程每帧调用，区块异常只吞不抛（限一次告警），外部区块出错不影响状态页本身。
+     */
+    private int drawSections(int y, int top, int bottom, int off) {
+        FontRenderer font = this.fontRenderer;
+        try {
+            boolean first = true;
+            for (IStatusSection section : StatusSectionRegistry.getSections()) {
+                if (section == null) {
+                    continue;
+                }
+                List<String> lines = section.getLines();
+                if (lines == null || lines.isEmpty()) {
+                    continue;
+                }
+                if (first) {
+                    first = false;
+                    y += 8;
+                }
+                String title = section.getTitle();
+                if (title != null && !title.isEmpty()) {
+                    if (y + off + 12 > top && y + off < bottom) {
+                        font.drawStringWithShadow(title, 10, y + off, 0xFF9BE564);
+                    }
+                    y += 14;
+                }
+                for (String line : lines) {
+                    if (y + off + 10 > top && y + off < bottom) {
+                        font.drawStringWithShadow(line == null ? "" : line, 12, y + off, 0xAAAAAA);
+                    }
+                    y += 10;
+                }
+                y += 4;
+            }
+        } catch (Throwable t) {
+            if (!this.sectionErrorLogged) {
+                this.sectionErrorLogged = true;
+                LOGGER.warn("[GuiAbilityStatus] status section render failed: {}", t.toString());
+            }
+        }
+        return y;
     }
 
     /* ---------------- 详情面板 ---------------- */

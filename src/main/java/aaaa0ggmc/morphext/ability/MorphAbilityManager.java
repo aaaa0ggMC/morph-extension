@@ -122,10 +122,14 @@ public final class MorphAbilityManager {
         // 3. 解析药水免疫被动 (immunities)
         if (def.immunities != null && !def.immunities.isEmpty()) {
             String immId = "morphext:immunity_potion_" + morphName.replace(':', '_');
+            java.util.Set<String> wantPotions = normalizeNames(def.immunities);
             IAbility existing = AbilityRegistry.get(immId);
-            if (existing instanceof IPassiveAbility) {
+            if (existing instanceof PotionImmunityPassive
+                    && ((PotionImmunityPassive) existing).getImmunePotionNames().equals(wantPotions)) {
                 if (!resolved.contains(existing)) resolved.add(existing);
             } else {
+                // 免疫表与配置不一致（reload / 覆盖合并改过数据）时必须重建：
+                // 注册表里的旧实例会永远缓存旧免疫表，导致声明的免疫静默失效。
                 PotionImmunityPassive pip = new PotionImmunityPassive(immId,
                         "morphext.passive.immunity_potion.name",
                         "morphext.passive.immunity_potion.desc",
@@ -139,10 +143,13 @@ public final class MorphAbilityManager {
         // 4. 解析伤害免疫被动 (damageImmunities)
         if (def.damageImmunities != null && !def.damageImmunities.isEmpty()) {
             String immId = "morphext:immunity_damage_" + morphName.replace(':', '_');
+            java.util.Set<String> wantDamage = normalizeNames(def.damageImmunities);
             IAbility existing = AbilityRegistry.get(immId);
-            if (existing instanceof IPassiveAbility) {
+            if (existing instanceof DamageImmunityPassive
+                    && ((DamageImmunityPassive) existing).getImmuneTypes().equals(wantDamage)) {
                 if (!resolved.contains(existing)) resolved.add(existing);
             } else {
+                // 同上：免疫表漂移时重建，保证 resolve 结果始终等于当前配置
                 DamageImmunityPassive dip = new DamageImmunityPassive(immId,
                         "morphext.passive.immunity_damage.name",
                         "morphext.passive.immunity_damage.desc",
@@ -174,6 +181,19 @@ public final class MorphAbilityManager {
         return resolved;
     }
 
+    /** 与被动构造器同规格的名称归一化（trim + 小写），用于免疫表一致性比对。 */
+    private static java.util.Set<String> normalizeNames(List<String> names) {
+        java.util.Set<String> out = new HashSet<>();
+        if (names != null) {
+            for (String n : names) {
+                if (n != null && !n.trim().isEmpty()) {
+                    out.add(n.trim().toLowerCase());
+                }
+            }
+        }
+        return out;
+    }
+
     /**
      * 变身状态变动处理：安全触发旧形态的 onRemoved，并挂载新形态的 onApplied
      */
@@ -181,20 +201,14 @@ public final class MorphAbilityManager {
         UUID uuid = player.getUniqueID();
         MorphContext oldContext = new MorphContext(player, null, oldMorphName, null);
 
-        // 1. 卸载旧形态的所有被动
-        List<IPassiveAbility> oldPassives = activePassives.remove(uuid);
-        if (oldPassives != null) {
-            for (IPassiveAbility p : oldPassives) {
-                try {
-                    p.onRemoved(player, oldContext);
-                } catch (Throwable t) {
-                    LOGGER.error("[morphext] Error onRemoved for ability {} on player {}", p.getId(), player.getName(), t);
-                }
-            }
-        }
-        activeActives.remove(uuid);
+        // 1. 取出旧形态的所有被动（此阶段先不摘表：下面原子换入新表，
+        //    避免 remove→put 窗口内伤害事件看到空被动表而漏掉免疫）
+        List<IPassiveAbility> oldPassives = activePassives.get(uuid);
 
         if (newMorphName == null || newMorphName.isEmpty() || newMorph == null) {
+            activePassives.remove(uuid);
+            activeActives.remove(uuid);
+            unmountPassives(player, oldPassives, oldContext);
             currentMorphs.remove(uuid);
             // demorph 兜底恢复移速 base（MorphEvent.Post 未触达的路径，如客户端实例/登出）
             aaaa0ggmc.morphext.variant.VariantEventListener.restorePreMorphSpeed(player);
@@ -252,8 +266,10 @@ public final class MorphAbilityManager {
             }
         }
 
-        activePassives.put(uuid, nextPassives);
+        // 原子换入新表，随后再回调 onRemoved/onApplied（旧表在换入前沿续生效，无空窗）
+        List<IPassiveAbility> previous = activePassives.put(uuid, nextPassives);
         activeActives.put(uuid, nextActives);
+        unmountPassives(player, previous != null ? previous : oldPassives, oldContext);
 
         // 3. 触发新被动的 onApplied
         for (IPassiveAbility p : nextPassives) {
@@ -264,8 +280,63 @@ public final class MorphAbilityManager {
             }
         }
 
-        LOGGER.info("[morphext] Mounted {} passives and {} actives for player {} ({})",
-                nextPassives.size(), nextActives.size(), player.getName(), newMorphName);
+        int damageImmuneTypes = 0;
+        for (IPassiveAbility p : nextPassives) {
+            if (p instanceof DamageImmunityPassive) {
+                damageImmuneTypes += ((DamageImmunityPassive) p).getImmuneTypes().size();
+            }
+        }
+        LOGGER.info("[morphext] Mounted {} passives (damageImmuneTypes={}) and {} actives for player {} ({})",
+                nextPassives.size(), damageImmuneTypes, nextActives.size(), player.getName(), newMorphName);
+    }
+
+    /** 逐个摘下被动并回调 onRemoved（单个失败不影响其余）。 */
+    private static void unmountPassives(EntityPlayer player, List<IPassiveAbility> passives, MorphContext oldContext) {
+        if (passives == null) {
+            return;
+        }
+        for (IPassiveAbility p : passives) {
+            try {
+                p.onRemoved(player, oldContext);
+            } catch (Throwable t) {
+                LOGGER.error("[morphext] Error onRemoved for ability {} on player {}", p.getId(), player.getName(), t);
+            }
+        }
+    }
+
+    /**
+     * 立刻按玩家当前形态对齐能力挂载（变身事件驱动；PlayerTick 轮询作兜底）。
+     */
+    public void syncMorphNow(EntityPlayer player) {
+        if (player == null) {
+            return;
+        }
+        IMorphing morphing = Morphing.get(player);
+        AbstractMorph currentMorph = morphing != null ? morphing.getCurrentMorph() : null;
+        String morphName = currentMorph != null && currentMorph.name != null ? currentMorph.name : "";
+        UUID uuid = player.getUniqueID();
+        String recorded = currentMorphs.get(uuid);
+        if (!morphName.equals(recorded != null ? recorded : "")) {
+            handleMorphChange(player, recorded, morphName, currentMorph);
+        }
+    }
+
+    /**
+     * MorphEvent.Post：变身成功瞬间立刻挂载新形态被动。
+     * PlayerTick 轮询要到 Phase.END 才发现形态变化，而窒息（IN_WALL）等环境伤害在玩家自身
+     * onEntityUpdate 里先行结算，两者之间整整一 tick 的免疫空窗——转化后只有 1 点血时，
+     * 这一 tick 足以二次死亡。故事件驱动即时挂载，轮询保留为兜底（覆盖非 MorphAPI 路径）。
+     */
+    @SubscribeEvent
+    public void onMorphPost(mchorse.metamorph.api.events.MorphEvent.Post event) {
+        if (event.player == null) {
+            return;
+        }
+        try {
+            syncMorphNow(event.player);
+        } catch (Throwable t) {
+            LOGGER.error("[morphext] Error syncing abilities on morph for player {}", event.player.getName(), t);
+        }
     }
 
     @SubscribeEvent
