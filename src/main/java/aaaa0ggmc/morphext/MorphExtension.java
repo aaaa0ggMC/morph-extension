@@ -7,9 +7,11 @@ import aaaa0ggmc.morphext.conversion.ConversionPipeline;
 import aaaa0ggmc.morphext.conversion.rule.ConversionRuleRegistry;
 import aaaa0ggmc.morphext.conversion.rule.StructureDetectors;
 import aaaa0ggmc.morphext.form.FormCategories;
+import aaaa0ggmc.morphext.follower.FollowerHandler;
 import aaaa0ggmc.morphext.integration.metamorph.MetamorphBridge;
 import aaaa0ggmc.morphext.proxy.CommonProxy;
 import aaaa0ggmc.morphext.proxy.ClientProxy;
+import aaaa0ggmc.morphext.skill.SkillRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -47,6 +49,8 @@ public class MorphExtension {
         // 通用机制：形态类别 + 转化规则（数据驱动，模组侧只提供 JSON）
         FormCategories.init(event.getModConfigurationDirectory());
         ConversionRuleRegistry.init(event.getModConfigurationDirectory());
+        // 通用机制：技能系统（数据驱动，技能定义由整合包以 JSON 提供）
+        SkillRegistry.init(event.getModConfigurationDirectory());
         proxy.preInit(event);
     }
 
@@ -56,6 +60,8 @@ public class MorphExtension {
         StructureDetectors.registerBuiltins();
         ConversionPipeline.register(ConversionRuleRegistry.stage());
         ConversionPipeline.registerEvents();
+        // 通用机制：随从框架接线（EntityJoinWorldEvent 由 @Mod.EventBusSubscriber 自动注入）
+        FollowerHandler.init();
         proxy.init(event);
     }
 

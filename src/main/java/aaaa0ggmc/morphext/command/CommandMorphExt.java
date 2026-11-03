@@ -7,9 +7,12 @@ import aaaa0ggmc.morphext.faction.FactionJsonConfig;
 import aaaa0ggmc.morphext.faction.FactionManager;
 import aaaa0ggmc.morphext.faction.FactionRank;
 import aaaa0ggmc.morphext.faction.FactionRelation;
+import aaaa0ggmc.morphext.skill.SkillDefinition;
+import aaaa0ggmc.morphext.skill.SkillRegistry;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.PlayerNotFoundException;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,12 +31,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * MorphExtension 整合包与数据驱动管理指令。
  *
  * 用法：
  *  - /morphext reload                     重新加载全局配置与当前存档数据包的阵营关系图谱
+ *  - /morphext skill give <player> <id>    授予技能
+ *  - /morphext skill revoke <player> <id>  撤销技能
+ *  - /morphext skill list [player]         列出技能与玩家已获得情况
  *  - /morphext-debug relation missing     导出当前缺失（回退到 MODERATE）的阵营关系与未映射生物
  *  - /morphext-debug relation graph       导出当前阵营两两关系的 SVG 关系图
  *  - /morphext-debug relation all         同时导出以上两项
@@ -53,7 +61,8 @@ public class CommandMorphExt extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/morphext reload | /morphext-debug relation <missing|graph|all|query>";
+        return "/morphext reload | /morphext skill <give|revoke|list> [player] [id]"
+                + " | /morphext-debug relation <missing|graph|all|query>";
     }
 
     @Override
@@ -70,6 +79,10 @@ public class CommandMorphExt extends CommandBase {
             }
             sender.sendMessage(new TextComponentString(TextFormatting.GREEN
                     + "[MorphExtension] 阵营拓扑关系图谱与数据包已成功重新加载！"));
+            return;
+        }
+        if (args.length >= 1 && args[0].equalsIgnoreCase("skill")) {
+            this.handleSkill(server, sender, args);
             return;
         }
         if (args.length >= 2 && args[0].equalsIgnoreCase("relation")) {
@@ -105,6 +118,98 @@ public class CommandMorphExt extends CommandBase {
             }
         }
         sendHelp(sender);
+    }
+
+    /** 技能子命令：/morphext skill <give|revoke|list> [player] [id]。 */
+    private void handleSkill(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+        if (args.length < 2) {
+            this.sendSkillHelp(sender);
+            return;
+        }
+        String mode = args[1].toLowerCase(Locale.ROOT);
+        if ("list".equals(mode)) {
+            EntityPlayerMP player = this.resolveSkillPlayer(server, sender, args, 2);
+            this.listSkills(sender, player);
+            return;
+        }
+        if ("give".equals(mode) || "revoke".equals(mode)) {
+            EntityPlayerMP player = this.resolveSkillPlayer(server, sender, args, 2);
+            if (args.length < 4) {
+                throw new CommandException("用法: /morphext skill " + mode + " <player> <id>");
+            }
+            String id = args[3].trim().toLowerCase(Locale.ROOT);
+            if (id.isEmpty()) {
+                throw new CommandException("技能 id 不能为空");
+            }
+            if ("give".equals(mode)) {
+                SkillRegistry.grant(player, id);
+                if (SkillRegistry.byId(id) == null) {
+                    sender.sendMessage(new TextComponentString(TextFormatting.YELLOW
+                            + "[MorphExtension] 警告: 没有 id 为 " + id + " 的技能定义（配置未加载或已拼错）。"));
+                }
+                sender.sendMessage(new TextComponentString(TextFormatting.GREEN
+                        + "[MorphExtension] 已授予 " + player.getName() + " 技能 " + id));
+            } else {
+                SkillRegistry.revoke(player, id);
+                sender.sendMessage(new TextComponentString(TextFormatting.GREEN
+                        + "[MorphExtension] 已撤销 " + player.getName() + " 技能 " + id));
+            }
+            return;
+        }
+        this.sendSkillHelp(sender);
+    }
+
+    /** 取技能子命令作用的玩家；省略参数时用指令发送者自己。 */
+    private EntityPlayerMP resolveSkillPlayer(MinecraftServer server, ICommandSender sender, String[] args, int index)
+            throws CommandException {
+        if (args.length > index && args[index] != null && !args[index].isEmpty()) {
+            try {
+                return CommandBase.getPlayer(server, sender, args[index]);
+            } catch (PlayerNotFoundException notFound) {
+                throw new CommandException("找不到玩家 " + args[index]);
+            }
+        }
+        return CommandBase.getCommandSenderAsPlayer(sender);
+    }
+
+    private void listSkills(ICommandSender sender, EntityPlayerMP player) throws CommandException {
+        List<SkillDefinition> definitions = SkillRegistry.all();
+        Set<String> owned = SkillRegistry.ownedSnapshot(player);
+        sender.sendMessage(new TextComponentString(TextFormatting.GOLD + "=== morphext skills ("
+                + TextFormatting.WHITE + player.getName() + TextFormatting.GOLD + ") ==="));
+        if (definitions.isEmpty()) {
+            sender.sendMessage(new TextComponentString(TextFormatting.GRAY
+                    + "没有加载任何技能定义（assets/<modid>/morphext/skills.json 或 config/morphext/skills.json）"));
+        }
+        for (SkillDefinition definition : definitions) {
+            boolean has = owned.contains(definition.id);
+            boolean usable = SkillRegistry.isUsable(player, definition.id);
+            String type = definition.grant == null || definition.grant.type == null
+                    ? "manual"
+                    : definition.grant.type;
+            sender.sendMessage(new TextComponentString(
+                    (has ? TextFormatting.GREEN : TextFormatting.GRAY) + " - " + definition.id
+                            + TextFormatting.GRAY + " [line=" + definition.line + " grant=" + type + "] "
+                            + (has ? TextFormatting.GREEN + "已获得" : TextFormatting.DARK_GRAY + "未获得")
+                            + TextFormatting.GRAY + " / "
+                            + (usable ? TextFormatting.GREEN + "形态可用" : TextFormatting.DARK_GRAY + "形态不符")));
+        }
+        for (String id : owned) {
+            if (SkillRegistry.byId(id) == null) {
+                sender.sendMessage(new TextComponentString(TextFormatting.YELLOW + " - " + id
+                        + TextFormatting.GRAY + " [无定义] 已获得"));
+            }
+        }
+    }
+
+    private void sendSkillHelp(ICommandSender sender) {
+        sender.sendMessage(new TextComponentString(TextFormatting.GOLD + "=== Morphext 技能指令 ==="));
+        sender.sendMessage(new TextComponentString(TextFormatting.AQUA + " /morphext skill give <player> <id>"
+                + TextFormatting.GRAY + " - 授予技能"));
+        sender.sendMessage(new TextComponentString(TextFormatting.AQUA + " /morphext skill revoke <player> <id>"
+                + TextFormatting.GRAY + " - 撤销技能"));
+        sender.sendMessage(new TextComponentString(TextFormatting.AQUA + " /morphext skill list [player]"
+                + TextFormatting.GRAY + " - 列出技能与已获得情况"));
     }
 
     /** 查看准星前方实体的阵营、玩家身份等级、关系与索敌状态，用于排查“同阵营不反击”。 */
@@ -202,6 +307,12 @@ public class CommandMorphExt extends CommandBase {
         sender.sendMessage(new TextComponentString(TextFormatting.GOLD + "=== Morphext 调试指令 ==="));
         sender.sendMessage(new TextComponentString(TextFormatting.AQUA + " /morphext reload"
                 + TextFormatting.GRAY + " - 重载阵营配置与数据包"));
+        sender.sendMessage(new TextComponentString(TextFormatting.AQUA + " /morphext skill give <player> <id>"
+                + TextFormatting.GRAY + " - 授予技能"));
+        sender.sendMessage(new TextComponentString(TextFormatting.AQUA + " /morphext skill revoke <player> <id>"
+                + TextFormatting.GRAY + " - 撤销技能"));
+        sender.sendMessage(new TextComponentString(TextFormatting.AQUA + " /morphext skill list [player]"
+                + TextFormatting.GRAY + " - 列出技能与已获得情况"));
         sender.sendMessage(new TextComponentString(TextFormatting.AQUA + " /morphext-debug relation missing"
                 + TextFormatting.GRAY + " - 导出缺失关系（回退到 MODERATE）与未映射生物"));
         sender.sendMessage(new TextComponentString(TextFormatting.AQUA + " /morphext-debug relation graph"
@@ -218,10 +329,25 @@ public class CommandMorphExt extends CommandBase {
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args,
                                           @Nullable BlockPos targetPos) {
         if (args.length == 1) {
-            return getListOfStringsMatchingLastWord(args, "relation", "reload");
+            return getListOfStringsMatchingLastWord(args, "relation", "reload", "skill");
         }
         if (args.length == 2 && "relation".equalsIgnoreCase(args[0])) {
             return getListOfStringsMatchingLastWord(args, "missing", "graph", "all", "query");
+        }
+        if (args.length == 2 && "skill".equalsIgnoreCase(args[0])) {
+            return getListOfStringsMatchingLastWord(args, "give", "revoke", "list");
+        }
+        if (args.length == 3 && "skill".equalsIgnoreCase(args[0])
+                && ("give".equalsIgnoreCase(args[1]) || "revoke".equalsIgnoreCase(args[1]))) {
+            return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
+        }
+        if (args.length == 4 && "skill".equalsIgnoreCase(args[0])
+                && ("give".equalsIgnoreCase(args[1]) || "revoke".equalsIgnoreCase(args[1]))) {
+            List<String> ids = new ArrayList<>();
+            for (SkillDefinition definition : SkillRegistry.all()) {
+                ids.add(definition.id);
+            }
+            return getListOfStringsMatchingLastWord(args, ids.toArray(new String[0]));
         }
         return Collections.emptyList();
     }
