@@ -37,14 +37,15 @@ public final class SkillDefinition {
     public static final class GrantSpec {
         /**
          * 条件类型：
-         *  - forms_seen_all：{@link #forms} 全部出现在玩家 forms_seen 中；
+         *  - forms_seen_all：{@link #forms} 全部出现在玩家 forms_seen 中（集齐才授予）；
+         *  - forms_seen_any：{@link #forms} 任意一个出现在玩家 forms_seen 中即授予；
          *  - boss_defeated：玩家状态键 {@code boss_defeated:<skillId>} 存在；
          *  - advancement：玩家状态键 {@link SkillDefinition#advancement} 存在；
          *  - item_used：玩家状态键 {@code item_used:<skillId>} 存在；
          *  - manual：不自动授予（默认）。
          */
         public String type = "manual";
-        /** forms_seen_all 要求全部见过的形态 id 列表（归一化后比较）。 */
+        /** 形态 id 列表（归一化后比较）：forms_seen_all 要求全部见过，forms_seen_any 只要求任一见过；forms 为空时两者均不授予。 */
         public List<String> forms = new ArrayList<>();
     }
 }

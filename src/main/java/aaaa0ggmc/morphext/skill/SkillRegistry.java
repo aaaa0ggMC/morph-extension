@@ -59,6 +59,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 自动授予条件与外部状态键约定（由整合包/其他机制写入，核心只做存在性判定）：
  * <ul>
  *   <li>{@code forms_seen_all}：grant.forms 全部出现在 ul.forms_seen；</li>
+ *   <li>{@code forms_seen_any}：grant.forms 任意一个出现在 ul.forms_seen；</li>
  *   <li>{@code boss_defeated}：状态键 {@code boss_defeated:&lt;skillId&gt;} 存在；</li>
  *   <li>{@code advancement}：状态键等于 definition.advancement；</li>
  *   <li>{@code item_used}：状态键 {@code item_used:&lt;skillId&gt;} 存在；</li>
@@ -365,6 +366,20 @@ public final class SkillRegistry {
                     }
                 }
                 return true;
+            }
+            case "forms_seen_any": {
+                List<String> forms = definition.grant == null ? null : definition.grant.forms;
+                if (forms == null || forms.isEmpty()) {
+                    return false;
+                }
+                Set<String> seen = readIds(PlayerAbilityStore.get(player), FORMS_SEEN_KEY);
+                for (String raw : forms) {
+                    String form = FormCategories.normalize(raw);
+                    if (form != null && seen.contains(form)) {
+                        return true;
+                    }
+                }
+                return false;
             }
             case "boss_defeated":
                 return hasState(player, "boss_defeated:" + definition.id);
