@@ -3,6 +3,10 @@ package aaaa0ggmc.morphext;
 import aaaa0ggmc.morphext.ability.AbilityStateStore;
 import aaaa0ggmc.morphext.ability.AbilityUnlocks;
 import aaaa0ggmc.morphext.config.ModConfig;
+import aaaa0ggmc.morphext.conversion.ConversionPipeline;
+import aaaa0ggmc.morphext.conversion.rule.ConversionRuleRegistry;
+import aaaa0ggmc.morphext.conversion.rule.StructureDetectors;
+import aaaa0ggmc.morphext.form.FormCategories;
 import aaaa0ggmc.morphext.integration.metamorph.MetamorphBridge;
 import aaaa0ggmc.morphext.proxy.CommonProxy;
 import aaaa0ggmc.morphext.proxy.ClientProxy;
@@ -40,11 +44,18 @@ public class MorphExtension {
         ModConfig.init(new File(event.getModConfigurationDirectory(), MODID + ".cfg"));
         AbilityStateStore.init(event.getModConfigurationDirectory());
         AbilityUnlocks.init(event.getModConfigurationDirectory());
+        // 通用机制：形态类别 + 转化规则（数据驱动，模组侧只提供 JSON）
+        FormCategories.init(event.getModConfigurationDirectory());
+        ConversionRuleRegistry.init(event.getModConfigurationDirectory());
         proxy.preInit(event);
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
+        // 死亡转化管线：内置检测器 + 规则阶段 + 事件入口
+        StructureDetectors.registerBuiltins();
+        ConversionPipeline.register(ConversionRuleRegistry.stage());
+        ConversionPipeline.registerEvents();
         proxy.init(event);
     }
 
